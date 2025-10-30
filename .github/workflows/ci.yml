@@ -1,0 +1,300 @@
+name: ApexRebate CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Code Quality Checks
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Run ESLint
+      run: npm run lint
+
+    - name: Run Prettier check
+      run: npx prettier --check .
+
+    - name: Run type check
+      run: npx tsc --noEmit
+
+    - name: Check for unused dependencies
+      run: npx depcheck
+
+  # Unit Tests
+  unit-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: apexrebate_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Setup database
+      run: |
+        npx prisma generate
+        npx prisma db push
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
+
+    - name: Run unit tests
+      run: npm run test
+
+    - name: Run tests with coverage
+      run: npm run test:coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+
+  # Integration Tests
+  integration-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run integration tests
+      run: |
+        echo "🧪 Running integration tests"
+        # Add integration test commands here
+
+  # E2E Tests
+  e2e-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run E2E tests
+      run: npm run test:e2e
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+  # Security Scans
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run npm audit
+      run: npm audit --audit-level=high
+
+    - name: Run Snyk security scan
+      uses: snyk/actions/node@master
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        languages: typescript, javascript
+
+  # Performance Tests
+  performance-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run Lighthouse CI
+      run: |
+        npm install -g @lhci/cli@0.12.x
+        lhci autorun
+      env:
+        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+    - name: Run bundle size analysis
+      run: |
+        npx bundlesize
+
+  # Accessibility Tests
+  accessibility-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Build application
+      run: npm run build
+
+    - name: Run accessibility tests
+      run: |
+        echo "♿ Running accessibility tests"
+        # Add accessibility test commands here
+
+  # Database Tests
+  database-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: apexrebate_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci --legacy-peer-deps
+
+    - name: Setup database
+      run: |
+        npx prisma generate
+        npx prisma db push
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
+
+    - name: Run database migrations
+      run: npx prisma migrate deploy
+
+    - name: Run database tests
+      run: |
+        echo "🗄️ Running database tests"
+        # Add database test commands here
+
+    - name: Validate database schema
+      run: npx prisma validate
+
+  # Notify Results
+  notify:
+    runs-on: ubuntu-latest
+    needs: [quality, unit-tests, integration-tests, e2e-tests, security-scan, performance-tests, accessibility-tests, database-tests]
+    if: always()
+    
+    steps:
+    - name: Notify success
+      if: ${{ needs.quality.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success' }}
+      uses: 8398a7/action-slack@v3
+      with:
+        status: 'success'
+        channel: '#ci-cd'
+        message: '✅ All CI checks passed!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+    - name: Notify failure
+      if: ${{ needs.quality.result == 'failure' || needs.unit-tests.result == 'failure' || needs.e2e-tests.result == 'failure' }}
+      uses: 8398a7/action-slack@v3
+      with:
+        status: 'failure'
+        channel: '#ci-cd'
+        message: '❌ CI checks failed!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}

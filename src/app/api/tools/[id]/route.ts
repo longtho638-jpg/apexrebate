@@ -1,0 +1,215 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { auth } from '@/lib/auth';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const tool = await db.tool.findUnique({
+      where: { id: params.id },
+      include: {
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true
+          }
+        },
+        _count: {
+          select: {
+            reviews: true,
+            orders: true
+          }
+        }
+      }
+    });
+
+    if (!tool) {
+      return NextResponse.json(
+        { error: 'Tool not found' },
+        { status: 404 }
+      );
+    }
+
+    // Calculate average rating
+    const ratingData = await db.toolReview.aggregate({
+      where: { toolId: params.id },
+      _avg: { rating: true },
+      _count: { rating: true }
+    });
+
+    // Check if user has favorited or purchased this tool
+    const session = await auth();
+    let isFavorited = false;
+    let isPurchased = false;
+
+    if (session?.user) {
+      const favorite = await db.toolFavorite.findUnique({
+        where: {
+          toolId_userId: {
+            toolId: params.id,
+            userId: session.user.id
+          }
+        }
+      });
+      isFavorited = !!favorite;
+
+      const purchase = await db.toolOrder.findFirst({
+        where: {
+          toolId: params.id,
+          buyerId: session.user.id,
+          status: 'COMPLETED'
+        }
+      });
+      isPurchased = !!purchase;
+    }
+
+    const toolWithDetails = {
+      ...tool,
+      rating: ratingData._avg.rating || 0,
+      reviews: ratingData._count.rating || 0,
+      sales: tool._count.orders,
+      isFavorited,
+      isPurchased,
+      features: tool.features ? JSON.parse(tool.features) : [],
+      requirements: tool.requirements ? JSON.parse(tool.requirements) : []
+    };
+
+    return NextResponse.json(toolWithDetails);
+  } catch (error) {
+    console.error('Error fetching tool:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch tool' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const tool = await db.tool.findUnique({
+      where: { id: params.id }
+    });
+
+    if (!tool) {
+      return NextResponse.json(
+        { error: 'Tool not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user is the seller
+    if (tool.sellerId !== session.user.id) {
+      return NextResponse.json(
+        { error: 'Only the seller can update this tool' },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const {
+      name,
+      description,
+      price,
+      category,
+      type,
+      image,
+      features,
+      requirements,
+      documentation
+    } = body;
+
+    const updatedTool = await db.tool.update({
+      where: { id: params.id },
+      data: {
+        name,
+        description,
+        price: parseFloat(price),
+        category,
+        type,
+        image,
+        features,
+        requirements,
+        documentation
+      },
+      include: {
+        seller: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatar: true
+          }
+        }
+      }
+    });
+
+    return NextResponse.json(updatedTool);
+  } catch (error) {
+    console.error('Error updating tool:', error);
+    return NextResponse.json(
+      { error: 'Failed to update tool' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const tool = await db.tool.findUnique({
+      where: { id: params.id }
+    });
+
+    if (!tool) {
+      return NextResponse.json(
+        { error: 'Tool not found' },
+        { status: 404 }
+      );
+    }
+
+    // Check if user is the seller or admin
+    if (tool.sellerId !== session.user.id && session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { error: 'Only the seller or admin can delete this tool' },
+        { status: 403 }
+      );
+    }
+
+    await db.tool.delete({
+      where: { id: params.id }
+    });
+
+    return NextResponse.json({ message: 'Tool deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting tool:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete tool' },
+      { status: 500 }
+    );
+  }
+}

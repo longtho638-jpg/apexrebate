@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated();
+      
+      // Only admins can read all users
+      allow list: if isAdmin();
+    }
+
+    // Payouts collection
+    match /payouts/{payoutId} {
+      allow read: if isAuthenticated();
+      allow create: if isAdmin();
+      allow list: if isAuthenticated();
+      
+      // Payouts are immutable once created
+      allow update, delete: if false;
+    }
+
+    // Wall of Fame - public read access
+    match /wallOfFame/{entryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+      allow list: if true;
+    }
+
+    // Broker data - public read access
+    match /brokers/{brokerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+      allow list: if true;
+    }
+
+    // Analytics - admin only
+    match /analytics/{analyticsId} {
+      allow read, write: if isAdmin();
+      allow list: if isAdmin();
+    }
+
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

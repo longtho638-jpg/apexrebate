@@ -1,0 +1,55 @@
+# ApexRebate Robots.txt
+# https://apexrebate.com
+
+User-agent: *
+Allow: /
+
+# Prioritize important pages
+Allow: /vi
+Allow: /en
+Allow: /vi/calculator
+Allow: /en/calculator
+Allow: /vi/wall-of-fame
+Allow: /en/wall-of-fame
+Allow: /vi/faq
+Allow: /en/faq
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/
+Disallow: /*.json$
+
+# Block common bot paths
+Disallow: /wp-admin/
+Disallow: /wp-login.php
+Disallow: /wp-register.php
+
+# Sitemap
+Sitemap: https://apexrebate.com/sitemap.xml
+
+# Crawl delay (optional, be nice to servers)
+Crawl-delay: 1
+
+# Popular search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Social media crawlers
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /

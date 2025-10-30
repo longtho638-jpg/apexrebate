@@ -1,0 +1,86 @@
+{
+  "info": {
+    "_postman_id": "apexrebate-api-collection",
+    "name": "ApexRebate API v1.0",
+    "description": "API collection for ApexRebate platform - HẠT GIỐNG stage",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Intake",
+      "item": [
+        {
+          "name": "Submit Intake Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"kaison@example.com\",\n  \"tradingVolume\": \"2000000\",\n  \"preferredBroker\": \"binance\",\n  \"experience\": \"advanced\",\n  \"referralSource\": \"twitter\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/submit-intake",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "submit-intake"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Wall of Fame",
+      "item": [
+        {
+          "name": "Get Wall of Fame",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/wall-of-fame",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "wall-of-fame"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Broker Data",
+      "item": [
+        {
+          "name": "Get Broker Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/broker-data?broker=binance",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "broker-data"],
+              "query": [
+                {
+                  "key": "broker",
+                  "value": "binance"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}
