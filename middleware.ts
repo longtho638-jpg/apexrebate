@@ -1,2 +1,8 @@
-// Temporarily disable next-intl middleware to isolate server error
-export const config = {} as const;
+// Temporarily no-op middleware to isolate server error
+import { NextResponse } from 'next/server';
+
+export function middleware() {
+	return NextResponse.next();
+}
+
+export const config = { matcher: [] };
