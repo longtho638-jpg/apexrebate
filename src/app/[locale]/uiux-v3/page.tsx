@@ -1,5 +1,6 @@
+'use client'
+
 import Link from 'next/link'
-import type { Metadata } from 'next'
 
 import {
   Badge,
@@ -22,10 +23,8 @@ import {
   useToast,
 } from '@/features/uiux-v3/components'
 
-export const metadata: Metadata = {
-  title: 'UI/UX v3 — Tailwind-Only Canvas',
-  description: 'Canvas Hybrid Mode giúp clean rebuild ApexRebate UI với Tailwind CSS thuần, dark mode và i18n tự động.',
-}
+// ✅ Converted to Client Component to fix SSR error
+// Metadata moved to parent layout or removed for client-side rendering
 
 const featureHighlights = [
   {
