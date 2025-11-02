@@ -1,11 +1,2 @@
-import createMiddleware from 'next-intl/middleware';
-
-export default createMiddleware({
-  locales: ['en', 'vi'],
-  defaultLocale: 'vi',
-  localeDetection: false
-});
-
-export const config = {
-  matcher: ['/', '/(vi|en)/:path*']
-};
+// Temporarily disable next-intl middleware to isolate server error
+export const config = {} as const;
