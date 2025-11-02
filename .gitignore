@@ -48,3 +48,24 @@ prompt
 
 server.lognode_modules
 scripts/opshub-cli/node_modules
+# Node & build
+node_modules/
+functions/node_modules/
+scripts/opshub-cli/node_modules/
+scripts/opshub-function/node_modules/
+.next/
+functions/.next/
+dist/
+build/
+.turbo/
+.vercel/
+
+# Firebase local cache/emulators
+.firebase/
+
+# Logs & OS junk
+*.log
+.DS_Store
+
+# Coverage
+coverage/
