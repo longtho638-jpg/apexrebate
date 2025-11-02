@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation';
 import { getRequestConfig } from 'next-intl/server';
 
 // Can be imported from a shared config
@@ -7,10 +6,12 @@ const defaultLocale = 'vi' as const;
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
+  // If invalid, use default locale instead of throwing notFound
+  const validLocale = (locales.includes(locale as any) ? locale : defaultLocale) as string;
 
   return {
-    messages: (await import(`../messages/${locale}.json`)).default,
+    locale: validLocale,
+    messages: (await import(`../messages/${validLocale}.json`)).default,
     timeZone: 'Asia/Ho_Chi_Minh',
     defaultLocale,
     locales

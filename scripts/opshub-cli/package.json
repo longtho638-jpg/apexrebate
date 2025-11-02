@@ -1,0 +1,20 @@
+{
+  "name": "opshub-cli",
+  "version": "1.0.0",
+  "description": "Google Ops Hub CLI for ApexRebate",
+  "main": "index.js",
+  "bin": {
+    "opshub": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "commander": "^11.0.0",
+    "node-fetch": "^2.6.7",
+    "@google-cloud/firestore": "^6.6.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -5,6 +5,10 @@ const cors = require('cors')({origin: true});
 // Initialize Firebase Admin
 admin.initializeApp();
 
+// Configuration from environment variables (Functions v2)
+const APP_URL = process.env.APP_URL || 'https://ssr-fyesnthnra-uc.a.run.app';
+const CRON_SECRET = process.env.CRON_SECRET || 'your-secret-key-123';
+
 // Manual Payout Process - Concierge Service
 exports.manualPayout = functions.https.onRequest(async (req, res) => {
   return cors(req, res, async () => {
@@ -194,4 +198,96 @@ exports.getBrokerData = functions.https.onRequest(async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   });
+});
+
+// Scheduled Cron Job - Free History Processing
+// Note: Firebase Functions v5 pubsub.schedule requires second-gen functions
+// For now, using HTTP trigger that can be called by Cloud Scheduler
+exports.scheduledCronJobs = functions.https.onRequest(async (req, res) => {
+  return cors(req, res, async () => {
+    try {
+      console.log('🕐 Running scheduled cron jobs...');
+      
+      // Verify Cloud Scheduler header
+      const schedulerHeader = req.headers['x-cloudscheduler'];
+      const authHeader = req.headers['authorization'];
+      
+      if (!schedulerHeader && (!CRON_SECRET || authHeader !== `Bearer ${CRON_SECRET}`)) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      
+      // Call the cron jobs endpoint
+      console.log('Calling cron endpoint:', APP_URL);
+      const response = await fetch(`${APP_URL}/api/cron/run-jobs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${CRON_SECRET}`
+        }
+      });
+
+      const result = await response.json();
+      console.log('✅ Cron jobs completed:', result);
+      
+      res.status(200).json({
+        success: true,
+        message: 'Scheduled cron jobs executed',
+        data: result
+      });
+    } catch (error) {
+      console.error('❌ Cron job execution failed:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+  });
+});
+
+// Manual Cron Job Trigger
+exports.triggerCronJobs = functions.https.onRequest(async (req, res) => {
+  return cors(req, res, async () => {
+    try {
+      console.log('🚀 Manual cron job trigger initiated...');
+
+      // Call the cron jobs endpoint
+      console.log('Calling cron endpoint:', APP_URL);
+      const response = await fetch(`${APP_URL}/api/cron/run-jobs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${CRON_SECRET}`
+        }
+      });
+
+      const result = await response.json();
+
+      res.status(200).json({
+        success: true,
+        message: 'Cron jobs executed successfully',
+        data: result
+      });
+
+    } catch (error) {
+      console.error('Cron job trigger error:', error);
+      res.status(500).json({ 
+        success: false,
+        error: 'Failed to trigger cron jobs',
+        details: error.message 
+      });
+    }
+  });
+});
+
+// Next.js SSR Function for hosting
+const next = require('next');
+const nextApp = next({ 
+  dev: false, 
+  conf: { distDir: '../.next' } 
+});
+const handle = nextApp.getRequestHandler();
+
+exports.ssr = functions.https.onRequest(async (req, res) => {
+  await nextApp.prepare();
+  return handle(req, res);
 });

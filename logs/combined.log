@@ -26,3 +26,109 @@
 {"timestamp":"2025-10-09T15:13:38.150Z","level":"info","message":"Real-time anomaly analysis started"}
 {"timestamp":"2025-10-09T15:13:38.150Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
 {"timestamp":"2025-10-09T15:13:38.151Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:21:42.153Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:21:42.165Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:21:42.165Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:21:42.165Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:21:42.213Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:21:42.213Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:21:43.724Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:21:43.726Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:22:17.563Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:17.574Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:22:17.574Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:22:17.574Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:22:17.650Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:17.651Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:22:19.481Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:19.484Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:22:51.350Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:51.355Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:22:51.356Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:22:51.356Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:22:51.428Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:51.430Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:22:52.984Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:22:53.001Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:23:24.452Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:23:24.454Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:23:24.454Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:23:24.454Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:23:24.506Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:23:24.508Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:24:02.891Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:02.895Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:24:02.895Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:24:02.895Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:24:02.934Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:02.934Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:24:04.499Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:04.501Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:24:36.940Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:36.946Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:24:36.946Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:24:36.947Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:24:36.997Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:37.000Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:24:38.618Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:24:38.620Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:25:33.263Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:25:33.267Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:25:33.267Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:25:33.267Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T12:25:33.339Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:25:33.342Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:25:34.866Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:25:34.878Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T12:25:34.917Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T12:25:34.919Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T12:25:34.919Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T12:25:34.920Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T14:58:24.270Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:58:24.272Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T14:58:24.272Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T14:58:24.273Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T14:58:24.368Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:58:24.369Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T14:58:26.283Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:58:26.285Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T14:58:26.392Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:58:26.393Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T14:58:26.393Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T14:58:26.393Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T14:59:06.481Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:59:06.488Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T14:59:06.488Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T14:59:06.488Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T14:59:06.542Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:59:06.545Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T14:59:08.078Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:59:08.080Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T14:59:08.114Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T14:59:08.115Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T14:59:08.115Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T14:59:08.116Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T15:00:17.085Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:00:17.090Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T15:00:17.090Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T15:00:17.091Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T15:00:17.145Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:00:17.147Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T15:00:18.626Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:00:18.629Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T15:00:18.676Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:00:18.678Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T15:00:18.678Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T15:00:18.678Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T15:57:53.035Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:57:53.050Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T15:57:53.050Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T15:57:53.050Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T15:57:53.061Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:57:53.065Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-10-31T15:57:54.535Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:57:54.536Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-10-31T15:57:54.536Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-10-31T15:57:54.536Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-10-31T15:57:54.535Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-10-31T15:57:54.536Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}

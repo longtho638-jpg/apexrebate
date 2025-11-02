@@ -1,0 +1,12 @@
+# Vercel ignore
+functions/
+scripts/
+docs/
+tests/
+*.md
+*.log
+.env.local
+.firebase/
+firebase.json
+firestore.rules
+firestore.indexes.json

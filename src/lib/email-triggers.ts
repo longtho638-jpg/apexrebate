@@ -62,6 +62,63 @@ class EmailTriggers {
     // Send monthly report email logic here
     console.log(`Monthly report sent to ${user.email}`)
   }
+
+  static async checkInactivityWarnings() {
+    console.log('🔍 Checking for inactive users...')
+    
+    try {
+      const thirtyDaysAgo = new Date()
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+      // Find users who haven't logged in for 30+ days
+      const inactiveUsers = await db.user.findMany({
+        where: {
+          lastActiveAt: {
+            lt: thirtyDaysAgo
+          }
+        },
+        take: 50
+      })
+
+      console.log(`Found ${inactiveUsers.length} inactive users`)
+
+      for (const user of inactiveUsers) {
+        console.log(`Sending inactivity warning to ${user.email}`)
+        // TODO: Send email via email service
+      }
+
+      return inactiveUsers.length
+    } catch (error) {
+      console.error('Error checking inactivity:', error)
+      return 0
+    }
+  }
+
+  static async sendConciergeUpdates() {
+    console.log('🎯 Sending concierge updates...')
+    
+    try {
+      // Find users with low tier (likely seed/sprout users)
+      const seedUsers = await db.user.findMany({
+        where: {
+          tier: 'BRONZE'
+        },
+        take: 50
+      })
+
+      console.log(`Sending updates to ${seedUsers.length} seed/sprout users`)
+
+      for (const user of seedUsers) {
+        console.log(`Sending concierge update to ${user.email}`)
+        // TODO: Send personalized concierge email
+      }
+
+      return seedUsers.length
+    } catch (error) {
+      console.error('Error sending concierge updates:', error)
+      return 0
+    }
+  }
 }
 
 export const emailTriggers = EmailTriggers

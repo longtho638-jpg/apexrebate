@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import FAQClient from './faq-client';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: {
     default: 'Câu hỏi thường gặp - ApexRebate',

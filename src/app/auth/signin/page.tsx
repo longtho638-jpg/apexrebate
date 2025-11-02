@@ -1,8 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { Suspense } from 'react'
+
+export const dynamic = 'force-dynamic'
 import { signIn } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,10 +15,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Eye, EyeOff, Mail, Lock, Shield, AlertTriangle, Key } from 'lucide-react'
 
-export default function SignInPage() {
+function SignInPageComponent() {
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
+  const callbackUrl = '/dashboard'
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -286,5 +288,7 @@ export default function SignInPage() {
         </Card>
       </div>
     </div>
-  )
+    )
 }
+
+export default SignInPageComponent
