@@ -47,6 +47,7 @@ test
 prompt
 
 server.log
+logs/
 # codex remix
 .codex_contract.json
 /codex-remix
