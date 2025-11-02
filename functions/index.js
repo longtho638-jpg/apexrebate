@@ -1,9 +1,19 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cors = require('cors')({origin: true});
+const next = require('next');
 
 // Initialize Firebase Admin
 admin.initializeApp();
+
+// Next.js SSR handler
+const app = next({ dev: false });
+const handle = app.getRequestHandler();
+
+exports.nextServer = functions.https.onRequest(async (req, res) => {
+  await app.prepare();
+  return handle(req, res);
+});
 
 // Manual Payout Process - Concierge Service
 exports.manualPayout = functions.https.onRequest(async (req, res) => {

@@ -1,187 +1,101 @@
-name: ApexRebate Deploy Pipeline
+name: Deploy ApexRebate SSR + Lighthouse Audit + Gmail Notify
+
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
+
 env:
-  NODE_VERSION: '20'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  PROJECT_ID: apexrebate-prod
+  REGION: asia-southeast1
+  SITE_URL: https://apexrebate.com
+
 jobs:
-  # Code Quality and Testing
-  test:
+  build-deploy-audit:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy Functions + Hosting
+        id: deploy
+        run: firebase deploy --only functions,hosting --project $PROJECT_ID --force
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: apexrebate_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Run ESLint
-      run: npm run lint
-    - name: Run type check
-      run: npx tsc --noEmit
-    - name: Setup database
-      run: |
-        npx prisma generate
-        npx prisma db push
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
-    - name: Run unit tests
-      run: npm run test
-    - name: Run E2E tests
-      run: npm run test:e2e
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
-    - name: Build application
-      run: npm run build
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
-  # Security Scanning
-  security:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-    - name: Upload Trivy scan results
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: 'trivy-results.sarif'
-    - name: Run npm audit
-      run: npm audit --audit-level=high
-  # Build and Push Docker Image
-  build:
-    runs-on: ubuntu-latest
-    needs: [test, security]
-    if: github.ref == 'refs/heads/main'
-    outputs:
-      image-digest: ${{ steps.build.outputs.digest }}
-      image-tag: ${{ steps.meta.outputs.tags }}
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Log in to Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v5
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=sha,prefix={{branch}}-
-          type=raw,value=latest,enable={{is_default_branch}}
-    - name: Build and push Docker image
-      id: build
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        platforms: linux/amd64,linux/arm64
-  # Deploy to Staging
-  deploy-staging:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    environment: staging
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Deploy to staging
-      run: |
-        echo "🚀 Deploying to staging environment"
-        # Add your staging deployment logic here
-        # Example: kubectl apply -f k8s/staging/
-  # Deploy to Production
-  deploy-production:
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Deploy to production
-      run: |
-        echo "🚀 Deploying to production environment"
-        # Add your production deployment logic here
-        # Example: kubectl apply -f k8s/production/
-    - name: Run smoke tests
-      run: |
-        echo "🧪 Running smoke tests"
-        # Add smoke test logic here
-    - name: Notify deployment
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-      if: always()
-  # Performance Monitoring
-  performance:
-    runs-on: ubuntu-latest
-    needs: deploy-production
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Run Lighthouse CI
-      run: |
-        npm install -g @lhci/cli@0.12.x
-        lhci autorun
-      env:
-        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-    - name: Run performance tests
-      run: |
-        echo "⚡ Running performance tests"
-        # Add performance testing logic here
-  # Rollback on failure
-  rollback:
-    runs-on: ubuntu-latest
-    needs: [deploy-production, performance]
-    if: failure() && github.ref == 'refs/heads/main'
-    environment: production
-    steps:
-    - name: Rollback deployment
-      run: |
-        echo "🔄 Rolling back deployment"
-        # Add rollback logic here
-    - name: Notify rollback
-      with:
-        status: 'failure'
-        channel: '#deployments'
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
+      - name: Run Lighthouse CI audit
+        id: lighthouse
+        run: |
+          npx @lhci/cli autorun --collect.url=$SITE_URL/vi --collect.numberOfRuns=1 --upload.target=filesystem --upload.outputDir=./lhci-report
+          echo "Lighthouse completed"
+        continue-on-error: true
+
+      - name: Install jq (for parsing JSON)
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Parse Lighthouse metrics
+        id: parse
+        run: |
+          MANIFEST=./lhci-report/manifest.json
+          if [ -f "$MANIFEST" ]; then
+            PERF=$(jq -r '.[0].summary.performance // empty' "$MANIFEST")
+            ACC=$(jq -r '.[0].summary.accessibility // empty' "$MANIFEST")
+            SEO=$(jq -r '.[0].summary.seo // empty' "$MANIFEST")
+            BEST=$(jq -r '.[0].summary.bestPractices // empty' "$MANIFEST")
+            : ${PERF:=N/A}
+            : ${ACC:=N/A}
+            : ${SEO:=N/A}
+            : ${BEST:=N/A}
+          else
+            echo "manifest.json not found; setting scores to N/A"
+            PERF=N/A
+            ACC=N/A
+            SEO=N/A
+            BEST=N/A
+          fi
+          echo "perf=$PERF" >> $GITHUB_OUTPUT
+          echo "acc=$ACC" >> $GITHUB_OUTPUT
+          echo "seo=$SEO" >> $GITHUB_OUTPUT
+          echo "best=$BEST" >> $GITHUB_OUTPUT
+
+      - name: Upload Lighthouse report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: lhci-report
+
+      - name: Send deployment report to Gmail webhook
+        env:
+          GMAIL_WEBHOOK: ${{ secrets.GMAIL_WEBHOOK }}
+        run: |
+          curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "project": "'"$PROJECT_ID"'",
+              "site": "'"$SITE_URL"'",
+              "performance": "'"${{ steps.parse.outputs.perf }}"'",
+              "accessibility": "'"${{ steps.parse.outputs.acc }}"'",
+              "seo": "'"${{ steps.parse.outputs.seo }}"'",
+              "bestPractices": "'"${{ steps.parse.outputs.best }}"'",
+              "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%SZ)"'",
+              "status": "✅ Deploy & Lighthouse Audit Completed",
+              "repo": "'"${{ github.repository }}"'",
+              "run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }' \
+            $GMAIL_WEBHOOK

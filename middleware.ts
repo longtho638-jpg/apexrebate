@@ -1,8 +1,12 @@
 // Temporarily no-op middleware to isolate server error
-import { NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
 
-export function middleware() {
-	return NextResponse.next();
-}
+export default createMiddleware({
+	locales: ['en', 'vi'],
+	defaultLocale: 'vi',
+	localeDetection: false
+});
 
-export const config = { matcher: [] };
+export const config = {
+	matcher: ['/', '/(vi|en)/:path*']
+};

@@ -67,6 +67,9 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "firebase": "^12.5.0",
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^6.6.0",
     "framer-motion": "^12.23.2",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",
@@ -100,6 +103,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.40.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.1.5",
