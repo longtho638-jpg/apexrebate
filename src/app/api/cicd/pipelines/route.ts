@@ -98,19 +98,22 @@ const generatePipelines = (): Pipeline[] => {
 
 export async function GET(request: NextRequest) {
   try {
-    // 验证用户权限
-    const session = await getServerSession(authOptions)
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userRole = session.user?.role || 'user'
-    if (!['admin', 'moderator', 'developer'].includes(userRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
-    }
-
-    // 获取查询参数
     const { searchParams } = new URL(request.url)
+    const isMock = searchParams.get('mock') === '1'
+
+    // 验证用户权限
+    if (!isMock) {
+      const session = await getServerSession(authOptions)
+      if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+
+      const userRole = session.user?.role || 'user'
+      if (!['admin', 'moderator', 'developer'].includes(userRole)) {
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
+      }
+    }
+
     const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '20')
 

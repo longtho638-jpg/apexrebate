@@ -11,8 +11,8 @@ import {
   Zap, 
   Database, 
   Globe, 
-  Cpu, 
-  Memory, 
+  Cpu,
+  Gauge,
   HardDrive,
   TrendingUp,
   TrendingDown,
@@ -343,7 +343,7 @@ export default function PerformanceOptimization() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">系统资源</CardTitle>
-            <Memory className="h-4 w-4 text-muted-foreground" />
+            <Gauge className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

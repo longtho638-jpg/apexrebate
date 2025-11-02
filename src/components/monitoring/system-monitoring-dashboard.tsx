@@ -9,9 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { 
   Activity, 
-  Cpu, 
-  HardDrive, 
-  Memory, 
+  Cpu,
+  HardDrive,
+  Gauge,
   Network, 
   AlertTriangle, 
   CheckCircle, 
@@ -272,7 +272,7 @@ export default function SystemMonitoringDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">内存使用</CardTitle>
-            <Memory className="h-4 w-4 text-muted-foreground" />
+            <Gauge className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">

@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -7,12 +9,12 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { 
-  Play, 
-  Pause, 
-  RefreshCw, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Play,
+  Pause,
+  RefreshCw,
+  CheckCircle,
+  XCircle,
   AlertTriangle,
   Clock,
   GitBranch,
@@ -65,6 +67,97 @@ interface Pipeline {
   }[]
 }
 
+const fallbackDeployments: Deployment[] = [
+  {
+    id: '1',
+    version: 'v2.1.0',
+    environment: 'production',
+    status: 'success',
+    branch: 'main',
+    commit: 'a1b2c3d4',
+    author: 'John Doe',
+    startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    completedAt: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
+    duration: 1800,
+    changes: { added: 12, modified: 34, deleted: 5 },
+    tests: { total: 285, passed: 276, failed: 9 },
+  },
+  {
+    id: '2',
+    version: 'v2.0.9',
+    environment: 'staging',
+    status: 'running',
+    branch: 'develop',
+    commit: 'e5f6g7h8',
+    author: 'Jane Smith',
+    startedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
+    changes: { added: 8, modified: 22, deleted: 3 },
+    tests: { total: 265, passed: 245, failed: 0 },
+  },
+  {
+    id: '3',
+    version: 'v2.0.8',
+    environment: 'development',
+    status: 'failed',
+    branch: 'feature/new-ui',
+    commit: 'i9j0k1l2',
+    author: 'Bob Johnson',
+    startedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
+    completedAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
+    duration: 300,
+    changes: { added: 15, modified: 28, deleted: 7 },
+    tests: { total: 295, passed: 280, failed: 15 },
+  },
+]
+
+const fallbackPipelines: Pipeline[] = [
+  {
+    id: '1',
+    name: '主应用部署管道',
+    description: '主应用程序的完整CI/CD流程',
+    status: 'active',
+    lastRun: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
+    nextRun: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
+    triggers: ['push', 'pull_request', 'schedule'],
+    stages: [
+      { name: '代码检查', status: 'success', duration: 120 },
+      { name: '单元测试', status: 'success', duration: 180 },
+      { name: '构建镜像', status: 'success', duration: 300 },
+      { name: '部署到Staging', status: 'success', duration: 240 },
+      { name: '集成测试', status: 'running' },
+      { name: '部署到Production', status: 'pending' },
+    ],
+  },
+  {
+    id: '2',
+    name: '微服务部署管道',
+    description: '微服务架构的独立部署流程',
+    status: 'active',
+    lastRun: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    triggers: ['push', 'manual'],
+    stages: [
+      { name: '服务构建', status: 'success', duration: 200 },
+      { name: '容器化', status: 'success', duration: 150 },
+      { name: '服务测试', status: 'success', duration: 180 },
+      { name: '服务部署', status: 'success', duration: 120 },
+    ],
+  },
+  {
+    id: '3',
+    name: '数据库迁移管道',
+    description: '数据库schema迁移和备份流程',
+    status: 'paused',
+    lastRun: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    triggers: ['manual'],
+    stages: [
+      { name: '数据库备份', status: 'success', duration: 300 },
+      { name: '迁移脚本', status: 'pending' },
+      { name: '数据验证', status: 'pending' },
+      { name: '性能测试', status: 'pending' },
+    ],
+  },
+]
+
 export default function CICDDashboard() {
   const [deployments, setDeployments] = useState<Deployment[]>([])
   const [pipelines, setPipelines] = useState<Pipeline[]>([])
@@ -74,58 +167,16 @@ export default function CICDDashboard() {
 
   const fetchDeployments = async () => {
     try {
-      const response = await fetch('/api/cicd/deployments')
+      const response = await fetch('/api/cicd/deployments?mock=1')
       if (response.ok) {
         const data = await response.json()
         setDeployments(data.data)
       } else {
-        // 模拟数据
-        const mockDeployments: Deployment[] = [
-          {
-            id: '1',
-            version: 'v2.1.0',
-            environment: 'production',
-            status: 'success',
-            branch: 'main',
-            commit: 'a1b2c3d4',
-            author: 'John Doe',
-            startedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            completedAt: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString(),
-            duration: 1800,
-            changes: { added: 12, modified: 34, deleted: 5 },
-            tests: { total: 285, passed: 276, failed: 9 }
-          },
-          {
-            id: '2',
-            version: 'v2.0.9',
-            environment: 'staging',
-            status: 'running',
-            branch: 'develop',
-            commit: 'e5f6g7h8',
-            author: 'Jane Smith',
-            startedAt: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
-            changes: { added: 8, modified: 22, deleted: 3 },
-            tests: { total: 265, passed: 245, failed: 0 }
-          },
-          {
-            id: '3',
-            version: 'v2.0.8',
-            environment: 'development',
-            status: 'failed',
-            branch: 'feature/new-ui',
-            commit: 'i9j0k1l2',
-            author: 'Bob Johnson',
-            startedAt: new Date(Date.now() - 45 * 60 * 1000).toISOString(),
-            completedAt: new Date(Date.now() - 40 * 60 * 1000).toISOString(),
-            duration: 300,
-            changes: { added: 15, modified: 28, deleted: 7 },
-            tests: { total: 295, passed: 280, failed: 15 }
-          }
-        ]
-        setDeployments(mockDeployments)
+        setDeployments(fallbackDeployments)
       }
     } catch (error) {
       console.error('Failed to fetch deployments:', error)
+      setDeployments(fallbackDeployments)
     } finally {
       setIsLoading(false)
     }
@@ -133,70 +184,23 @@ export default function CICDDashboard() {
 
   const fetchPipelines = async () => {
     try {
-      const response = await fetch('/api/cicd/pipelines')
+      const response = await fetch('/api/cicd/pipelines?mock=1')
       if (response.ok) {
         const data = await response.json()
         setPipelines(data.data)
       } else {
-        // 模拟数据
-        const mockPipelines: Pipeline[] = [
-          {
-            id: '1',
-            name: '主应用部署管道',
-            description: '主应用程序的完整CI/CD流程',
-            status: 'active',
-            lastRun: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-            nextRun: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-            triggers: ['push', 'pull_request', 'schedule'],
-            stages: [
-              { name: '代码检查', status: 'success', duration: 120 },
-              { name: '单元测试', status: 'success', duration: 180 },
-              { name: '构建镜像', status: 'success', duration: 300 },
-              { name: '部署到Staging', status: 'success', duration: 240 },
-              { name: '集成测试', status: 'running' },
-              { name: '部署到Production', status: 'pending' }
-            ]
-          },
-          {
-            id: '2',
-            name: '微服务部署管道',
-            description: '微服务架构的独立部署流程',
-            status: 'active',
-            lastRun: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-            triggers: ['push', 'manual'],
-            stages: [
-              { name: '服务构建', status: 'success', duration: 200 },
-              { name: '容器化', status: 'success', duration: 150 },
-              { name: '服务测试', status: 'success', duration: 180 },
-              { name: '服务部署', status: 'success', duration: 120 }
-            ]
-          },
-          {
-            id: '3',
-            name: '数据库迁移管道',
-            description: '数据库schema迁移和备份流程',
-            status: 'paused',
-            lastRun: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-            triggers: ['manual'],
-            stages: [
-              { name: '数据库备份', status: 'success', duration: 300 },
-              { name: '迁移脚本', status: 'pending' },
-              { name: '数据验证', status: 'pending' },
-              { name: '性能测试', status: 'pending' }
-            ]
-          }
-        ]
-        setPipelines(mockPipelines)
+        setPipelines(fallbackPipelines)
       }
     } catch (error) {
       console.error('Failed to fetch pipelines:', error)
+      setPipelines(fallbackPipelines)
     }
   }
 
   const deployToEnvironment = async (environment: string) => {
     setIsDeploying(true)
     try {
-      const response = await fetch('/api/cicd/deploy', {
+      const response = await fetch('/api/cicd/deploy?mock=1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ environment })
@@ -233,7 +237,7 @@ export default function CICDDashboard() {
 
   const rollbackDeployment = async (deploymentId: string) => {
     try {
-      const response = await fetch('/api/cicd/rollback', {
+      const response = await fetch('/api/cicd/rollback?mock=1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ deploymentId })

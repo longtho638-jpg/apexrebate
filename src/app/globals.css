@@ -120,3 +120,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .skip-link {
+    @apply sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:left-1/2 focus-visible:top-4 focus-visible:-translate-x-1/2 focus-visible:z-50 focus-visible:rounded-full focus-visible:bg-primary focus-visible:px-4 focus-visible:py-2 focus-visible:text-primary-foreground focus-visible:shadow-lg;
+  }
+
+  .cq-container {
+    container-type: inline-size;
+  }
+
+  .cq-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  @container (min-width: 48rem) {
+    .cq-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @container (min-width: 72rem) {
+    .cq-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+}
