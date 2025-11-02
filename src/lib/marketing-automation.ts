@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { emailService, EmailType } from '@/lib/email'
-import { ZAI } from 'z-ai-web-dev-sdk'
+import ZAI from 'z-ai-web-dev-sdk'
 
 export interface MarketingCampaign {
   id: string
