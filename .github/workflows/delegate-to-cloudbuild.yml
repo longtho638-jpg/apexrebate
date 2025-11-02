@@ -1,0 +1,43 @@
+name: Delegate to Google Cloud Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  trigger-cloudbuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Trigger Google Cloud Build
+        uses: google-github-actions/cloud-build@v1
+        with:
+          project_id: apexrebate-prod
+          config: cloudbuild.yaml
+          substitutions: |
+            _TRIGGER_SOURCE=github
+            _AUTHOR=${{ github.actor }}
+            _BRANCH=${{ github.ref_name }}
+            _COMMIT=${{ github.sha }}
+
+      - name: Notify success (via Apps Script)
+        run: |
+          echo "📨 Notifying Apps Script about successful trigger..."
+          curl -X POST -H "Content-Type: application/json" \
+            -d "{\"project\":\"apexrebate-prod\",\"status\":\"TRIGGERED\",\"author\":\"${{ github.actor }}\",\"branch\":\"${{ github.ref_name }}\",\"commit\":\"${{ github.sha }}\"}" \
+            "https://script.google.com/macros/s/AKfycbymyHjaIp_Aiqgp9DJMsRMyACH_xZxkUAln1d-_7BCCbbDtVoOoyyiofppwdd6NSb8h/exec"
