@@ -4,24 +4,31 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main ]
+
 env:
   NODE_VERSION: '18'
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: ${{ env.NODE_VERSION }}
         cache: 'npm'
+    
     - name: Install dependencies
       run: npm ci
+    
     - name: Run ESLint
       run: npm run lint
+    
     - name: Build application
       run: npm run build
+    
     - name: Run API regression tests
       run: |
         npm run dev &
@@ -29,27 +36,33 @@ jobs:
         ./tests/run-regression.sh dev
       env:
         CI: true
+
   deploy-preview:
     needs: lint-and-test
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
     - uses: actions/checkout@v3
+    
     - name: Deploy to Preview
       run: |
         echo "🚀 Deploying to preview environment..."
         # Add your preview deployment commands here
+        
     - name: Run regression on preview
       run: ./tests/run-regression.sh preview
+
   deploy-production:
     needs: lint-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/checkout@v3
+    
     - name: Deploy to Production
       run: |
         echo "🎯 Deploying to production..."
         # Add your production deployment commands here
+        
     - name: Run regression on production
       run: ./tests/run-regression.sh prod
