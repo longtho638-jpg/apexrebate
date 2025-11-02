@@ -1,14 +1,5 @@
 {
   "buildCommand": "prisma generate || true && next build",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
-  "deploymentProtection": {
-    "preview": {
-      "enabled": true,
-      "type": "vercel_authentication"
-    },
-    "production": {
-      "enabled": false
-    }
-  }
+  "installCommand": "npm install --legacy-peer-deps"
 }
