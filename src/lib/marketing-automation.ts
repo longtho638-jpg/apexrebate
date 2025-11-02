@@ -111,8 +111,8 @@ export class MarketingAutomation {
         return
       }
 
-      const module = await import('z-ai-web-dev-sdk')
-      const sdk: any = module?.default ?? module?.ZAI ?? module
+      const importedModule = await import('z-ai-web-dev-sdk')
+      const sdk: any = importedModule?.default ?? importedModule?.ZAI ?? importedModule
 
       if (sdk?.create) {
         this.zai = await sdk.create()
