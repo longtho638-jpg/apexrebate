@@ -1,30 +1,29 @@
 ---
 name: codex-merge-fix
-description: "Tự động kiểm tra PR, chạy lint, build, và đề xuất merge preview khi pass."
+description: "Kiểm tra PR bị Codex block, chạy lint/build, và hướng dẫn merge preview."
 ---
 
 # Codex Merge Fix Agent
 
-**Trigger:** `@codex-merge-fix`
+**Trigger:** `@codex-merge-fix run`
 
-## 🎯 Purpose
-- Khi PR bị lỗi merge hoặc lint (Codex block),
-- Agent này sẽ hướng dẫn xử lý conflict, chạy lint/build local hoặc CI,
-- Và nếu pass, đề xuất auto-merge qua comment "✅ Ready to merge".
+## 🎯 Mục tiêu
+Giúp tự động kiểm tra Pull Request có lỗi lint/build hoặc xung đột merge:
+- Phát hiện conflict và gợi ý lệnh terminal fix.
+- Chạy thử `npm ci && npm run lint && npm run build`.
+- Nếu pass → đề xuất merge.
 
-## 🧩 How it works
-1. Xác định PR đang mở (qua `GITHUB_REF`).
-2. Chạy `npm ci && npm run lint && npm run build`.
-3. Nếu tất cả pass → tạo comment `✅ Lint & build passed on PR #...`.
-4. Nếu fail → comment `❌ Check logs`.
+## 🚀 Cách dùng
+Trong phần **comment** của PR đang mở, gõ:
 
-## 🔧 To trigger
-Trong PR, comment:
 ```
 @codex-merge-fix run
 ```
 
-Hoặc trong Copilot Chat:
+Hoặc trong Copilot Chat, thử:
 ```
 @codex-merge-fix please check this PR
 ```
+
+Agent sẽ hiện hộp thoại xác nhận để chạy kiểm tra.  
+Nếu workflow `agent-dispatch.yml` đã có (hoặc được thêm sau), nó sẽ tự động chạy CI cho nhánh hiện tại.

@@ -8,6 +8,8 @@ jobs:
   codex-merge-fix:
     if: github.event.client_payload.agent == 'codex-merge-fix'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
