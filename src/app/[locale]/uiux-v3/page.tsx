@@ -1,14 +1,18 @@
 'use client'
 
+// Tránh static prerendering để không gặp lỗi SSR
+export const dynamic = 'force-dynamic'
+
 import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import dynamic from 'next/dynamic'
+import { Rocket, Activity, CheckCircle, Settings, Zap } from 'lucide-react'
+import dynamicImport from 'next/dynamic'
 
 // ✅ Lazy import để tránh SSR crash & giảm bundle
-const CICDDashboard = dynamic(() => import('@/components/cicd/cicd-dashboard'), {
+const CICDDashboard = dynamicImport(() => import('@/components/cicd/cicd-dashboard'), {
   ssr: false,
   loading: () => <div className="p-6 text-center text-sm text-muted-foreground">Đang tải dashboard...</div>,
 })
@@ -17,55 +21,65 @@ export default function CICDPage() {
   const [activeTab, setActiveTab] = useState('dashboard')
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto py-6 space-y-6">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">CI/CD Pipeline Dashboard</h1>
-          <p className="text-muted-foreground">管理和监控你的持续集成和部署流程</p>
+          <h1 className="text-3xl font-bold tracking-tight">CI/CD 管道中心</h1>
+          <p className="text-muted-foreground">管理持续集成、部署和交付流程</p>
         </div>
-        <div className="flex gap-2">
-          <Badge variant="outline">Production</Badge>
-          <Badge variant="secondary">Auto-Deploy: ON</Badge>
+        <div className="flex items-center space-x-2">
+          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+            <CheckCircle className="h-3 w-3 mr-1" />
+            管道正常
+          </Badge>
+          <Button variant="outline" size="sm">
+            <Settings className="h-4 w-4 mr-2" />
+            管道设置
+          </Button>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      {/* Stats Cards with Icons */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>总部署次数</CardDescription>
-            <CardTitle className="text-2xl">1,284</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">活跃管道</CardTitle>
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">+12% 较上月</p>
+            <div className="text-2xl font-bold">3</div>
+            <p className="text-xs text-muted-foreground">2个运行中, 1个暂停</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>成功率</CardDescription>
-            <CardTitle className="text-2xl">98.7%</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">今日部署</CardTitle>
+            <Rocket className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">+0.3% 较上月</p>
+            <div className="text-2xl font-bold">8</div>
+            <p className="text-xs text-muted-foreground">7成功, 1失败</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>平均部署时间</CardDescription>
-            <CardTitle className="text-2xl">3.2min</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">平均部署时间</CardTitle>
+            <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">-0.5min 较上月</p>
+            <div className="text-2xl font-bold text-blue-600">6.5分</div>
+            <p className="text-xs text-muted-foreground">较上周优化 15%</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>活跃环境</CardDescription>
-            <CardTitle className="text-2xl">8</CardTitle>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">成功率</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">无变化</p>
+            <div className="text-2xl font-bold text-green-600">94.2%</div>
+            <p className="text-xs text-muted-foreground">最近30天</p>
           </CardContent>
         </Card>
       </div>
@@ -73,7 +87,7 @@ export default function CICDPage() {
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+          <TabsTrigger value="dashboard">管道仪表板</TabsTrigger>
           <TabsTrigger value="deployments">部署管理</TabsTrigger>
           <TabsTrigger value="environments">环境管理</TabsTrigger>
           <TabsTrigger value="monitoring">监控日志</TabsTrigger>
@@ -81,60 +95,14 @@ export default function CICDPage() {
         </TabsList>
 
         <TabsContent value="dashboard">
-          {/* ✅ mock data mode để tránh fetch /api lỗi */}
-          <CICDDashboard mockMode />
-          <div className="mt-4 text-xs text-muted-foreground text-right pr-2">
-            Runtime: client-only (mocked data) · Codex UI restored ✅
-          </div>
+          <CICDDashboard />
         </TabsContent>
 
-        <TabsContent value="deployments">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Deployments</CardTitle>
-              <CardDescription>最近的部署记录和状态</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">部署列表将在此显示</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="environments">
-          <Card>
-            <CardHeader>
-              <CardTitle>Environment Management</CardTitle>
-              <CardDescription>管理不同的部署环境</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">环境配置将在此显示</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="monitoring">
-          <Card>
-            <CardHeader>
-              <CardTitle>Logs & Monitoring</CardTitle>
-              <CardDescription>实时日志和性能监控</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">监控数据将在此显示</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="settings">
-          <Card>
-            <CardHeader>
-              <CardTitle>Pipeline Settings</CardTitle>
-              <CardDescription>配置CI/CD流程参数</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">设置选项将在此显示</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Các tab còn lại vẫn giữ layout Codex */}
+        <TabsContent value="deployments"><div /></TabsContent>
+        <TabsContent value="environments"><div /></TabsContent>
+        <TabsContent value="monitoring"><div /></TabsContent>
+        <TabsContent value="settings"><div /></TabsContent>
       </Tabs>
     </div>
   )
