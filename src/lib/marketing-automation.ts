@@ -1,6 +1,5 @@
 import { db } from '@/lib/db'
 import { emailService, EmailType } from '@/lib/email'
-import { ZAI } from 'z-ai-web-dev-sdk'
 
 export interface MarketingCampaign {
   id: string
@@ -108,8 +107,19 @@ export class MarketingAutomation {
 
   async initializeZAI() {
     try {
-      this.zai = await ZAI.create()
-      console.log('Marketing automation initialized with ZAI SDK')
+      if (this.zai) {
+        return
+      }
+
+      const module = await import('z-ai-web-dev-sdk')
+      const sdk: any = module?.default ?? module?.ZAI ?? module
+
+      if (sdk?.create) {
+        this.zai = await sdk.create()
+        console.log('Marketing automation initialized with ZAI SDK')
+      } else {
+        console.warn('ZAI SDK module loaded but no create method was found')
+      }
     } catch (error) {
       console.error('Failed to initialize ZAI SDK for marketing:', error)
     }
