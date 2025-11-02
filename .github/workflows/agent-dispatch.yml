@@ -1,0 +1,19 @@
+name: Codex Merge Fix Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+
+jobs:
+  codex-merge-fix:
+    if: github.event.client_payload.agent == 'codex-merge-fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint || echo "::error::Lint failed"
+      - run: npm run build || echo "::error::Build failed"
