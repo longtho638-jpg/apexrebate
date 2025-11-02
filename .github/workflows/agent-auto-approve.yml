@@ -1,0 +1,35 @@
+name: Codex Auto Approve Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+
+jobs:
+  codex-auto-approve:
+    if: github.event.client_payload.agent == 'codex-auto-approve'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Check last Codex Merge Fix result
+        id: verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Checking last merge-fix run..."
+          gh run list --workflow "Codex Merge Fix Runner" --limit 1 --json conclusion -q ".[0].conclusion" > result.txt
+          result=$(cat result.txt)
+          echo "Last workflow conclusion: $result"
+          if [ "$result" != "success" ]; then
+            echo "::error::Cannot approve — merge-fix did not pass."
+            exit 1
+          fi
+
+      - name: Approve PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "✅ Auto-approving PR..."
+          gh pr review ${{ github.event.client_payload.pull_number }} --approve --body "✅ Auto-approved by codex-auto-approve agent."

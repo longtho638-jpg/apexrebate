@@ -1,0 +1,35 @@
+name: Codex Auto Merge Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+
+jobs:
+  codex-auto-merge:
+    if: github.event.client_payload.agent == 'codex-auto-merge'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate PR approval
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Checking PR approvals..."
+          APPROVED=$(gh pr view ${{ github.event.client_payload.pull_number }} --json reviewDecision -q '.reviewDecision')
+          if [ "$APPROVED" != "APPROVED" ]; then
+            echo "::error::PR not approved yet."
+            exit 1
+          fi
+
+      - name: Merge PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🚀 Merging PR..."
+          gh pr merge ${{ github.event.client_payload.pull_number }} --merge --delete-branch --admin

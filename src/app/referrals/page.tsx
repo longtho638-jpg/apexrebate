@@ -31,7 +31,7 @@ import {
   Twitter,
   Linkedin,
   Send,
-  HelpCircle,
+  HelpCircle
 } from 'lucide-react';
 import Navbar from '@/components/navbar';
 
@@ -314,8 +314,8 @@ Best regards`);
                     variant="outline"
                     className="flex flex-col items-center space-y-2 h-auto py-3"
                   >
-                    <Send className="w-5 h-5" />
-                    <span className="text-xs">Send</span>
+                    <MessageCircle className="w-5 h-5" />
+                    <span className="text-xs">Telegram</span>
                   </Button>
                 </div>
 
