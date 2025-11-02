@@ -1,0 +1,32 @@
+steps:
+  # Step 1 — Cài dependencies và build
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['ci']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    args: ['run', 'build']
+
+  # Step 2 — Triển khai Firebase Hosting
+  - name: 'gcr.io/firebase-tools/cli'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🚀 Deploying to Firebase Hosting..."
+        firebase deploy --only hosting --project=apexrebate-prod
+
+  # Step 3 — Ghi log và gửi email notify qua Apps Script
+  - name: 'gcr.io/cloud-builders/curl'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "🧾 Sending deployment report..."
+        curl -X POST -H "Content-Type: application/json" \
+          -d "{\"project\":\"apexrebate-prod\",\"status\":\"SUCCESS\",\"timestamp\":\"$(date -u +'%Y-%m-%dT%H:%M:%SZ')\",\"build_id\":\"${BUILD_ID}\"}" \
+          "https://script.google.com/macros/s/AKfycbymyHjaIp_Aiqgp9DJMsRMyACH_xZxkUAln1d-_7BCCbbDtVoOoyyiofppwdd6NSb8h/exec"
+
+timeout: 1200s
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
