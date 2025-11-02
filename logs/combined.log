@@ -228,3 +228,15 @@
 {"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"Real-time anomaly analysis started"}
 {"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
 {"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-11-02T13:37:37.973Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:37:37.976Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:37:37.984Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:37:38.022Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:37:38.022Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:37:38.022Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-11-02T13:37:39.188Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:37:39.190Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:37:39.314Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:37:39.314Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:37:39.315Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:37:39.316Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}

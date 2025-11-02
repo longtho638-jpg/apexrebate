@@ -1,7 +1,7 @@
 // next.config.ts
 import nextIntl from 'next-intl/plugin';
 
-const withNextIntl = nextIntl('./next-intl.config.ts');
+const withNextIntl = nextIntl('./src/i18n/request.ts');
 
 const config: import('next').NextConfig = {
   reactStrictMode: true,
