@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { MemoryStick } from 'lucide-react'
 import { 
   Activity, 
-  Cpu, 
-  HardDrive, 
+  Cpu,
+  HardDrive,
+  Gauge,
   Network, 
   AlertTriangle, 
   CheckCircle, 
@@ -272,7 +272,7 @@ export default function SystemMonitoringDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">内存使用</CardTitle>
-            <HardDrive className="h-4 w-4 text-muted-foreground" />
+            <Gauge className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -308,16 +308,16 @@ export default function SystemMonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.network.latency?.toFixed(0) || 0}ms
+              {metrics?.network.latency.toFixed(0)}ms
             </div>
             <div className="flex items-center mt-2">
-              {(metrics?.network.latency || 0) < 50 ? (
+              {metrics?.network.latency < 50 ? (
                 <TrendingDown className="h-4 w-4 text-green-600 mr-1" />
               ) : (
                 <TrendingUp className="h-4 w-4 text-red-600 mr-1" />
               )}
               <span className="text-xs text-muted-foreground">
-                入站: {metrics?.network.inbound?.toFixed(0) || 0}KB/s
+                入站: {metrics?.network.inbound.toFixed(0)}KB/s
               </span>
             </div>
           </CardContent>
