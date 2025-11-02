@@ -1,0 +1,37 @@
+name: Codex Auto Merge Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+
+jobs:
+  codex-auto-merge:
+    if: github.event.client_payload.agent == 'codex-auto-merge'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check PR status
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "🔍 Checking Codex Merge Fix results..."
+          gh run list --workflow "Codex Merge Fix Runner" --limit 1 --json conclusion -q ".[0].conclusion" > result.txt
+          result=$(cat result.txt)
+          echo "Last workflow conclusion: $result"
+          if [ "$result" != "success" ]; then
+            echo "::error::Last codex-merge-fix run failed or not found."
+            exit 1
+          fi
+
+      - name: Auto-merge PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "✅ Merging current PR..."
+          gh pr merge ${{ github.event.client_payload.pull_number }} --merge --admin --delete-branch --auto
