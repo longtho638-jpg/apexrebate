@@ -1,0 +1,38 @@
+diff --git a/src/app/[locale]/page.tsx b/src/app/[locale]/page.tsx
+index 1111111..4444444 100644
+--- a/src/app/[locale]/page.tsx
++++ b/src/app/[locale]/page.tsx
+@@ -1,3 +1,28 @@
+-export default function Page() {
+-  return <div>Home OK</div>;
+-}
++import { redirect } from "next/navigation";
++
++// ✅ Safe multi-locale redirect → /uiux-v3
++// No runtime fetch needed - we know the route exists from build
++export default function LocaleRedirect({
++  params,
++}: {
++  params: { locale: string };
++}) {
++  const supportedLocales = ["vi", "en"];
++  const { locale } = params;
++
++  // Validate locale is supported
++  const isValidLocale = supportedLocales.includes(locale);
++  
++  if (!isValidLocale) {
++    // Unsupported locale → fallback to Vietnamese
++    redirect("/vi/uiux-v3");
++  }
++
++  // Feature flag: enable/disable uiux-v3 redirect
++  const ENABLE_UIUX_REDIRECT = process.env.NEXT_PUBLIC_ENABLE_UIUX_REDIRECT !== 'false';
++  
++  if (ENABLE_UIUX_REDIRECT) {
++    redirect(`/${locale}/uiux-v3`);
++  }
++
++  // Fallback if redirect is disabled
++  return <div className="p-8 text-center">Home OK – UI/UX v3 redirect disabled</div>;
++}

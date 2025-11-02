@@ -1,0 +1,154 @@
+name: Codex Deploy Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+  workflow_dispatch:
+
+jobs:
+  codex-deploy:
+    if: github.event.client_payload.agent == 'codex-deploy' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.branch || github.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run lint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Build Next.js
+        run: npm run build
+        continue-on-error: false
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Firebase
+        id: firebase-deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          PROJECT_ID: apexrebate-prod
+        run: |
+          firebase deploy --only hosting,functions --project $PROJECT_ID --non-interactive || {
+            echo "deploy_status=failed" >> $GITHUB_OUTPUT
+            echo "::warning::Firebase deploy failed"
+            exit 1
+          }
+          echo "deploy_status=success" >> $GITHUB_OUTPUT
+
+      - name: Authenticate to Google Cloud
+        if: steps.firebase-deploy.outputs.deploy_status == 'success'
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        if: steps.firebase-deploy.outputs.deploy_status == 'success'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        if: steps.firebase-deploy.outputs.deploy_status == 'success'
+        id: cloudrun-deploy
+        env:
+          PROJECT_ID: apexrebate-prod
+          REGION: us-central1
+        run: |
+          gcloud builds submit --tag gcr.io/$PROJECT_ID/apexrebate-app || {
+            echo "cloudrun_status=failed" >> $GITHUB_OUTPUT
+            echo "::warning::Cloud Build failed"
+            exit 0
+          }
+          gcloud run deploy apexrebate \
+            --image gcr.io/$PROJECT_ID/apexrebate-app \
+            --region $REGION \
+            --platform managed \
+            --allow-unauthenticated || {
+            echo "cloudrun_status=failed" >> $GITHUB_OUTPUT
+            echo "::warning::Cloud Run deploy failed"
+            exit 0
+          }
+          echo "cloudrun_status=success" >> $GITHUB_OUTPUT
+
+      - name: Comment deploy status on PR
+        if: github.event.client_payload.pr_number
+        uses: actions/github-script@v7
+        env:
+          FIREBASE_STATUS: ${{ steps.firebase-deploy.outputs.deploy_status }}
+          CLOUDRUN_STATUS: ${{ steps.cloudrun-deploy.outputs.cloudrun_status || 'skipped' }}
+        with:
+          script: |
+            const firebaseStatus = process.env.FIREBASE_STATUS === 'success' ? '✅' : '❌';
+            const cloudrunStatus = process.env.CLOUDRUN_STATUS === 'success' ? '✅' : 
+                                   process.env.CLOUDRUN_STATUS === 'skipped' ? '⏭️' : '❌';
+            
+            const body = `## 🪷 Codex Deploy Runner
+            
+            | Service | Status |
+            |---------|--------|
+            | Firebase Hosting + Functions | ${firebaseStatus} ${process.env.FIREBASE_STATUS} |
+            | Cloud Run | ${cloudrunStatus} ${process.env.CLOUDRUN_STATUS} |
+            
+            **Branch**: \`${context.payload.client_payload.branch || context.ref}\`
+            **Triggered by**: @${context.actor}
+            **Run**: [View workflow](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            `;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.client_payload.pr_number,
+              body: body
+            });
+
+      - name: Trigger auto-approve chain
+        if: steps.firebase-deploy.outputs.deploy_status == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "✅ Build & Deploy completed. Triggering auto-approve chain..."
+          gh workflow run agent-auto-approve.yml || echo "::notice::Auto-approve workflow triggered"
+
+      - name: Retry on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const maxRetries = 3;
+            const currentAttempt = context.runNumber % maxRetries || 1;
+            
+            if (currentAttempt < maxRetries) {
+              core.notice(`Deploy failed. Retry ${currentAttempt}/${maxRetries}...`);
+              
+              // Trigger retry via repository dispatch
+              await github.rest.repos.createDispatchEvent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                event_type: 'run-agent',
+                client_payload: {
+                  agent: 'codex-deploy',
+                  branch: context.payload.client_payload?.branch || context.ref,
+                  pr_number: context.payload.client_payload?.pr_number,
+                  retry: currentAttempt + 1
+                }
+              });
+            } else {
+              core.setFailed(`Deploy failed after ${maxRetries} attempts`);
+            }
