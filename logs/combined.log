@@ -204,3 +204,27 @@
 {"timestamp":"2025-11-02T12:06:17.483Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
 {"timestamp":"2025-11-02T12:06:17.626Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
 {"timestamp":"2025-11-02T12:06:17.626Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:32:29.826Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:32:29.827Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:32:29.830Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:32:29.831Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-11-02T13:32:30.028Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:32:30.029Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:32:31.839Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:32:31.842Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:32:31.945Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:32:31.946Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:32:31.946Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:32:31.946Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-11-02T13:33:32.309Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:33:32.316Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:33:32.316Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:33:32.316Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}
+{"timestamp":"2025-11-02T13:33:32.442Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:33:32.443Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:33:33.734Z","level":"error","message":"Failed to load historical data","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:33:33.734Z","level":"info","message":"AI Recommendation Engine initialized","meta":{"enabled":true,"maxRecommendations":5}}
+{"timestamp":"2025-11-02T13:33:33.946Z","level":"error","message":"Failed to load user baselines","meta":{"error":"Cannot read properties of undefined (reading 'findMany')"}}
+{"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"Real-time anomaly analysis started"}
+{"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"Batch anomaly analysis started","meta":{"interval":"15 minutes"}}
+{"timestamp":"2025-11-02T13:33:33.947Z","level":"info","message":"ML Anomaly Detector initialized","meta":{"enabled":true,"sensitivity":0.7,"userBaselines":0}}

@@ -1,5 +1,7 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { Inter } from 'next/font/google';
+import viMessages from '@/../messages/vi.json';
+import enMessages from '@/../messages/en.json';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,9 +19,8 @@ export default async function LocaleLayout({
     ? locale
     : 'vi';
 
-  // Load plain JSON messages explicitly to avoid any prod bundling quirks
-  // Note: Keep messages as a serializable object for the Client Provider
-  const messages = (await import(`../../../messages/${effectiveLocale}.json`)).default;
+  // Use static imports to avoid dynamic import serialization issues
+  const messages = effectiveLocale === 'vi' ? viMessages : enMessages;
 
   return (
     <NextIntlClientProvider locale={effectiveLocale} messages={messages}>
