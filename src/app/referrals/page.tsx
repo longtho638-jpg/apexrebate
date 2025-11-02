@@ -32,7 +32,6 @@ import {
   Linkedin,
   Send,
   HelpCircle,
-  Send
 } from 'lucide-react';
 import Navbar from '@/components/navbar';
 
