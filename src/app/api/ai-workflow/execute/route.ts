@@ -134,7 +134,8 @@ async function executeWorkflow(executionId: string) {
       try {
         await executeStep(executionId, step)
       } catch (error) {
-        addLog(executionId, 'error', `步骤 ${step.name} 执行失败`, { error: error.message })
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        addLog(executionId, 'error', `步骤 ${step.name} 执行失败`, { error: errorMessage })
         step.status = 'error'
         execution.status = 'failed'
         execution.endTime = new Date()
@@ -149,7 +150,8 @@ async function executeWorkflow(executionId: string) {
   } catch (error) {
     execution.status = 'failed'
     execution.endTime = new Date()
-    addLog(executionId, 'error', '工作流执行失败', { error: error.message })
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    addLog(executionId, 'error', '工作流执行失败', { error: errorMessage })
   }
 }
 

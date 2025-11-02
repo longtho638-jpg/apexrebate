@@ -83,7 +83,7 @@ export class IntelligentCustomerService {
         messages: [],
         context: {},
         priority: 'medium',
-        channel,
+        channel: channel as any,
         tags: []
       };
 
@@ -604,7 +604,7 @@ export class IntelligentCustomerService {
       // 搜索知识库
       const kbResults = await this.searchKnowledgeBase(intent.intent);
       
-      if (kbResults.length > 0 && kbResults[0].relevanceScore > 0.7) {
+      if (kbResults.length > 0 && (kbResults[0] as any).relevanceScore > 0.7) {
         const kbEntry = kbResults[0];
         return {
           content: kbEntry.answer,
@@ -857,8 +857,8 @@ ${session.messages.slice(-5).map(m => `[${m.sender}]: ${m.content}`).join('\n')}
 
   private async clearKBCache(): Promise<void> {
     const keys = await redis.keys('kb_search_*');
-    if (keys.length > 0) {
-      await redis.del(...keys);
+    for (const key of keys) {
+      await redis.del(key);
     }
   }
 

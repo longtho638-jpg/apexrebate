@@ -101,7 +101,7 @@ export class RealTimeNotificationSystem {
             };
 
             this.connectedUsers.set(userId, userConnection);
-            socket.userId = userId;
+            (socket as any).userId = userId;
             
             // 加入用户房间
             socket.join(`user_${userId}`);
@@ -125,9 +125,9 @@ export class RealTimeNotificationSystem {
 
       // 加入频道
       socket.on('join_channel', (channel) => {
-        if (socket.userId) {
+  if ((socket as any).userId) {
           socket.join(channel);
-          const userConnection = this.connectedUsers.get(socket.userId);
+          const userConnection = this.connectedUsers.get((socket as any).userId);
           if (userConnection && !userConnection.channels.includes(channel)) {
             userConnection.channels.push(channel);
           }
@@ -137,9 +137,9 @@ export class RealTimeNotificationSystem {
 
       // 离开频道
       socket.on('leave_channel', (channel) => {
-        if (socket.userId) {
+  if ((socket as any).userId) {
           socket.leave(channel);
-          const userConnection = this.connectedUsers.get(socket.userId);
+          const userConnection = this.connectedUsers.get((socket as any).userId);
           if (userConnection) {
             userConnection.channels = userConnection.channels.filter(c => c !== channel);
           }
@@ -150,8 +150,8 @@ export class RealTimeNotificationSystem {
       // 发送消息
       socket.on('send_message', async (data) => {
         try {
-          if (socket.userId) {
-            await this.handleUserMessage(socket.userId, data);
+          if ((socket as any).userId) {
+            await this.handleUserMessage((socket as any).userId, data);
           }
         } catch (error) {
           logger.error('Error handling user message', error);
@@ -161,8 +161,8 @@ export class RealTimeNotificationSystem {
 
       // 更新活动状态
       socket.on('update_activity', () => {
-        if (socket.userId) {
-          const userConnection = this.connectedUsers.get(socket.userId);
+        if ((socket as any).userId) {
+          const userConnection = this.connectedUsers.get((socket as any).userId);
           if (userConnection) {
             userConnection.lastActivity = new Date();
           }
@@ -171,9 +171,9 @@ export class RealTimeNotificationSystem {
 
       // 处理断开连接
       socket.on('disconnect', () => {
-        if (socket.userId) {
-          this.connectedUsers.delete(socket.userId);
-          logger.info(`User disconnected: ${socket.userId}`);
+        if ((socket as any).userId) {
+          this.connectedUsers.delete((socket as any).userId);
+          logger.info(`User disconnected: ${(socket as any).userId}`);
         }
       });
     });
@@ -194,7 +194,7 @@ export class RealTimeNotificationSystem {
       await this.validateNotification(fullNotification);
 
       // 根据渠道发送通知
-      const deliveryPromises = [];
+  const deliveryPromises: Promise<void>[] = [];
       
       if (notification.channel === 'websocket' || notification.channel === 'in_app') {
         deliveryPromises.push(this.sendWebSocketNotification(fullNotification));
@@ -510,7 +510,7 @@ export class RealTimeNotificationSystem {
 
   private async validateUserToken(userId: string, token: string): Promise<boolean> {
     // 简化的token验证逻辑
-    return token && token.length > 10;
+    return !!token && token.length > 10;
   }
 
   private async validateNotification(notification: NotificationMessage): Promise<void> {

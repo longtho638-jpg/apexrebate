@@ -6,12 +6,39 @@
 import { prisma } from '@/lib/db';
 import { redis } from '@/lib/redis';
 import { logger } from '@/lib/logger';
-import { 
-  Recommendation, 
-  UserPreference, 
-  RecommendationType, 
-  RecommendationContext 
-} from '@/types/recommendation';
+// Local lightweight type definitions to avoid missing module '@/types/recommendation'
+export type RecommendationType = 'tool' | 'feature' | 'content' | 'promotion' | string;
+
+export interface Recommendation {
+  id: string;
+  type: RecommendationType;
+  title: string;
+  description?: string;
+  score?: number;
+  confidence?: number;
+  reasoning?: string;
+  validUntil?: Date;
+  createdAt?: Date;
+  metadata?: Record<string, any>;
+}
+
+export interface RecommendationContext {
+  page?: string;
+  category?: string;
+  [key: string]: any;
+}
+
+export interface UserPreference {
+  userId: string;
+  preferredExchanges: string[];
+  preferredFeatures: string[];
+  tradingStyle: string;
+  riskTolerance: string;
+  engagementLevel: string;
+  priceSensitivity: string;
+  technicalLevel: string;
+  lastUpdated: Date;
+}
 
 export class IntelligentRecommendationEngine {
   private static instance: IntelligentRecommendationEngine;

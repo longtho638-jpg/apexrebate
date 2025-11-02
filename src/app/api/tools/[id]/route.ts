@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         seller: {
           select: {
@@ -36,13 +38,13 @@ export async function GET(
 
     // Calculate average rating
     const ratingData = await db.toolReview.aggregate({
-      where: { toolId: params.id },
+      where: { toolId: id },
       _avg: { rating: true },
       _count: { rating: true }
     });
 
     // Check if user has favorited or purchased this tool
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     let isFavorited = false;
     let isPurchased = false;
 
@@ -50,7 +52,7 @@ export async function GET(
       const favorite = await db.toolFavorite.findUnique({
         where: {
           toolId_userId: {
-            toolId: params.id,
+            toolId: id,
             userId: session.user.id
           }
         }
@@ -59,7 +61,7 @@ export async function GET(
 
       const purchase = await db.toolOrder.findFirst({
         where: {
-          toolId: params.id,
+          toolId: id,
           buyerId: session.user.id,
           status: 'COMPLETED'
         }
@@ -90,10 +92,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -101,8 +103,9 @@ export async function PUT(
       );
     }
 
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!tool) {
@@ -134,7 +137,7 @@ export async function PUT(
     } = body;
 
     const updatedTool = await db.tool.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         description,
@@ -170,10 +173,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -181,8 +184,9 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!tool) {
@@ -201,7 +205,7 @@ export async function DELETE(
     }
 
     await db.tool.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ message: 'Tool deleted successfully' });

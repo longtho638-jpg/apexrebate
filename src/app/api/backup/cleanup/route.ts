@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 获取当前磁盘使用情况
-    let diskUsage = { total: 0, used: 0, free: 0, percentage: 0 }
+    let diskUsage: { total: string | number; used: string | number; free: string | number; percentage: number } = { total: 0, used: 0, free: 0, percentage: 0 }
     try {
       const { stdout } = await execAsync('df -h .')
       const lines = stdout.split('\n')
@@ -174,7 +174,7 @@ export async function GET(request: NextRequest) {
     const logsSize = getDirectorySize(logsDir)
 
     // 获取总体磁盘使用情况
-    let diskUsage = { total: 0, used: 0, free: 0, percentage: 0 }
+    let diskUsage: { total: string | number; used: string | number; free: string | number; percentage: number } = { total: 0, used: 0, free: 0, percentage: 0 }
     try {
       const { stdout } = await execAsync('df -h .')
       const lines = stdout.split('\n')

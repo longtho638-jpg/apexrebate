@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -15,8 +16,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!tool) {
@@ -30,7 +32,7 @@ export async function POST(
     const existingFavorite = await db.toolFavorite.findUnique({
       where: {
         toolId_userId: {
-          toolId: params.id,
+          toolId: id,
           userId: session.user.id
         }
       }
@@ -45,7 +47,7 @@ export async function POST(
 
     const favorite = await db.toolFavorite.create({
       data: {
-        toolId: params.id,
+        toolId: id,
         userId: session.user.id
       }
     });
@@ -62,10 +64,10 @@ export async function POST(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -73,10 +75,11 @@ export async function DELETE(
       );
     }
 
+    const { id } = await params;
     const favorite = await db.toolFavorite.findUnique({
       where: {
         toolId_userId: {
-          toolId: params.id,
+          toolId: id,
           userId: session.user.id
         }
       }
@@ -92,7 +95,7 @@ export async function DELETE(
     await db.toolFavorite.delete({
       where: {
         toolId_userId: {
-          toolId: params.id,
+          toolId: id,
           userId: session.user.id
         }
       }

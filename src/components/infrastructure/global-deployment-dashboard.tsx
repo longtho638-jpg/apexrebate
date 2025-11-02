@@ -45,6 +45,10 @@ interface Region {
     p95: number
     p99: number
   }
+  infrastructure?: {
+    apiEndpoint: string
+    cdnEndpoint: string
+  }
 }
 
 interface HealthCheck {
@@ -387,10 +391,10 @@ export default function GlobalDeploymentDashboard() {
                         <div>
                           <p className="text-sm font-medium mb-1">基础设施</p>
                           <p className="text-xs text-muted-foreground">
-                            API: {region.infrastructure.apiEndpoint.split('/')[2]}
+                            API: {region.infrastructure?.apiEndpoint.split('/')[2] || 'N/A'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            CDN: {region.infrastructure.cdnEndpoint.split('/')[2]}
+                            CDN: {region.infrastructure?.cdnEndpoint.split('/')[2] || 'N/A'}
                           </p>
                         </div>
                         

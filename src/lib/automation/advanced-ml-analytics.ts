@@ -559,7 +559,7 @@ export class AdvancedMLAnalytics {
 
   private async getUserTradingHistory(userId: string, days: number): Promise<any[]> {
     // 模拟历史交易数据
-    const data = [];
+    const data: any[] = [];
     for (let i = days; i > 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
@@ -575,7 +575,7 @@ export class AdvancedMLAnalytics {
 
   private async getAllUserFeatures(): Promise<any[]> {
     // 模拟所有用户特征数据
-    const users = [];
+    const users: any[] = [];
     for (let i = 1; i <= 200; i++) {
       users.push({
         userId: `user${i}`,
@@ -598,7 +598,7 @@ export class AdvancedMLAnalytics {
 
   private async getUserRecentTransactions(userId: string, count: number): Promise<any[]> {
     // 模拟最近交易数据
-    const transactions = [];
+    const transactions: any[] = [];
     for (let i = 0; i < count; i++) {
       transactions.push({
         transactionId: `tx_${userId}_${i}`,
@@ -653,7 +653,7 @@ export class AdvancedMLAnalytics {
 
   private async getMarketData(market: string, days: number): Promise<any[]> {
     // 模拟市场数据
-    const data = [];
+    const data: any[] = [];
     let basePrice = 50000;
     for (let i = days; i > 0; i--) {
       const date = new Date();
@@ -728,7 +728,7 @@ export class AdvancedMLAnalytics {
   }
 
   private getDefaultVolumePrediction(horizon: number): any {
-    const predictions = [];
+    const predictions: any[] = [];
     for (let i = 1; i <= horizon; i++) {
       const date = new Date();
       date.setDate(date.getDate() + i);

@@ -28,14 +28,14 @@ interface IndexAnalysis {
   columns: string[];
   usage: number;
   efficiency: number;
-  recommendation: 'keep' | 'drop' | 'optimize';
+  recommendation: 'keep' | 'drop' | 'optimize' | 'create';
 }
 
 // 数据库性能优化API
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.role === 'ADMIN') {
+    if (session?.user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.role === 'ADMIN') {
+    if (session?.user?.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

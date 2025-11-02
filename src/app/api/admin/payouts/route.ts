@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     if (payouts.length === 0) {
       // Generate mock payouts for demonstration
       const mockUsers = await db.user.findMany({ take: 5 });
-      const mockPayouts = [];
+      const mockPayouts: any[] = [];
       
       for (let i = 0; i < 20; i++) {
         const user = mockUsers[i % mockUsers.length];

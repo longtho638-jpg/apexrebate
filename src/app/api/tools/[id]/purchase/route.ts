@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -15,8 +16,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         seller: {
           select: {
@@ -45,7 +47,7 @@ export async function POST(
     // Check if user already purchased this tool
     const existingPurchase = await db.toolOrder.findFirst({
       where: {
-        toolId: params.id,
+        toolId: id,
         buyerId: session.user.id,
         status: 'COMPLETED'
       }
@@ -61,13 +63,13 @@ export async function POST(
     // Create order
     const order = await db.toolOrder.create({
       data: {
-        toolId: params.id,
+        toolId: id,
         buyerId: session.user.id,
         sellerId: tool.sellerId,
         amount: tool.price,
         currency: 'USD',
         status: 'PENDING',
-        downloadUrl: `https://apexrebate.com/tools/${params.id}/download`,
+        downloadUrl: `https://apexrebate.com/tools/${id}/download`,
         licenseKey: generateLicenseKey()
       },
       include: {

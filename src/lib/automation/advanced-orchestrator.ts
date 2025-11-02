@@ -123,7 +123,7 @@ export class AdvancedAutomationOrchestrator {
    */
   async getComprehensiveInsights(userId?: string): Promise<any> {
     try {
-      const insights = {
+      const insights: any = {
         timestamp: new Date(),
         userId,
         analytics: {},
@@ -279,7 +279,7 @@ export class AdvancedAutomationOrchestrator {
     try {
       logger.info('Starting system performance optimization...');
 
-      const optimizationResults = {
+      const optimizationResults: any = {
         timestamp: new Date(),
         optimizations: [],
         improvements: {},
@@ -421,7 +421,7 @@ export class AdvancedAutomationOrchestrator {
 
   // 高级分析处理
   private async performAdvancedAnalytics(event: any): Promise<any> {
-    const results = {};
+    const results: any = {};
 
     try {
       // 用户流失预测
@@ -446,7 +446,7 @@ export class AdvancedAutomationOrchestrator {
 
   // 安全分析
   private async performSecurityAnalysis(event: any): Promise<any> {
-    const results = {};
+    const results: any = {};
 
     try {
       // 威胁检测
@@ -469,7 +469,7 @@ export class AdvancedAutomationOrchestrator {
 
   // 智能通知
   private async triggerIntelligentNotifications(event: any): Promise<any> {
-    const results = {};
+    const results: any = {};
 
     try {
       // 基于分析结果触发智能通知
@@ -492,7 +492,7 @@ export class AdvancedAutomationOrchestrator {
 
   // 个性化内容
   private async generatePersonalizedContent(event: any): Promise<any> {
-    const results = {};
+    const results: any = {};
 
     try {
       // 基于用户行为生成个性化内容推荐
@@ -512,7 +512,7 @@ export class AdvancedAutomationOrchestrator {
 
   // 客服需求评估
   private async evaluateCustomerServiceNeeds(event: any): Promise<any> {
-    const results = {};
+    const results: any = {};
 
     try {
       // 评估是否需要客服介入

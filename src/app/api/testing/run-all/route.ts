@@ -13,7 +13,7 @@ const executeAllTests = async () => {
     { id: '6', name: '可访问性测试套件', duration: 90000 }
   ]
 
-  const results = []
+  const results: any[] = []
   
   for (const suite of testSuites) {
     // 模拟测试执行

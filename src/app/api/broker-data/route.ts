@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    const brokerData = brokerMocks[broker?.toLowerCase()] || {
+    const brokerData = brokerMocks[broker?.toLowerCase() || ''] || {
       name: broker || 'Unknown',
       affiliateRate: 0.3,
       typicalFee: 0.0005,

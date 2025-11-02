@@ -23,7 +23,7 @@ export interface TestCase {
 
 export interface TestResult {
   passed: boolean
-  duration: number
+  duration?: number
   error?: Error
   details?: Record<string, any>
   coverage?: CoverageInfo
@@ -338,7 +338,7 @@ export class AutomatedTestingService {
         }
 
         // Execute test with timeout
-        const result = await this.executeWithTimeout(test.execute(), timeout)
+        const result = await this.executeWithTimeout(() => test.execute(), timeout)
         const duration = Date.now() - startTime
 
         // Teardown
@@ -439,11 +439,13 @@ export class AutomatedTestingService {
       
       return {
         passed,
+        duration: 0,
         details: { response: data, status: response.status }
       }
     } catch (error) {
       return {
         passed: false,
+        duration: 0,
         error: error instanceof Error ? error : new Error(String(error))
       }
     }

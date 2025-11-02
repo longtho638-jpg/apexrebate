@@ -1,5 +1,8 @@
 'use client'
 
+// Avoid static prerendering for this page to prevent next-intl build-time config errors
+export const dynamic = 'force-dynamic';
+
 import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'

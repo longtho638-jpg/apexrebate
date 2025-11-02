@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth'
 
 // 自动优化系统
 const runAutoOptimization = async () => {
-  const optimizations = []
+  const optimizations: any[] = []
   
   // 1. 数据库优化
   const dbOptimization = {

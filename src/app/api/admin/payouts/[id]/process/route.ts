@@ -6,7 +6,7 @@ import { sendPayoutNotification } from '@/lib/notifications/service';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -26,7 +26,8 @@ export async function POST(
       );
     }
 
-    const payoutId = params.id;
+    const { id } = await params;
+    const payoutId = id;
 
     // Find the payout
     const payout = await db.payout.findUnique({

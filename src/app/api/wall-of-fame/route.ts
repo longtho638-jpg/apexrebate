@@ -13,7 +13,7 @@ const mockWallOfFame = [
 export async function GET() {
   try {
     // Try to get real data from database using UserService
-    let wallOfFameData = [];
+    let wallOfFameData: any[] = [];
     let totalSaved = 0;
 
     try {

@@ -18,7 +18,6 @@ import {
   BarChart3,
   Globe,
   Apple,
-  Android,
   Send,
   RefreshCw,
   TrendingUp,
@@ -139,7 +138,7 @@ export default function MobileAppManagement() {
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case 'ios': return <Apple className="h-4 w-4" />;
-      case 'android': return <Android className="h-4 w-4" />;
+      case 'android': return <Smartphone className="h-4 w-4" />;
       default: return <Smartphone className="h-4 w-4" />;
     }
   };
@@ -480,7 +479,7 @@ export default function MobileAppManagement() {
                 size="sm"
                 onClick={() => setSelectedPlatform('android')}
               >
-                <Android className="h-4 w-4 mr-1" />
+                <Smartphone className="h-4 w-4 mr-1" />
                 Android
               </Button>
             </div>

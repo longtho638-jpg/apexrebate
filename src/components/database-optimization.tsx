@@ -50,7 +50,7 @@ interface IndexAnalysis {
   columns: string[];
   usage: number;
   efficiency: number;
-  recommendation: 'keep' | 'drop' | 'optimize';
+  recommendation: 'keep' | 'drop' | 'optimize' | 'create';
 }
 
 interface OptimizationSuggestion {

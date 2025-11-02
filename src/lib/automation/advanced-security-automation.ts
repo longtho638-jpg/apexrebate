@@ -285,7 +285,7 @@ export class AdvancedSecurityAutomation {
    */
   async performComplianceCheck(userId: string, transactionData?: any): Promise<any> {
     try {
-      const complianceResults = {
+      const complianceResults: any = {
         userId,
         timestamp: new Date(),
         rules: [],
@@ -511,7 +511,7 @@ export class AdvancedSecurityAutomation {
         throw new Error('Security event not found');
       }
 
-      const responseResults = [];
+      const responseResults: any[] = [];
       
       for (const action of responseActions) {
         const result = await this.executeSecurityAction(action, event);
@@ -683,7 +683,7 @@ export class AdvancedSecurityAutomation {
     logger.info('Security monitoring started');
   }
 
-  private async initializeThreatIntelligence(): void {
+  private async initializeThreatIntelligence(): Promise<void> {
     // 初始化威胁情报数据
     this.threatIntelligence = {
       maliciousIPs: new Set(),
@@ -737,10 +737,9 @@ export class AdvancedSecurityAutomation {
     // 要求额外验证
     if (threat.userId) {
       await this.requireAdditionalVerification(threat.userId);
+      // 限制用户权限
+      await this.limitUserPermissions(threat.userId);
     }
-    
-    // 限制用户权限
-    await this.limitUserPermissions(threat.userId);
     
     // 通知安全团队
     await this.notifySecurityTeam(threat, 'high');
@@ -748,7 +747,9 @@ export class AdvancedSecurityAutomation {
 
   private async executeMediumPriorityResponse(threat: SecurityEvent): Promise<void> {
     // 监控用户活动
-    await this.monitorUserActivity(threat.userId);
+    if (threat.userId) {
+      await this.monitorUserActivity(threat.userId);
+    }
     
     // 发送安全警报
     await this.sendSecurityAlert(threat);
@@ -759,7 +760,9 @@ export class AdvancedSecurityAutomation {
     await this.logSecurityEvent(threat);
     
     // 增加监控频率
-    await this.increaseMonitoringFrequency(threat.userId);
+    if (threat.userId) {
+      await this.increaseMonitoringFrequency(threat.userId);
+    }
   }
 
   // 辅助方法
@@ -851,7 +854,9 @@ export class AdvancedSecurityAutomation {
 
   private async handleAnomalousBehavior(event: SecurityEvent, result: any): Promise<void> {
     await this.sendSecurityAlert(event);
-    await this.monitorUserActivity(event.userId);
+    if (event.userId) {
+      await this.monitorUserActivity(event.userId);
+    }
   }
 
   private async handleDataBreach(event: SecurityEvent, result: any): Promise<void> {
@@ -863,7 +868,7 @@ export class AdvancedSecurityAutomation {
     const actionMap: Record<string, () => Promise<any>> = {
       'block_user': () => this.blockUserAccess(event.userId!, 'Security violation'),
       'require_mfa': () => this.requireAdditionalVerification(event.userId!),
-      'limit_permissions': () => this.limitUserPermissions(event.userId),
+      'limit_permissions': () => this.limitUserPermissions(event.userId!),
       'notify_admin': () => this.notifySecurityTeam(event, 'medium'),
       'log_incident': () => this.logSecurityIncident(event, 'medium')
     };

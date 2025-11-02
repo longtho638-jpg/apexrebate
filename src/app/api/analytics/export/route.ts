@@ -295,7 +295,7 @@ function getBestBroker(payouts: any[]): string {
   }, {} as Record<string, number>)
   
   return Object.entries(brokerStats).reduce((best, [broker, amount]) => 
-    amount > best.amount ? { broker, amount } : best, 
+    (amount as number) > best.amount ? { broker, amount: amount as number } : best, 
     { broker: 'N/A', amount: 0 }
   ).broker
 }

@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     let payoutsData = payouts;
     if (payouts.length === 0) {
       // Generate mock payouts for the last 6 months
-      const mockPayouts = [];
+      const mockPayouts: any[] = [];
       const brokers = ['binance', 'bybit', 'okx'];
       const currentDate = new Date();
       

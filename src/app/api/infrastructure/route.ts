@@ -121,8 +121,10 @@ const defaultDeploymentConfig: DeploymentConfig = {
   cdn: {
     provider: 'cloudflare',
     distributionId: 'E1234567890ABC',
+    domain: 'cdn.apexrebate.com',
     cacheRules: [
       {
+        id: 'api-cache',
         path: '/api/*',
         ttl: 300,
         cacheKey: 'full-url',
@@ -131,6 +133,7 @@ const defaultDeploymentConfig: DeploymentConfig = {
         methods: ['GET', 'POST']
       },
       {
+        id: 'static-cache',
         path: '/static/*',
         ttl: 86400,
         cacheKey: 'path',
@@ -138,7 +141,27 @@ const defaultDeploymentConfig: DeploymentConfig = {
         headers: [],
         methods: ['GET']
       }
-    ]
+    ],
+    compression: {
+      enabled: true,
+      level: 'medium',
+      mimeTypes: ['text/html', 'application/json', 'text/css', 'application/javascript']
+    },
+    security: {
+      httpsOnly: true,
+      hsts: true,
+      securityHeaders: []
+    },
+    geoRestrictions: {
+      enabled: false,
+      allowedCountries: [],
+      blockedCountries: []
+    },
+    rateLimiting: {
+      enabled: true,
+      requestsPerSecond: 100,
+      burstLimit: 200
+    }
   },
   security: {
     wafEnabled: true,

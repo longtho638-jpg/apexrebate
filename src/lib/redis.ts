@@ -6,6 +6,7 @@
 export interface RedisClient {
   get(key: string): Promise<string | null>;
   set(key: string, value: string, ttl?: number): Promise<void>;
+  setex(key: string, ttl: number, value: string): Promise<void>;
   del(key: string): Promise<void>;
   exists(key: string): Promise<boolean>;
   expire(key: string, ttl: number): Promise<void>;
@@ -14,11 +15,16 @@ export interface RedisClient {
   hdel(key: string, field: string): Promise<void>;
   incr(key: string): Promise<number>;
   decr(key: string): Promise<number>;
+  lpush(key: string, value: string): Promise<number>;
+  rpush(key: string, value: string): Promise<number>;
+  lrange(key: string, start: number, stop: number): Promise<string[]>;
+  keys(pattern: string): Promise<string[]>;
 }
 
 export class SimpleRedisClient implements RedisClient {
   private cache: Map<string, { value: string; expiry?: number }> = new Map();
   private hashCache: Map<string, Map<string, string>> = new Map();
+  private listCache: Map<string, string[]> = new Map();
 
   private isExpired(key: string): boolean {
     const item = this.cache.get(key);
@@ -43,6 +49,11 @@ export class SimpleRedisClient implements RedisClient {
 
   async set(key: string, value: string, ttl?: number): Promise<void> {
     const expiry = ttl ? Date.now() + ttl * 1000 : undefined;
+    this.cache.set(key, { value, expiry });
+  }
+
+  async setex(key: string, ttl: number, value: string): Promise<void> {
+    const expiry = Date.now() + ttl * 1000;
     this.cache.set(key, { value, expiry });
   }
 
@@ -97,6 +108,44 @@ export class SimpleRedisClient implements RedisClient {
     const value = current ? parseInt(current, 10) - 1 : -1;
     await this.set(key, value.toString());
     return value;
+  }
+
+  async lpush(key: string, value: string): Promise<number> {
+    if (!this.listCache.has(key)) {
+      this.listCache.set(key, []);
+    }
+    const list = this.listCache.get(key)!;
+    list.unshift(value);
+    return list.length;
+  }
+
+  async rpush(key: string, value: string): Promise<number> {
+    if (!this.listCache.has(key)) {
+      this.listCache.set(key, []);
+    }
+    const list = this.listCache.get(key)!;
+    list.push(value);
+    return list.length;
+  }
+
+  async lrange(key: string, start: number, stop: number): Promise<string[]> {
+    const list = this.listCache.get(key) || [];
+    const actualStop = stop === -1 ? list.length : stop + 1;
+    return list.slice(start, actualStop);
+  }
+
+  async keys(pattern: string): Promise<string[]> {
+    // Simple pattern matching - only supports wildcard *
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    const matchingKeys: string[] = [];
+    
+    for (const key of this.cache.keys()) {
+      if (regex.test(key)) {
+        matchingKeys.push(key);
+      }
+    }
+    
+    return matchingKeys;
   }
 }
 

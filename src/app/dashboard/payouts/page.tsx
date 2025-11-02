@@ -21,10 +21,10 @@ import AuthGuard from '@/components/auth/auth-guard';
 import Navbar from '@/components/navbar';
 
 export default function PayoutsPage() {
-  const [payouts, setPayouts] = useState([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedPayout, setSelectedPayout] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedPayout, setSelectedPayout] = useState<any>(null);
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {

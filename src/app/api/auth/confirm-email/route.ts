@@ -15,11 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the verification token
+    // Token has a unique constraint; look up by token
     const verificationToken = await db.verificationToken.findUnique({
-      where: {
-        identifier: email,
-        token
-      }
+      where: { token }
     });
 
     if (!verificationToken) {
@@ -33,7 +31,7 @@ export async function GET(request: NextRequest) {
     if (verificationToken.expires < new Date()) {
       // Delete expired token
       await db.verificationToken.delete({
-        where: { id: verificationToken.id }
+        where: { token }
       });
       return NextResponse.json(
         { error: 'Verification token has expired' },
@@ -61,7 +59,7 @@ export async function GET(request: NextRequest) {
 
     // Delete the verification token
     await db.verificationToken.delete({
-      where: { id: verificationToken.id }
+      where: { token }
     });
 
     return NextResponse.json({

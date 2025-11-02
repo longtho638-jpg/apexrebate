@@ -362,7 +362,7 @@ export class StepByStepAutomation {
           estimatedDuration: 120,
           dependencies: [],
           conditions: [
-            { type: 'metric_threshold', operator: 'greater_than', metric: 'cpu_usage', threshold: 70 }
+            { type: 'metric_threshold', operator: 'greater_than', metric: 'cpu_usage', threshold: 70, value: null }
           ],
           actions: [
             { type: 'api_call', config: { endpoint: '/api/monitoring/performance-metrics', method: 'GET' } }

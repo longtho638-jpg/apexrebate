@@ -352,11 +352,11 @@ export class BusinessInsightsEngine {
 
   private async generateRetentionAnalysis(cohortPeriod: string): Promise<any> {
     // 模拟留存数据
-    const cohorts = [];
+    const cohorts: any[] = [];
     const cohortCount = 8; // 8个队列
     
     for (let i = 0; i < cohortCount; i++) {
-      const cohort = {
+      const cohort: any = {
         id: `cohort_${i}`,
         startDate: new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000),
         initialUsers: Math.floor(Math.random() * 500) + 200,
@@ -398,7 +398,7 @@ export class BusinessInsightsEngine {
     ];
 
     // 模拟漏斗数据
-    const funnelData = [];
+    const funnelData: any[] = [];
     let previousCount = 10000;
     
     for (const step of funnelSteps) {
@@ -550,7 +550,7 @@ export class BusinessInsightsEngine {
   }
 
   private generateTimeSeriesData(startDate: Date, endDate: Date, options: any): any[] {
-    const data = [];
+    const data: any[] = [];
     const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
     
     for (let i = 0; i <= daysDiff; i++) {

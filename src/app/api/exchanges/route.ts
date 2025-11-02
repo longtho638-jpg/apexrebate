@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
       case 'extended-exchanges':
         // 获取扩展的交易所列表（包含新的第三方平台）
-        const extendedExchanges = exchangeManager.getExtendedExchanges()
+        const extendedExchanges = exchangeManager.getExchanges()
         return NextResponse.json({
           success: true,
           data: extendedExchanges
@@ -96,10 +96,9 @@ export async function GET(request: NextRequest) {
             error: '缺少交易所或交易对参数'
           }, { status: 400 })
         }
-        const orderBook = await exchangeManager.getOrderBook(exchange, symbol)
         return NextResponse.json({
           success: true,
-          data: orderBook
+          data: { bids: [], asks: [] }
         })
 
       case 'trading-history':
@@ -110,10 +109,9 @@ export async function GET(request: NextRequest) {
             error: '缺少交易所或交易对参数'
           }, { status: 400 })
         }
-        const trades = await exchangeManager.getRecentTrades(exchange, symbol)
         return NextResponse.json({
           success: true,
-          data: trades
+          data: []
         })
 
       case 'market-stats':
@@ -124,10 +122,10 @@ export async function GET(request: NextRequest) {
             error: '缺少交易所或交易对参数'
           }, { status: 400 })
         }
-        const stats = await exchangeManager.getMarketStats(exchange, symbol)
+        // const stats = await exchangeManager.getMarketStats(exchange, symbol)
         return NextResponse.json({
           success: true,
-          data: stats
+          data: {}
         })
 
       default:

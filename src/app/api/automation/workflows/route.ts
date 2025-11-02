@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     console.error('Failed to get workflows:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : "Unknown error"
     }, { status: 500 });
   }
 }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     console.error('Failed to register workflow:', error);
     return NextResponse.json({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : "Unknown error"
     }, { status: 500 });
   }
 }

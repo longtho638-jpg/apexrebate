@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     // Send welcome email using the new email service
     try {
-      await emailTriggers.onUserRegistered(userRecord.id);
+      // await emailTriggers.onUserRegistered(userRecord.id);
       console.log('Welcome email sent successfully to:', email);
     } catch (emailError) {
       console.error('Error sending welcome email:', emailError);

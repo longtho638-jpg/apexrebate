@@ -86,27 +86,25 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role
-        token.emailVerified = user.emailVerified
-        token.twoFactorEnabled = user.twoFactorEnabled
+        token.role = (user as any).role
+        token.emailVerified = (user as any).emailVerified
+        token.twoFactorEnabled = (user as any).twoFactorEnabled
       }
       return token
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.sub!
-        session.user.role = token.role as string
-        session.user.emailVerified = token.emailVerified as boolean
-        session.user.twoFactorEnabled = token.twoFactorEnabled as boolean
+        session.user.role = token.role as string;
+        (session.user as any).emailVerified = token.emailVerified as boolean;
+        (session.user as any).twoFactorEnabled = token.twoFactorEnabled as boolean
       }
       return session
     },
   },
   pages: {
     signIn: "/auth/signin",
-    signUp: "/auth/signup",
     verifyRequest: "/auth/verify-request",
-    newPassword: "/auth/reset-password",
   },
 }
 
@@ -136,16 +134,16 @@ export async function sendVerificationEmail(email: string) {
   // Send verification email
   const verificationUrl = `${process.env.NEXTAUTH_URL}/auth/verify-email?token=${token}`
   
-  await sendEmail({
-    to: email,
-    subject: "Verify your ApexRebate account",
-    template: "email-verification",
-    data: {
+  await sendEmail(
+    email,
+    "Verify your ApexRebate account",
+    `Click here to verify your email: ${verificationUrl}`,
+    {
       name: user.name || "Trader",
       verificationUrl,
       expirationHours: 24
     }
-  })
+  )
 
   return { success: true }
 }
@@ -199,16 +197,16 @@ export async function sendPasswordResetEmail(email: string) {
   // Send reset email
   const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${token}`
   
-  await sendEmail({
-    to: email,
-    subject: "Reset your ApexRebate password",
-    template: "password-reset",
-    data: {
+  await sendEmail(
+    email,
+    "Reset your ApexRebate password",
+    `Click here to reset your password: ${resetUrl}`,
+    {
       name: user.name || "Trader",
       resetUrl,
       expirationHours: 1
     }
-  })
+  )
 
   return { success: true }
 }

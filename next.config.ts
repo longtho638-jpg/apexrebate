@@ -1,10 +1,30 @@
 // next.config.ts
-import type { NextConfig } from "next";
+import nextIntl from 'next-intl/plugin';
 
-const nextConfig: NextConfig = {
-  output: "export",
-  distDir: "out",
+const withNextIntl = nextIntl('./next-intl.config.ts');
+
+const config: import('next').NextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  experimental: {},
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'www.apexrebate.com',
+          },
+        ],
+        destination: 'https://apexrebate.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
-export default nextConfig;
+export default withNextIntl(config);

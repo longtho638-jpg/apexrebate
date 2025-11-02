@@ -889,7 +889,7 @@ export class APIGateway {
     });
     
     return Object.entries(counts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 10)
       .map(([endpoint, count]) => ({ endpoint, count }));
   }
@@ -901,7 +901,7 @@ export class APIGateway {
     });
     
     return Object.entries(counts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 10)
       .map(([service, count]) => ({ service, count }));
   }
@@ -931,7 +931,7 @@ export class APIGateway {
     });
     
     return Object.entries(counts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([,a], [,b]) => (b as number) - (a as number))
       .slice(0, 5)
       .map(([endpoint, count]) => ({ endpoint, count }));
   }
@@ -961,7 +961,7 @@ export class APIGateway {
 
   private getClientId(request: NextRequest): string {
     // 从请求中提取客户端ID
-    return request.ip || 'unknown';
+    return (request as any).ip || request.headers.get('x-forwarded-for') || 'unknown';
   }
 
   private generateCacheKey(endpoint: APIEndpoint, request: NextRequest): string {
@@ -996,8 +996,8 @@ export class APIGateway {
 
   private async clearEndpointCache(): Promise<void> {
     const keys = await redis.keys('gateway_stats_*');
-    if (keys.length > 0) {
-      await redis.del(...keys);
+    for (const key of keys) {
+      await redis.del(key);
     }
   }
 

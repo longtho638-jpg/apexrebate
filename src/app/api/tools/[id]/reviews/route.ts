@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
 
     const reviews = await db.toolReview.findMany({
-      where: { toolId: params.id },
+      where: { toolId: id },
       include: {
         user: {
           select: {
@@ -35,7 +37,7 @@ export async function GET(
     }));
 
     const total = await db.toolReview.count({
-      where: { toolId: params.id }
+      where: { toolId: id }
     });
 
     return NextResponse.json({
@@ -58,10 +60,10 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -69,8 +71,9 @@ export async function POST(
       );
     }
 
+    const { id } = await params;
     const tool = await db.tool.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!tool) {
@@ -83,7 +86,7 @@ export async function POST(
     // Check if user has purchased this tool
     const purchase = await db.toolOrder.findFirst({
       where: {
-        toolId: params.id,
+        toolId: id,
         buyerId: session.user.id,
         status: 'COMPLETED'
       }
@@ -101,7 +104,7 @@ export async function POST(
 
     const review = await db.toolReview.create({
       data: {
-        toolId: params.id,
+        toolId: id,
         userId: session.user.id,
         rating,
         title,

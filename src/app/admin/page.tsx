@@ -117,7 +117,7 @@ export default function AdminDashboard() {
 
       if (statsData.success) setStats(statsData.data);
       if (usersData.success) setUsers(usersData.data);
-      if (payoutsData.success) setPayouts(payouts.data);
+      if (payoutsData.success) setPayouts(payoutsData.data);
     } catch (error) {
       console.error('Failed to fetch admin data:', error);
       toast.error('Không thể tải dữ liệu quản trị');

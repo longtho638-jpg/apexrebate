@@ -58,7 +58,28 @@ export interface DeploymentConfig {
   cdn: {
     provider: 'cloudflare' | 'aws-cloudfront' | 'fastly' | 'akamai'
     distributionId: string
+    domain: string
     cacheRules: CacheRule[]
+    compression: {
+      enabled: boolean
+      level: 'low' | 'medium' | 'high'
+      mimeTypes: string[]
+    }
+    security: {
+      httpsOnly: boolean
+      hsts: boolean
+      securityHeaders: SecurityHeader[]
+    }
+    geoRestrictions: {
+      enabled: boolean
+      allowedCountries: string[]
+      blockedCountries: string[]
+    }
+    rateLimiting: {
+      enabled: boolean
+      requestsPerSecond: number
+      burstLimit: number
+    }
   }
   security: {
     wafEnabled: boolean
@@ -74,12 +95,29 @@ export interface DeploymentConfig {
   }
 }
 
+export interface SecurityHeader {
+  name: string
+  value: string
+  enabled: boolean
+}
+
 export interface CacheRule {
+  id: string
   path: string
   ttl: number
   cacheKey: string
   compress: boolean
   headers: string[]
+  methods: string[]
+  edgeFunctions?: EdgeFunction[]
+}
+
+export interface EdgeFunction {
+  name: string
+  path: string
+  trigger: 'request' | 'response'
+  code: string
+  runtime: 'cloudflare-workers' | 'aws-lambda' | 'fastly-compute'
 }
 
 export interface FirewallRule {

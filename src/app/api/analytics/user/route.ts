@@ -105,16 +105,19 @@ export async function GET(request: NextRequest) {
       return acc
     }, {} as Record<string, { count: number; amount: number; volume: number }>)
 
-    const totalAmount = Object.values(brokerStats).reduce((sum, stat) => sum + stat.amount, 0)
+    const totalAmount = (Object.values(brokerStats) as { count: number; amount: number; volume: number }[]).reduce((sum, stat) => sum + stat.amount, 0)
     
-    const brokerDistribution = Object.entries(brokerStats).map(([broker, stats]) => ({
-      broker: broker.charAt(0).toUpperCase() + broker.slice(1),
-      amount: Math.round(stats.amount * 100) / 100,
-      percentage: Math.round((stats.amount / totalAmount) * 100),
-      volume: Math.round(stats.volume),
-      avgPayout: Math.round((stats.amount / stats.count) * 100) / 100,
-      color: broker === 'binance' ? '#0088FE' : broker === 'bybit' ? '#00C49F' : broker === 'okx' ? '#FFBB28' : '#8884D8'
-    }))
+    const brokerDistribution = Object.entries(brokerStats).map(([broker, stats]) => {
+      const typedStats = stats as { count: number; amount: number; volume: number };
+      return {
+        broker: broker.charAt(0).toUpperCase() + broker.slice(1),
+        amount: Math.round(typedStats.amount * 100) / 100,
+        percentage: Math.round((typedStats.amount / totalAmount) * 100),
+        volume: Math.round(typedStats.volume),
+        avgPayout: Math.round((typedStats.amount / typedStats.count) * 100) / 100,
+        color: broker === 'binance' ? '#0088FE' : broker === 'bybit' ? '#00C49F' : broker === 'okx' ? '#FFBB28' : '#8884D8'
+      };
+    })
 
     // Calculate referral growth
     const referralsByMonth = new Map<string, number>()
@@ -132,7 +135,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Calculate monthly comparison
-    const monthlyComparison = []
+    const monthlyComparison: any[] = []
     for (let i = 5; i >= 0; i--) {
       const currentDate = new Date()
       currentDate.setMonth(currentDate.getMonth() - i)

@@ -6,14 +6,16 @@ const locales = ['vi', 'en'] as const;
 const defaultLocale = 'vi' as const;
 
 export default getRequestConfig(async ({ locale }) => {
+  // Ensure locale is defined with fallback
+  const currentLocale = locale || defaultLocale;
+  
   // Validate that the incoming `locale` parameter is valid
-  if (!locales.includes(locale as any)) notFound();
+  if (!locales.includes(currentLocale as any)) notFound();
 
   return {
-    messages: (await import(`../messages/${locale}.json`)).default,
+    locale: currentLocale,
+    messages: (await import(`../messages/${currentLocale}.json`)).default,
     timeZone: 'Asia/Ho_Chi_Minh',
-    defaultLocale,
-    locales
   };
 });
 

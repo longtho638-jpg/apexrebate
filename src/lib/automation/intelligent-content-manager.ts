@@ -540,7 +540,7 @@ export class IntelligentContentManager {
       }
 
       // 模拟性能数据
-      const performance = {
+      const performance: any = {
         contentId,
         timeRange,
         metrics: {
@@ -565,9 +565,9 @@ export class IntelligentContentManager {
           returnVisitorRate: Math.random() * 0.3 + 0.1,
           shareRate: Math.random() * 0.05 + 0.01
         },
-        trends: this.generatePerformanceTrends(timeRange),
-        recommendations: this.generatePerformanceRecommendations(content, performance)
+        trends: this.generatePerformanceTrends(timeRange)
       };
+      performance.recommendations = this.generatePerformanceRecommendations(content, performance);
 
       // 缓存性能数据
       await redis.setex(cacheKey, 1800, JSON.stringify(performance));
@@ -663,7 +663,7 @@ export class IntelligentContentManager {
    */
   async optimizeContentBatch(contentIds: string[]): Promise<any> {
     try {
-      const results = [];
+      const results: any[] = [];
       
       for (const contentId of contentIds) {
         try {
@@ -686,7 +686,7 @@ export class IntelligentContentManager {
           results.push({
             contentId,
             success: false,
-            error: error.message
+            error: error instanceof Error ? error.message : String(error)
           });
         }
       }
@@ -902,7 +902,7 @@ export class IntelligentContentManager {
 
   private generatePerformanceTrends(timeRange: string): any[] {
     const days = parseInt(timeRange) || 30;
-    const trends = [];
+    const trends: any[] = [];
     
     for (let i = days; i > 0; i--) {
       const date = new Date();
@@ -919,7 +919,7 @@ export class IntelligentContentManager {
   }
 
   private generatePerformanceRecommendations(content: ContentItem, performance: any): string[] {
-    const recommendations = [];
+    const recommendations: any[] = [];
     
     if (performance.metrics.bounceRate > 0.7) {
       recommendations.push('优化内容开头以降低跳出率');

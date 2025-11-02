@@ -77,7 +77,7 @@ class AIRecommendationEngine {
       });
     } catch (error) {
       logger.error('Failed to initialize AI Recommendation Engine', { 
-        error: error.message 
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   }
@@ -129,7 +129,7 @@ class AIRecommendationEngine {
       });
 
     } catch (error) {
-      logger.error('Failed to load historical data', { error: error.message });
+      logger.error('Failed to load historical data', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -160,7 +160,7 @@ class AIRecommendationEngine {
         }
       });
     } catch (error) {
-      logger.error('Failed to save user behavior', { error: error.message });
+      logger.error('Failed to save user behavior', { error: error instanceof Error ? error.message : String(error) });
     }
 
     // 更新用户偏好
@@ -218,7 +218,7 @@ class AIRecommendationEngine {
       });
 
     } catch (error) {
-      logger.error('Failed to update user preferences', { error: error.message });
+      logger.error('Failed to update user preferences', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -306,7 +306,7 @@ class AIRecommendationEngine {
     } catch (error) {
       logger.error('Failed to generate recommendations', { 
         userId, 
-        error: error.message 
+        error: error instanceof Error ? error.message : String(error)
       });
       return [];
     }
@@ -755,7 +755,7 @@ class AIRecommendationEngine {
         });
       }
     } catch (error) {
-      logger.error('Failed to save recommendations', { error: error.message });
+      logger.error('Failed to save recommendations', { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -794,7 +794,7 @@ class AIRecommendationEngine {
           userCount: activeUsers.length
         });
       } catch (error) {
-        logger.error('Periodic recommendation update failed', { error: error.message });
+        logger.error('Periodic recommendation update failed', { error: error instanceof Error ? error.message : String(error) });
       }
     }, intervalMs);
   }

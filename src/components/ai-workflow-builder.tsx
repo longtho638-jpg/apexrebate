@@ -687,9 +687,7 @@ export function AIWorkflowBuilder() {
                     size="sm"
                     className="flex-1"
                     onClick={() => {
-                      const newStep = { ...selectedStepData }
-                      delete newStep.id
-                      delete newStep.position
+                      const { id, position, ...newStep } = selectedStepData
                       const newId = `step-${Date.now()}`
                       const newStepWithId = { ...newStep, id: newId, position: { 
                         x: selectedStepData.position.x + 20, 

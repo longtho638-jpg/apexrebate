@@ -88,14 +88,14 @@ export default function ProfilePage() {
       if (data.success) {
         setProfile(data.data);
         setEditedProfile(data.data);
-      } else {
+      } else if (session?.user) {
         // Fallback to session data
         const fallbackProfile: UserProfile = {
-          id: session.user.id,
-          email: session.user.email,
+          id: session.user.id || '',
+          email: session.user.email || '',
           name: session.user.name || '',
-          image: session.user.image,
-          role: session.user.role,
+          image: session.user.image || undefined,
+          role: session.user.role || 'user',
           tradingVolume: 0,
           preferredBroker: 'binance',
           experience: 'beginner',

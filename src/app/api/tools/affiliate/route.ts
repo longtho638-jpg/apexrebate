@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { getServerSession } from 'next-auth';
+
 import { authOptions } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -64,7 +66,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
+    const session = await getServerSession(authOptions);
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -139,10 +141,10 @@ export async function GET(request: NextRequest) {
           id: link.id,
           toolName: link.tool.name,
           linkCode: link.linkCode,
-          commission: link.commission,
+          commissionRate: link.commission,
           sales: link.orders.length,
           revenue: link.orders.reduce((sum, order) => sum + order.amount, 0),
-          commission: link.orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
+          commissionEarned: link.orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
           createdAt: link.createdAt
         }))
       });

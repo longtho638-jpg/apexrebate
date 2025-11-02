@@ -433,7 +433,7 @@ export class ErrorRecoverySystem {
       const patterns: ErrorPattern[] = [
         {
           id: 'connection_timeout_pattern',
-          pattern: /connection timeout/i,
+          pattern: 'connection timeout',
           frequency: 0,
           lastSeen: new Date(),
           category: 'network',
@@ -443,7 +443,7 @@ export class ErrorRecoverySystem {
         },
         {
           id: 'database_lock_pattern',
-          pattern: /database lock|deadlock/i,
+          pattern: 'database lock|deadlock',
           frequency: 0,
           lastSeen: new Date(),
           category: 'database',
@@ -453,7 +453,7 @@ export class ErrorRecoverySystem {
         },
         {
           id: 'memory_exhaustion_pattern',
-          pattern: /out of memory|memory exhausted/i,
+          pattern: 'out of memory|memory exhausted',
           frequency: 0,
           lastSeen: new Date(),
           category: 'resource',
@@ -646,7 +646,7 @@ export class ErrorRecoverySystem {
     } catch (error) {
       attempt.status = 'completed';
       attempt.result = 'failed';
-      attempt.message = error.message;
+      attempt.message = error instanceof Error ? error.message : String(error);
       
       // 更新策略成功率
       await this.updateStrategySuccessRate(strategy.id, false);
@@ -704,7 +704,7 @@ export class ErrorRecoverySystem {
 
     } catch (error) {
       log.status = 'failed';
-      log.error = error.message;
+      log.error = error instanceof Error ? error.message : String(error);
       log.endTime = new Date();
       throw error;
     }
@@ -796,7 +796,7 @@ export class ErrorRecoverySystem {
   // 分析方法
   private async analyzeErrorPattern(errorEvent: ErrorEvent): Promise<void> {
     for (const [patternId, pattern] of this.errorPatterns) {
-      if (pattern.pattern.test(errorEvent.message)) {
+      if (errorEvent.message.toLowerCase().includes(pattern.pattern.toLowerCase())) {
         pattern.frequency++;
         pattern.lastSeen = new Date();
         await this.saveErrorPattern(pattern);
