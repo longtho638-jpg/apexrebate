@@ -1,0 +1,62 @@
+name: Codex Remix CI
+
+on:
+  push:
+    paths:
+      - '.codex_contract.json'
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  remix:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install OpenAI CLI
+        run: npm install -g openai@4
+
+      - name: Run Codex Remix
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          mkdir -p codex-remix
+          oai api completions.create -m gpt-4o \
+            -p "$(cat .codex_contract.json)" \
+            -f ./src -o ./codex-remix
+
+      - name: Prepare Metadata
+        id: meta
+        run: |
+          echo "preview_url=https://apexrebate--codex-remix.web.app" >> $GITHUB_OUTPUT
+          echo "diff_summary=$(git diff --stat HEAD~1)" >> $GITHUB_OUTPUT
+
+      - name: Notify Google Apps Script
+        env:
+          GAS_WEBHOOK_URL: ${{ secrets.GAS_WEBHOOK_URL }}
+        run: |
+          STATUS="failure"
+          if [ "${{ job.status }}" == "success" ]; then
+            STATUS="success"
+          fi
+
+          curl -X POST "$GAS_WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "project": "ApexRebate",
+              "branch": "'${GITHUB_REF##*/}'",
+              "commit": "${{ github.sha }}",
+              "actor": "${{ github.actor }}",
+              "status": "'$STATUS'",
+              "preview_url": "${{ steps.meta.outputs.preview_url }}",
+              "diff_summary": "${{ steps.meta.outputs.diff_summary }}",
+              "timestamp": "'$(date +%Y-%m-%dT%H:%M:%S%z)'",
+              "run_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'

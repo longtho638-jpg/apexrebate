@@ -46,7 +46,40 @@ dev.log
 test
 prompt
 
+<<<<<<< HEAD
 server.log
 # codex remix
 .codex_contract.json
 /codex-remix
+=======
+server.lognode_modules
+scripts/opshub-cli/node_modules
+>>>>>>> 4a28d59d (feat: add ai demo routes + opshub function + cron scripts)
+# env
+.env
+.env.local
+.env.*.local
+.firebase
+.firebaserc.local
+
+# deps
+node_modules
+**/node_modules
+functions/node_modules
+scripts/opshub-cli/node_modules
+
+# build outputs
+.next
+out
+dist
+functions/lib
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+

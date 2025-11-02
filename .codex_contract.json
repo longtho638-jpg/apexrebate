@@ -1,0 +1,75 @@
+{
+  "project": "ApexRebate UI/UX Modernization",
+  "language": ["Vietnamese", "English"],
+  "context": {
+    "stack": "Next.js + Firebase Hosting + Functions (Node 18)",
+    "ui": "TailwindCSS v4 + Framer Motion + HeadlessUI + Lucide Icons",
+    "deployment": "Firebase (asia-southeast1)",
+    "constraints": [
+      "Do not modify backend logic (Firestore, Functions, Rules)",
+      "Do not touch environment secrets or app initialization",
+      "Keep ESLint + Prettier formatting intact",
+      "Keep AppCheck and Analytics integrations untouched"
+    ]
+  },
+  "scope": {
+    "vi": "Tái cấu trúc toàn bộ giao diện web (pages/, components/, layouts/) theo chuẩn UI/UX hiện đại, tối ưu hiệu năng và khả năng truy cập.",
+    "en": "Refactor all front-end files (pages/, components/, layouts/) to follow modern UI/UX design, performance best practices, and accessibility compliance."
+  },
+  "objectives": {
+    "vi": [
+      "1. Cải thiện giao diện: sử dụng Tailwind utility-first, tone màu thống nhất, border-radius 2xl, shadow-sm, spacing 4–6.",
+      "2. Tối ưu cấu trúc file: chia nhỏ component, đặt tên rõ ràng, group logic UI.",
+      "3. Thêm motion tinh tế bằng Framer Motion, tránh hiệu ứng rối hoặc nặng.",
+      "4. Cải thiện i18n: dùng next-i18next, đảm bảo text dễ dịch, hỗ trợ song ngữ.",
+      "5. Đảm bảo SEO + Lighthouse ≥90 (title, meta, open graph, schema).",
+      "6. Thêm ARIA roles cho accessibility (button, modal, tab, alert).",
+      "7. Responsive mobile-first; ưu tiên layout grid/flex cho Tailwind."
+    ],
+    "en": [
+      "1. Improve UI: use Tailwind utility-first, consistent color palette, 2xl rounded corners, soft shadows, adequate spacing (4–6 units).",
+      "2. Optimize file structure: split components, clear naming, group UI logic cleanly.",
+      "3. Add subtle motion using Framer Motion; avoid flashy or heavy animations.",
+      "4. Improve i18n: integrate next-i18next, ensure translatable strings, bilingual ready.",
+      "5. Ensure SEO + Lighthouse ≥90 (title, meta, open graph, structured data).",
+      "6. Add ARIA roles for accessibility (buttons, modals, tabs, alerts).",
+      "7. Enforce responsive design (mobile-first grid/flex layouts)."
+    ]
+  },
+  "style_guide": {
+    "typography": {
+      "font_family": "Inter, system-ui, sans-serif",
+      "headline_weight": 600,
+      "body_weight": 400,
+      "line_height": 1.6
+    },
+    "colors": {
+      "primary": "#2563eb",
+      "secondary": "#64748b",
+      "accent": "#10b981",
+      "neutral": "#f1f5f9",
+      "dark": "#0f172a"
+    },
+    "buttons": {
+      "shape": "rounded-2xl",
+      "hover_effect": "scale(1.02)",
+      "transition": "ease-in-out duration-150"
+    }
+  },
+  "output": {
+    "mode": "repo",
+    "branch": "codex-remix",
+    "format": "diff+files",
+    "preview": "Firebase Preview Channel",
+    "notes": {
+      "vi": "Sau khi Codex sinh code, AMPCode sẽ lint và merge diff vào nhánh amp-autopatch để deploy preview.",
+      "en": "After Codex generates the code, AMPCode will lint and merge diffs into amp-autopatch for Firebase preview deployment."
+    }
+  },
+  "meta": {
+    "author": "Người hướng dẫn",
+    "created": "2025-10-31",
+    "license": "MIT",
+    "version": "1.0"
+  }
+}
