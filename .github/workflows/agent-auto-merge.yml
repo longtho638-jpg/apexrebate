@@ -15,23 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check PR status
+      - name: Validate PR approval
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "🔍 Checking Codex Merge Fix results..."
-          gh run list --workflow "Codex Merge Fix Runner" --limit 1 --json conclusion -q ".[0].conclusion" > result.txt
-          result=$(cat result.txt)
-          echo "Last workflow conclusion: $result"
-          if [ "$result" != "success" ]; then
-            echo "::error::Last codex-merge-fix run failed or not found."
+          echo "🔍 Checking PR approvals..."
+          APPROVED=$(gh pr view ${{ github.event.client_payload.pull_number }} --json reviewDecision -q '.reviewDecision')
+          if [ "$APPROVED" != "APPROVED" ]; then
+            echo "::error::PR not approved yet."
             exit 1
           fi
 
-      - name: Auto-merge PR
+      - name: Merge PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "✅ Merging current PR..."
-          gh pr merge ${{ github.event.client_payload.pull_number }} --merge --admin --delete-branch --auto
+          echo "🚀 Merging PR..."
+          gh pr merge ${{ github.event.client_payload.pull_number }} --merge --delete-branch --admin

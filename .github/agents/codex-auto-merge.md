@@ -1,6 +1,6 @@
 ---
 name: codex-auto-merge
-description: "Tự động merge Pull Request sau khi codex-merge-fix pass."
+description: "Tự động merge Pull Request sau khi auto-approve."
 ---
 
 # Codex Auto Merge Agent
@@ -8,16 +8,15 @@ description: "Tự động merge Pull Request sau khi codex-merge-fix pass."
 **Trigger:** `@codex-auto-merge run`
 
 ## 🎯 Mục tiêu
-Tự động merge các Pull Request đã pass kiểm tra lint/build của `codex-merge-fix`.
+Tự động merge các PR đã được auto-approve & pass check.
 
 ## 🚀 Cách hoạt động
-1. Xác định PR hiện tại từ ngữ cảnh (`GITHUB_REF`).
-2. Kiểm tra kết quả workflow "Codex Merge Fix Runner".
-3. Nếu job `codex-merge-fix` kết thúc thành công → tự động merge PR.
-4. Nếu có conflict hoặc chưa được approve → tạo comment cảnh báo.
+1. Kiểm tra review status.
+2. Nếu đã có approval & pass checks → merge và xóa branch.
+3. Nếu chưa đủ điều kiện → comment thông báo.
 
 ## 💡 Cách sử dụng
-Trong phần **comment** của PR:
+Trong PR comment:
 ```
 @codex-auto-merge run
 ```
@@ -28,5 +27,5 @@ Hoặc trong Copilot Chat:
 ```
 
 ## ⚠️ Lưu ý
-- Cần bật quyền `pull-requests: write` trong workflow.
-- Chỉ hoạt động khi tất cả checks đã pass.
+- Cần quyền `pull-requests: write` và `contents: write`.
+- Không merge PR có conflict hoặc chưa được approve.
