@@ -473,4 +473,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
+}// Dashboard fix verified - force rebuild
