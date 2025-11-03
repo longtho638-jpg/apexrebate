@@ -1,11 +1,5 @@
 {
   "buildCommand": "prisma generate || true && next build",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps",
-  "functions": {
-    "src/app/api/backup/cleanup/route.ts": {
-      "runtime": "edge",
-      "maxDuration": 15
-    }
-  }
+  "installCommand": "npm install --legacy-peer-deps"
 }
