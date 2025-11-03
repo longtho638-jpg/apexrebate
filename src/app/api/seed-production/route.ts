@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { db } from '@/lib/db';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
  * Production Seed API Route
@@ -23,7 +25,7 @@ export async function POST() {
     }
 
     // Check if already seeded to prevent duplicate data
-    const userCount = await db.user.count();
+    const userCount = await prisma.user.count();
     if (userCount > 5) {
       return NextResponse.json({ 
         warning: 'Database appears to be already seeded',
@@ -41,17 +43,17 @@ export async function POST() {
     
     // Get final counts
     const counts = {
-      users: await db.user.count(),
-      tools: await db.tool.count(),
-      categories: await db.toolCategory.count(),
-      achievements: await db.achievement.count(),
-      payouts: await db.payout.count(),
-      exchanges: await db.exchange.count(),
-      exchangeAccounts: await db.exchangeAccount.count(),
-      regions: await db.deploymentRegion.count(),
-      mobileUsers: await db.mobileUser.count(),
-      notifications: await db.notification.count(),
-      activities: await db.userActivity.count()
+      users: await prisma.user.count(),
+      tools: await prisma.tool.count(),
+      categories: await prisma.toolCategory.count(),
+      achievements: await prisma.achievement.count(),
+      payouts: await prisma.payout.count(),
+      exchanges: await prisma.exchange.count(),
+      exchangeAccounts: await prisma.exchangeAccount.count(),
+      regions: await prisma.deploymentRegion.count(),
+      mobileUsers: await prisma.mobileUser.count(),
+      notifications: await prisma.notification.count(),
+      activities: await prisma.userActivity.count()
     };
 
     return NextResponse.json({ 
@@ -75,17 +77,17 @@ export async function POST() {
 export async function GET() {
   try {
     const counts = {
-      users: await db.user.count(),
-      tools: await db.tool.count(),
-      categories: await db.toolCategory.count(),
-      achievements: await db.achievement.count(),
-      payouts: await db.payout.count(),
-      exchanges: await db.exchange.count(),
-      exchangeAccounts: await db.exchangeAccount.count(),
-      regions: await db.deploymentRegion.count(),
-      mobileUsers: await db.mobileUser.count(),
-      notifications: await db.notification.count(),
-      activities: await db.userActivity.count()
+      users: await prisma.user.count(),
+      tools: await prisma.tool.count(),
+      categories: await prisma.toolCategory.count(),
+      achievements: await prisma.achievement.count(),
+      payouts: await prisma.payout.count(),
+      exchanges: await prisma.exchange.count(),
+      exchangeAccounts: await prisma.exchangeAccount.count(),
+      regions: await prisma.deploymentRegion.count(),
+      mobileUsers: await prisma.mobileUser.count(),
+      notifications: await prisma.notification.count(),
+      activities: await prisma.userActivity.count()
     };
 
     const isSeeded = counts.users > 5;
