@@ -532,6 +532,8 @@ async function seedMaster() {
   }
 }
 
+export default seedMaster;
+
 // Run seed
 seedMaster()
   .then(async () => {
