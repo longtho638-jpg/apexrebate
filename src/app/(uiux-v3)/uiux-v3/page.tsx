@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
 import {
   Badge,
@@ -10,263 +11,227 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-  Input,
-  Label,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  useToast,
 } from '@/features/uiux-v3/components'
+import { ToastShowcase } from '@/components/uiux-v3/toast-showcase'
 
 export const metadata: Metadata = {
   title: 'UI/UX v3 — Tailwind-Only Canvas',
-  description: 'Canvas Hybrid Mode giúp clean rebuild ApexRebate UI với Tailwind CSS thuần, dark mode và i18n tự động.',
+  description:
+    'Canvas Hybrid Mode giúp clean rebuild ApexRebate UI với Tailwind CSS thuần, dark mode và i18n tự động.',
 }
 
-const featureHighlights = [
-  {
-    title: 'Component primitives',
-    description: 'Button, card, table, skeleton, toast và input đều được tối ưu sẵn cho Tailwind thuần.',
-    i18nKey: 'features.primitives',
-  },
-  {
-    title: 'Container queries',
-    description: 'Grid linh hoạt dựa trên chiều rộng thực tế của component thay vì breakpoint màn hình.',
-    i18nKey: 'features.containers',
-  },
-  {
-    title: 'Design tokens',
-    description: 'Màu sắc, radius, typography mapping sang CSS custom properties đồng bộ.',
-    i18nKey: 'features.tokens',
-  },
-]
+export default async function UiUxV3Page() {
+  const t = await getTranslations('uiuxV3')
 
-const tokens = [
-  { name: '--radius', value: '10px', usage: 'Border radius chuẩn cho component', i18nKey: 'tokens.radius' },
-  { name: '--background', value: 'oklch(1 0 0)', usage: 'Nền sáng mặc định', i18nKey: 'tokens.background' },
-  { name: '--primary', value: 'oklch(0.205 0 0)', usage: 'Màu nhấn thương hiệu', i18nKey: 'tokens.primary' },
-]
+  const objectiveKeys = ['objectives.clarity', 'objectives.onboarding', 'objectives.automation'] as const
+  const objectives = objectiveKeys.map(key => ({
+    key,
+    title: t(`${key}.title`),
+    description: t(`${key}.description`),
+    bullets: t.raw(`${key}.bullets`) as string[],
+  }))
 
-const workflow = [
-  {
-    title: 'Thiết lập canvas',
-    description: 'Khởi tạo route /uiux-v3 với header, skip link và footer chuẩn.',
-    i18nKey: 'workflow.setup',
-  },
-  {
-    title: 'Mapping component',
-    description: 'Import primitives từ thư viện Tailwind-only và mapping vào UI thực tế.',
-    i18nKey: 'workflow.mapping',
-  },
-  {
-    title: 'Tự động i18n',
-    description: 'Chạy script extract-i18n để xuất JSON dựa trên data-i18n.',
-    i18nKey: 'workflow.i18n',
-  },
-]
+  const roadmapKeys = ['roadmap.seed', 'roadmap.tree', 'roadmap.forest', 'roadmap.ground'] as const
+  const roadmap = roadmapKeys.map(key => ({
+    key,
+    title: t(`${key}.title`),
+    bullets: t.raw(`${key}.bullets`) as string[],
+  }))
 
-const accessibilityChecklist = [
-  { item: 'Skip link tới nội dung chính', i18nKey: 'accessibility.skip' },
-  { item: 'Nút toggle dark mode với sr-only label', i18nKey: 'accessibility.theme' },
-  { item: 'Keyboard focus ring rõ ràng trên nav', i18nKey: 'accessibility.focus' },
-]
+  const tasks = t.raw('tasks.items') as { phase: string; steps: string[] }[]
+  const experts = t.raw('experts.advisors') as { name: string; summary: string; actions: string[] }[]
+  const guardrails = t.raw('governance.pillars') as string[]
 
-function ToastShowcase() {
-  'use client'
-
-  const { toast } = useToast()
-
-  return (
-    <Button
-      variant="secondary"
-      onClick={() =>
-        toast({
-          title: 'Canvas đã sẵn sàng',
-          description: 'Trigger toast này khi hoàn tất refactor luồng UI.',
-        })
-      }
-      data-i18n="hero.toast"
-    >
-      Gửi toast kiểm thử
-    </Button>
-  )
-}
-
-export default function UiUxV3Page() {
   return (
     <div className="space-y-20">
       <section id="hero" className="space-y-8">
         <div className="flex flex-col gap-6 rounded-3xl bg-gradient-to-br from-primary/10 via-background to-background p-10 shadow-sm">
           <div className="flex flex-wrap items-center gap-3">
-            <Badge variant="outline" data-i18n="hero.badge">
-              Hybrid Mode ⚡ Tailwind Only
+            <Badge variant="outline" data-i18n="hero.badgePrimary">
+              {t('hero.badgePrimary')}
             </Badge>
-            <Badge data-i18n="hero.badge.secondary">Clean rebuild</Badge>
+            <Badge data-i18n="hero.badgeSecondary">{t('hero.badgeSecondary')}</Badge>
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl" data-i18n="hero.title">
-              Canvas UI/UX v3 cho ApexRebate
+              {t('hero.title')}
             </h1>
             <p className="max-w-2xl text-lg text-muted-foreground" data-i18n="hero.subtitle">
-              Sẵn sàng để tái thiết toàn bộ giao diện với Tailwind thuần, dark mode, container queries và module i18n tự động.
+              {t('hero.subtitle')}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Button asChild size="lg" data-i18n="hero.primary">
-              <Link href="#workflow">Bắt đầu rebuild</Link>
+              <Link href="#roadmap">{t('hero.primary')}</Link>
             </Button>
             <Button variant="outline" size="lg" asChild data-i18n="hero.secondary">
-              <Link href="#features">Xem component kit</Link>
+              <Link href="#tasks">{t('hero.secondary')}</Link>
             </Button>
             <ToastShowcase />
           </div>
         </div>
       </section>
 
-      <section id="features" className="space-y-8">
+      <section id="objectives" className="space-y-8">
         <header className="space-y-2">
-          <h2 className="text-2xl font-semibold" data-i18n="features.heading">Bộ component nền tảng</h2>
-          <p className="max-w-2xl text-muted-foreground" data-i18n="features.description">
-            Các primitive được chuẩn hóa với spacing, radius và màu sắc đồng bộ, hỗ trợ container queries ngay trong class tiện ích.
+          <h2 className="text-2xl font-semibold" data-i18n="objectives.heading">
+            {t('objectives.heading')}
+          </h2>
+          <p className="max-w-2xl text-muted-foreground" data-i18n="objectives.description">
+            {t('objectives.description')}
           </p>
         </header>
         <div className="cq-container grid gap-6 cq-cols-1 cq-cols-2 cq-cols-3">
-          {featureHighlights.map(feature => (
-            <Card key={feature.title} className="border-border/60 bg-background/80 shadow-sm transition-all hover:border-border">
+          {objectives.map(objective => (
+            <Card key={objective.key} className="border-border/60 bg-background/80 shadow-sm transition-all hover:border-border">
               <CardHeader className="space-y-3">
-                <Badge variant="secondary" data-i18n={`${feature.i18nKey}.badge`}>
-                  {feature.title}
+                <Badge variant="secondary" data-i18n={`${objective.key}.title`}>
+                  {objective.title}
                 </Badge>
-                <CardTitle data-i18n={`${feature.i18nKey}.title`}>{feature.title}</CardTitle>
-                <CardDescription data-i18n={`${feature.i18nKey}.description`}>
-                  {feature.description}
+                <CardTitle data-i18n={`${objective.key}.title`}>{objective.title}</CardTitle>
+                <CardDescription data-i18n={`${objective.key}.description`}>
+                  {objective.description}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Skeleton className="h-32 w-full rounded-2xl bg-muted/40" />
-                <p className="text-sm text-muted-foreground" data-i18n={`${feature.i18nKey}.note`}>
-                  Skeleton preview thể hiện trạng thái tải mặc định.
-                </p>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <ul className="space-y-2">
+                  {objective.bullets.map((item, index) => (
+                    <li key={index} className="flex items-start gap-2" data-i18n={`${objective.key}.bullets.${index}`}>
+                      <span className="mt-1 size-2 rounded-full bg-primary/70" aria-hidden />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      <section id="tokens" className="space-y-8">
+      <section id="roadmap" className="space-y-8">
         <header className="space-y-2">
-          <h2 className="text-2xl font-semibold" data-i18n="tokens.heading">Design tokens</h2>
-          <p className="max-w-2xl text-muted-foreground" data-i18n="tokens.description">
-            Quản trị biến màu sắc và radius thống nhất cho mọi module, đồng bộ với Tailwind config mới.
-          </p>
-        </header>
-        <Card>
-          <CardHeader>
-            <CardTitle data-i18n="tokens.table.title">Bảng mapping tokens</CardTitle>
-            <CardDescription data-i18n="tokens.table.description">
-              Các giá trị được xuất trực tiếp từ CSS custom properties, sẵn sàng cho tài liệu hoá và audit.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead data-i18n="tokens.table.token">Token</TableHead>
-                  <TableHead data-i18n="tokens.table.value">Giá trị</TableHead>
-                  <TableHead data-i18n="tokens.table.usage">Mục đích</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tokens.map(token => (
-                  <TableRow key={token.name}>
-                    <TableCell data-i18n={`${token.i18nKey}.name`}>{token.name}</TableCell>
-                    <TableCell data-i18n={`${token.i18nKey}.value`}>{token.value}</TableCell>
-                    <TableCell data-i18n={`${token.i18nKey}.usage`}>{token.usage}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter className="flex items-center gap-4">
-            <div className="flex items-center gap-2" data-i18n="tokens.example.label">
-              <Label htmlFor="token-preview">Preview class</Label>
-              <Input id="token-preview" value="bg-primary text-primary-foreground rounded-lg" readOnly />
-            </div>
-            <Button variant="outline" size="sm" data-i18n="tokens.copy">
-              Sao chép
-            </Button>
-          </CardFooter>
-        </Card>
-      </section>
-
-      <section id="workflow" className="space-y-8">
-        <header className="space-y-2">
-          <h2 className="text-2xl font-semibold" data-i18n="workflow.heading">Quy trình vận hành canvas</h2>
-          <p className="max-w-2xl text-muted-foreground" data-i18n="workflow.description">
-            Các bước tuần tự để refactor UI hiện tại sang chuẩn Tailwind-only với i18n tự động.
+          <h2 className="text-2xl font-semibold" data-i18n="roadmap.heading">
+            {t('roadmap.heading')}
+          </h2>
+          <p className="max-w-2xl text-muted-foreground" data-i18n="roadmap.description">
+            {t('roadmap.description')}
           </p>
         </header>
         <div className="cq-container grid gap-6 cq-cols-1 cq-cols-2">
-          {workflow.map(step => (
-            <Card key={step.title} className="bg-background/90 shadow-sm">
+          {roadmap.map(stage => (
+            <Card key={stage.key} className="bg-background/90 shadow-sm">
               <CardHeader>
-                <CardTitle data-i18n={`${step.i18nKey}.title`}>{step.title}</CardTitle>
-                <CardDescription data-i18n={`${step.i18nKey}.description`}>
-                  {step.description}
-                </CardDescription>
+                <CardTitle data-i18n={`${stage.key}.title`}>{stage.title}</CardTitle>
               </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  {stage.bullets.map((bullet, index) => (
+                    <li key={index} className="flex items-start gap-3" data-i18n={`${stage.key}.bullets.${index}`}>
+                      <span className="mt-1.5 size-2 rounded-full bg-emerald-500" aria-hidden />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
             </Card>
           ))}
         </div>
       </section>
 
-      <section id="accessibility" className="space-y-8">
+      <section id="tasks" className="space-y-8">
         <header className="space-y-2">
-          <h2 className="text-2xl font-semibold" data-i18n="accessibility.heading">Chuẩn truy cập & QA</h2>
-          <p className="max-w-2xl text-muted-foreground" data-i18n="accessibility.description">
-            Checklist giúp đảm bảo canvas tuân thủ WCAG 2.2, hỗ trợ keyboard và dark mode liền mạch.
+          <h2 className="text-2xl font-semibold" data-i18n="tasks.heading">
+            {t('tasks.heading')}
+          </h2>
+          <p className="max-w-2xl text-muted-foreground" data-i18n="tasks.description">
+            {t('tasks.description')}
           </p>
         </header>
-        <Card>
-          <CardContent className="space-y-4">
-            <ul className="space-y-3">
-              {accessibilityChecklist.map(item => (
-                <li
-                  key={item.i18nKey}
-                  className="flex items-start gap-3 rounded-2xl border border-border/60 bg-background/90 p-4 shadow-xs"
-                  data-i18n={item.i18nKey}
-                >
-                  <span className="mt-1.5 size-2 rounded-full bg-emerald-500" aria-hidden />
-                  <span>{item.item}</span>
-                </li>
-              ))}
-            </ul>
-            <div className="rounded-2xl border border-dashed border-border/60 bg-background/80 p-4" id="qa" data-i18n="qa.note">
-              Lưu ý: chạy <code className="rounded bg-muted/80 px-2 py-1">npm run i18n:extract</code> sau mỗi lần cập nhật copy để đồng bộ file JSON.
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 md:grid-cols-2">
+          {tasks.map((task, index) => (
+            <Card key={task.phase} className="border-border/70 bg-background/85 shadow-sm">
+              <CardHeader>
+                <Badge variant="secondary" data-i18n={`tasks.items.${index}.phase`}>
+                  {task.phase}
+                </Badge>
+                <CardTitle data-i18n={`tasks.items.${index}.phase`}>{task.phase}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {task.steps.map((step, stepIndex) => (
+                    <li key={stepIndex} className="flex items-start gap-2" data-i18n={`tasks.items.${index}.steps.${stepIndex}`}>
+                      <span className="mt-1 size-2 rounded-full bg-primary/70" aria-hidden />
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </section>
 
-      <section id="monitoring" className="space-y-6">
+      <section id="experts" className="space-y-8">
         <header className="space-y-2">
-          <h2 className="text-2xl font-semibold" data-i18n="monitoring.heading">Monitor & rollout</h2>
-          <p className="max-w-2xl text-muted-foreground" data-i18n="monitoring.description">
-            Theo dõi Lighthouse + axe trong CI và cấu hình rollout theo từng module UI.
+          <h2 className="text-2xl font-semibold" data-i18n="experts.heading">
+            {t('experts.heading')}
+          </h2>
+          <p className="max-w-2xl text-muted-foreground" data-i18n="experts.description">
+            {t('experts.description')}
+          </p>
+        </header>
+        <div className="cq-container grid gap-6 cq-cols-1 cq-cols-2">
+          {experts.map((advisor, index) => (
+            <Card key={advisor.name} className="bg-background/90 shadow-sm">
+              <CardHeader className="space-y-2">
+                <Badge variant="outline" data-i18n={`experts.advisors.${index}.name`}>
+                  {advisor.name}
+                </Badge>
+                <CardTitle data-i18n={`experts.advisors.${index}.summary`}>{advisor.summary}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {advisor.actions.map((action, actionIndex) => (
+                    <li
+                      key={actionIndex}
+                      className="flex items-start gap-2"
+                      data-i18n={`experts.advisors.${index}.actions.${actionIndex}`}
+                    >
+                      <span className="mt-1 size-2 rounded-full bg-primary/70" aria-hidden />
+                      <span>{action}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section id="governance" className="space-y-8">
+        <header className="space-y-2">
+          <h2 className="text-2xl font-semibold" data-i18n="governance.heading">
+            {t('governance.heading')}
+          </h2>
+          <p className="max-w-2xl text-muted-foreground" data-i18n="governance.description">
+            {t('governance.description')}
           </p>
         </header>
         <Card className="bg-background/90">
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground" data-i18n="monitoring.instructions">
-              Thêm stage kiểm thử tự động trong pipeline để chạy <code className="rounded bg-muted/80 px-2 py-1">npm run lint</code> và các script Lighthouse/axe trước khi deploy.
-            </p>
-            <Button asChild size="sm" data-i18n="monitoring.cta">
-              <Link href="/docs/automation">Mở tài liệu automation</Link>
-            </Button>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              {guardrails.map((item, index) => (
+                <li key={index} className="flex items-start gap-3" data-i18n={`governance.pillars.${index}`}>
+                  <span className="mt-1.5 size-2 rounded-full bg-emerald-500" aria-hidden />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <CardFooter className="flex items-center gap-4 p-0 pt-2">
+              <Button asChild size="sm" data-i18n="governance.cta">
+                <Link href={t('governance.ctaHref')}>{t('governance.cta')}</Link>
+              </Button>
+            </CardFooter>
           </CardContent>
         </Card>
       </section>
