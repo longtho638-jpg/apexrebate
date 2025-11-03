@@ -1,3 +1,19 @@
+# Modern Lean Stack 2025
+
+Stack: Vercel + Neon + Prisma + Node runtime
+
+## Quickstart
+1. Copy `.env.example` → `.env`
+2. Set real DATABASE_URL + SEED_SECRET_KEY
+3. Push to Vercel main branch
+4. Test:
+   npm run test:seed
+
+## Expected output
+✅ API OK
+✅ Database connected
+🎉 SEED VALIDATION SUCCESSFUL
+
 # 🚀 Modern Lean Stack 2025 - Ready to Deploy
 
 ## 📦 Package này bao gồm gì?
@@ -210,3 +226,197 @@ Sau khi deploy xong:
 **🎉 CHÚC MỪNG ANH ĐÃ HOÀN THÀNH MODERN LEAN STACK 2025!**
 
 **Support:** Có vấn đề gì cứ hỏi em! 🚀
+
+{
+  "functions": {
+    "api/backup/cleanup.ts": {
+      "runtime": "edge",
+      "maxDuration": 15
+    }
+  },
+  "env": {
+    "BACKUP_SERVICE_URL": "@BACKUP_SERVICE_URL",
+    "BACKUP_AUTH_TOKEN": "@BACKUP_AUTH_TOKEN"
+  }
+}
+
+export const runtime = 'edge'
+
+/**
+ * Edge proxy tới BACKUP_SERVICE_URL (Cloud Run / Firebase Functions)
+ * Giữ nguyên header Authorization, Content-Type, query & body.
+ */
+export async function GET(req: Request) {
+  return proxyRequest(req)
+}
+
+export async function POST(req: Request) {
+  return proxyRequest(req)
+}
+
+async function proxyRequest(req: Request): Promise<Response> {
+  const backend = process.env.BACKUP_SERVICE_URL
+  if (!backend) {
+    return new Response(JSON.stringify({ error: 'BACKUP_SERVICE_URL not configured' }), {
+      status: 500,
+      headers: { 'content-type': 'application/json' }
+    })
+  }
+
+  const url = new URL(req.url)
+  const query = url.search ? url.search : ''
+  const target = backend + query
+
+  const headers = new Headers(req.headers)
+  // Inject token nếu cần
+  if (process.env.BACKUP_AUTH_TOKEN && !headers.has('authorization')) {
+    headers.set('authorization', process.env.BACKUP_AUTH_TOKEN)
+  }
+
+  // Forward fetch (Edge native streaming)
+  const response = await fetch(target, {
+    method: req.method,
+    headers,
+    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
+  })
+
+  // Trả response gốc, tránh cache
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      'content-type': response.headers.get('content-type') || 'application/json',
+      'cache-control': 'no-store',
+    },
+  })
+}
+
+const auth = req.headers.authorization;
+if (auth !== `Bearer ${process.env.INTERNAL_TOKEN}`) return res.status(403).send("Forbidden");
+
+# Cấu trúc thư mục
+
+Dưới đây là cấu trúc thư mục của project:
+
+```
+modern-lean-stack-2025/
+│
+├── prisma/
+│   └── schema.prisma
+│
+├── src/
+│   └── app/api/seed-production/route.ts
+│
+├── lib/
+│   └── db.ts
+│
+├── scripts/
+│   └── test-seed-algorithms.js
+│
+├── .env.example
+│
+└── README.md
+```
+
+---
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  payouts   Payout[]
+}
+
+model Tool {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String?
+  createdAt DateTime @default(now())
+}
+
+model Payout {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Float
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+import { PrismaClient } from "@prisma/client";
+import chalk from "chalk";
+import dotenv from "dotenv";
+import fetch from "node-fetch";
+
+dotenv.config();
+const prisma = new PrismaClient();
+
+const SEED_ENDPOINT =
+  process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") + "/api/seed-production";
+const API_KEY = process.env.SEED_SECRET_KEY;
+
+async function verifyApiRoute() {
+  console.log(chalk.cyan(`🔍 Checking seed API route...`));
+  try {
+    const res = await fetch(SEED_ENDPOINT, {
+      headers: { Authorization: `Bearer ${API_KEY}` },
+    });
+    const json = await res.json();
+    if (json.seeded || json.success) {
+      console.log(chalk.green(`✅ API seed route OK → ${SEED_ENDPOINT}`));
+      console.log(json);
+    } else {
+      console.warn(chalk.yellow(`⚠️ API responded but not seeded:`));
+      console.log(json);
+    }
+  } catch (err) {
+    console.error(chalk.red(`❌ API seed test failed: ${err.message}`));
+  }
+}
+
+async function verifyDatabase() {
+  console.log(chalk.cyan(`\n🔍 Checking database state via Prisma...`));
+  try {
+    const userCount = await prisma.user.count();
+    const toolCount = await prisma.tool.count();
+    const payoutCount = await prisma.payout.count();
+
+    console.log(
+      chalk.green(
+        `✅ Prisma connected → ${userCount} users, ${toolCount} tools, ${payoutCount} payouts`
+      )
+    );
+
+    if (userCount > 0 && toolCount > 0) {
+      console.log(chalk.bold.green(`🎉 SEED VALIDATION SUCCESSFUL`));
+      process.exit(0);
+    } else {
+      console.warn(chalk.yellow(`⚠️ Missing records → check /api/seed-production`));
+      process.exit(1);
+    }
+  } catch (err) {
+    console.error(chalk.red(`❌ Prisma test failed: ${err.message}`));
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
+  }
+}
+
+(async () => {
+  console.log(chalk.bold(`\n🚀 Running Seed Algorithm Validation\n`));
+  if (!process.env.DATABASE_URL)
+    return console.error(chalk.red("❌ Missing DATABASE_URL in .env"));
+  if (!process.env.SEED_SECRET_KEY)
+    console.warn(chalk.yellow("⚠️ Missing SEED_SECRET_KEY in .env"));
+
+  await verifyApiRoute();
+  await verifyDatabase();
+})();
