@@ -22,6 +22,18 @@ const config: import('next').NextConfig = {
         destination: 'https://apexrebate.com/:path*',
         permanent: true,
       },
+      // Make /uiux-v3 an internal alias that redirects to the root
+      {
+        source: '/uiux-v3',
+        destination: '/',
+        permanent: true,
+      },
+      // Locale-aware alias: /:locale/uiux-v3 -> /:locale
+      {
+        source: '/:locale/uiux-v3',
+        destination: '/:locale',
+        permanent: true,
+      },
     ];
   },
 };
