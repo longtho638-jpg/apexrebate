@@ -16,10 +16,12 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/', request.url), 301);
   }
 
-  // Redirect /:locale/uiux-v3 → /:locale (301 permanent)
-  if (pathname.match(/^\/(en|vi)\/uiux-v3$/)) {
-    const locale = pathname.split('/')[1];
-    return NextResponse.redirect(new URL(`/${locale}`, request.url), 301);
+  // Redirect /:locale/uiux-v3 → /:locale (301 permanent) - BEFORE intl middleware
+  const match = pathname.match(/^\/(en|vi)\/uiux-v3$/);
+  if (match) {
+    const locale = match[1];
+    const targetUrl = locale === 'vi' ? '/' : `/${locale}`;
+    return NextResponse.redirect(new URL(targetUrl, request.url), 301);
   }
 
   // Apply i18n routing for all other requests
