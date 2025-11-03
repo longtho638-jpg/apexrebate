@@ -2,6 +2,10 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const cors = require('cors')({origin: true});
 const next = require('next');
+const fs = require('fs');
+const path = require('path');
+const { onRequest } = require('firebase-functions/v2/https');
+const { onSchedule } = require('firebase-functions/v2/scheduler');
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -204,4 +208,103 @@ exports.getBrokerData = functions.https.onRequest(async (req, res) => {
       res.status(500).json({ error: 'Internal server error' });
     }
   });
+});
+// ==========================
+// Cleanup Service (HTTPS + Scheduler)
+// ==========================
+
+function runCleanup({ retentionDays = 7, dryRun = false } = {}) {
+  const rootDir = process.cwd();
+  const dirs = [
+    path.join(rootDir, 'backups'),
+    path.join(rootDir, 'logs'),
+    path.join(rootDir, 'temp'),
+  ];
+
+  const cutoffTime = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
+  const result = { deletedFiles: [], freedSpace: 0 };
+
+  const cleanupDir = (dir) => {
+    if (!fs.existsSync(dir)) return;
+    const files = fs.readdirSync(dir);
+
+    for (const file of files) {
+      const filePath = path.join(dir, file);
+      let stats;
+      try {
+        stats = fs.statSync(filePath);
+      } catch (e) {
+        continue;
+      }
+
+      if (stats.mtime.getTime() < cutoffTime) {
+        const size = stats.size;
+        if (!dryRun) {
+          try {
+            if (stats.isDirectory()) {
+              fs.rmSync(filePath, { recursive: true, force: true });
+            } else {
+              fs.unlinkSync(filePath);
+            }
+          } catch (e) {
+            console.warn('Failed to delete', filePath, e.message);
+          }
+        }
+        result.deletedFiles.push(filePath);
+        result.freedSpace += size;
+      }
+    }
+  };
+
+  for (const d of dirs) cleanupDir(d);
+
+  const freedSpaceMB = Math.round((result.freedSpace / 1024 / 1024) * 100) / 100;
+  return {
+    success: true,
+    retentionDays,
+    dryRun,
+    deletedCount: result.deletedFiles.length,
+    freedSpaceMB,
+    deletedFiles: result.deletedFiles,
+    exists: {
+      backups: fs.existsSync(path.join(rootDir, 'backups')),
+      logs: fs.existsSync(path.join(rootDir, 'logs')),
+      temp: fs.existsSync(path.join(rootDir, 'temp')),
+    }
+  };
+}
+
+// HTTPS endpoint
+exports.cleanup = onRequest(async (req, res) => {
+  return cors(req, res, async () => {
+    if (req.method !== 'POST' && req.method !== 'GET') {
+      return res.status(405).json({ error: 'Method not allowed' });
+    }
+
+    try {
+      const payload = req.method === 'GET' ? req.query : req.body || {};
+      const retentionDays = Number(payload.retentionDays ?? 7);
+      const dryRun = String(payload.dryRun ?? 'false') === 'true' || payload.dryRun === true;
+
+      const report = runCleanup({ retentionDays, dryRun });
+      return res.status(200).json(report);
+    } catch (err) {
+      console.error('Cleanup error:', err);
+      return res.status(500).json({ success: false, error: err.message || 'Unknown cleanup error' });
+    }
+  });
+});
+
+// Nightly scheduler
+exports.cleanupNightly = onSchedule({
+  schedule: 'every day 02:00',
+  timeZone: 'Asia/Ho_Chi_Minh'
+}, async () => {
+  try {
+    const report = runCleanup({ retentionDays: 7, dryRun: false });
+    console.log('Nightly cleanup completed:', JSON.stringify(report));
+  } catch (err) {
+    console.error('Nightly cleanup failed:', err);
+  }
+  return null;
 });
