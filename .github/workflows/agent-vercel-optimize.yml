@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.branch || github.ref }}
 
       - name: Clean Next.js cache and traces
         run: |
@@ -23,11 +25,12 @@ jobs:
         run: |
           if [ ! -f vercel.json ]; then
             echo "Creating vercel.json..."
-            echo '{' > vercel.json
-            echo '  "buildCommand": "prisma generate || true && next build",' >> vercel.json
-            echo '  "framework": "nextjs",' >> vercel.json
-            echo '  "installCommand": "npm install --legacy-peer-deps"' >> vercel.json
-            echo '}' >> vercel.json
+            printf '%s\n' \
+              '{' \
+              '  "buildCommand": "prisma generate || true && next build",' \
+              '  "framework": "nextjs",' \
+              '  "installCommand": "npm install --legacy-peer-deps"' \
+              '}' > vercel.json
           else
             echo "vercel.json already exists, keeping current configuration..."
           fi
@@ -47,9 +50,11 @@ jobs:
         run: |
           echo "🚀 Triggering redeploy..."
           BRANCH="${GITHUB_REF##*/}"
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
           curl -X POST "https://api.vercel.com/v13/deployments" \
             -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d "{\"name\": \"apexrebate\", \"gitSource\": \
-            {\"type\": \"github\",\"org\": \"longtho638-jpg\",\
-            \"repo\": \"apexrebate\",\"ref\": \"${BRANCH}\"}}"
+            -d "{\"name\": \"${REPO}\", \"gitSource\": \
+            {\"type\": \"github\",\"org\": \"${OWNER}\",\
+            \"repo\": \"${REPO}\",\"ref\": \"${BRANCH}\"}}"

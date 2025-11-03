@@ -1,13 +1,15 @@
 #!/bin/bash
 # Script to trigger vercel-optimize agent via GitHub API
-# Usage: ./trigger-vercel-optimize.sh [branch] [pr_number]
+# Usage: ./trigger-vercel-optimize.sh [branch] [pr_number] [repo]
 
 set -e
 
 BRANCH="${1:-main}"
 PR_NUMBER="${2:-}"
+REPO="${3:-longtho638-jpg/apexrebate}"
 
 echo "🚀 Triggering vercel-optimize agent..."
+echo "Repository: $REPO"
 echo "Branch: $BRANCH"
 echo "PR Number: ${PR_NUMBER:-N/A}"
 
@@ -56,7 +58,7 @@ RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
-  https://api.github.com/repos/longtho638-jpg/apexrebate/dispatches \
+  https://api.github.com/repos/$REPO/dispatches \
   -d "$PAYLOAD")
 
 HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
@@ -66,7 +68,7 @@ if [ "$HTTP_CODE" = "204" ]; then
   echo "✅ Successfully triggered vercel-optimize agent!"
   echo ""
   echo "Check the workflow run at:"
-  echo "https://github.com/longtho638-jpg/apexrebate/actions/workflows/agent-vercel-optimize.yml"
+  echo "https://github.com/$REPO/actions/workflows/agent-vercel-optimize.yml"
 else
   echo "❌ Failed to trigger workflow. HTTP code: $HTTP_CODE"
   echo "Response: $BODY"
