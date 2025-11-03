@@ -46,13 +46,13 @@ export default function Dashboard() {
       try {
         // Fetch user dashboard data
         const response = await fetch('/api/dashboard');
-        const data = await response.json();
+        const result = await response.json();
         
-        if (data.success) {
-          setUserData(data.userData);
-          setSavingsHistory(data.savingsHistory);
-          setBrokerStats(data.brokerStats);
-          setAchievements(data.achievements);
+        if (result.success && result.data) {
+          setUserData(result.data.userData);
+          setSavingsHistory(result.data.savingsHistory);
+          setBrokerStats(result.data.brokerStats);
+          setAchievements(result.data.achievements);
         } else {
           // Fallback to mock data
           const mockUserData = {
