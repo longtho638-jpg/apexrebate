@@ -81,12 +81,12 @@ export default function Dashboard() {
           ];
           
           const mockAchievements = [
-            { id: 'first_savings', title: 'Tiết kiệm đầu tiên', description: 'Hoàn thành lần hoàn phí đầu tiên', icon: Star, unlocked: true, date: '2024-01-15' },
-            { id: 'monthly_100', title: 'Thành viên tháng', description: 'Tiết kiệm hơn $100 trong tháng', icon: Award, unlocked: true, date: '2024-02-01' },
-            { id: 'referral_1', title: 'Người giới thiệu', description: 'Giới thiệu thành công 1 thành viên', icon: Users, unlocked: true, date: '2024-03-10' },
-            { id: 'savings_1000', title: 'Nhà tiết kiệm', description: 'Tổng tiết kiệm đạt $1,000', icon: Crown, unlocked: true, date: '2024-04-15' },
-            { id: 'savings_5000', title: 'Bậc thầy tiết kiệm', description: 'Tổng tiết kiệm đạt $5,000', icon: Gem, unlocked: false, progress: 57 },
-            { id: 'apex_pro', title: 'ApexPro Member', description: 'Nâng cấp lên ApexPro SaaS', icon: Shield, unlocked: false, progress: 80 }
+            { id: 'first_savings', title: 'Tiết kiệm đầu tiên', description: 'Hoàn thành lần hoàn phí đầu tiên', icon: 'Star', unlocked: true, date: '2024-01-15' },
+            { id: 'monthly_100', title: 'Thành viên tháng', description: 'Tiết kiệm hơn $100 trong tháng', icon: 'Award', unlocked: true, date: '2024-02-01' },
+            { id: 'referral_1', title: 'Người giới thiệu', description: 'Giới thiệu thành công 1 thành viên', icon: 'Users', unlocked: true, date: '2024-03-10' },
+            { id: 'savings_1000', title: 'Nhà tiết kiệm', description: 'Tổng tiết kiệm đạt $1,000', icon: 'Crown', unlocked: true, date: '2024-04-15' },
+            { id: 'savings_5000', title: 'Bậc thầy tiết kiệm', description: 'Tổng tiết kiệm đạt $5,000', icon: 'Gem', unlocked: false, progress: 57 },
+            { id: 'apex_pro', title: 'ApexPro Member', description: 'Nâng cấp lên ApexPro SaaS', icon: 'Shield', unlocked: false, progress: 80 }
           ];
           
           setUserData(mockUserData);
