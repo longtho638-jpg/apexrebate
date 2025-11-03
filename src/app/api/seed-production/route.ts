@@ -35,11 +35,16 @@ export async function POST() {
     }
 
     // Dynamic import to avoid loading seed code unnecessarily
-    const seedModule = await import('@/lib/seed-master');
-    
-    // Run seed
     console.log('Starting production seed...');
-    await seedModule.default();
+    
+    // Import and run seed with error handling
+    try {
+      const { default: seedMaster } = await import('@/lib/seed-master');
+      await seedMaster();
+    } catch (importError: any) {
+      console.error('Failed to import seed-master:', importError);
+      throw new Error(`Seed import failed: ${importError.message}`);
+    }
     
     // Get final counts
     const counts = {
