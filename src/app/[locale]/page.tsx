@@ -13,10 +13,9 @@ export default function LocaleRedirect({
   const isValidLocale = supportedLocales.includes(locale);
   
   if (!isValidLocale) {
-    // Unsupported locale → fallback to Vietnamese
-    redirect("/vi/uiux-v3");
+    redirect("/uiux-v3");
   }
 
-  // ✅ Valid locale → redirect to localized UI/UX v3
-  redirect(`/${locale}/uiux-v3`);
+  const target = locale === "vi" ? "/vi/uiux-v3" : "/uiux-v3";
+  redirect(target);
 }

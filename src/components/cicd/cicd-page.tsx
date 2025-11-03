@@ -1,28 +1,23 @@
 'use client'
 
-// Tránh static prerendering để không gặp lỗi SSR
+// Giữ nguyên layout/giao diện Codex, chỉ tối ưu runtime
 export const dynamic = 'force-dynamic'
 
 import React, { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Rocket, Activity, CheckCircle, Settings, Zap } from 'lucide-react'
-import dynamicImport from 'next/dynamic'
+import { Activity, CheckCircle, Rocket, Settings, Zap } from 'lucide-react'
 
-// ✅ Lazy import để tránh SSR crash & giảm bundle
-const CICDDashboard = dynamicImport(() => import('@/components/cicd/cicd-dashboard'), {
-  ssr: false,
-  loading: () => <div className="p-6 text-center text-sm text-muted-foreground">Đang tải dashboard...</div>,
-})
+// Giữ component dashboard tách riêng để có thể lazy-load nội bộ
+import CICDDashboard from '@/components/cicd/cicd-dashboard'
 
 export default function CICDPage() {
   const [activeTab, setActiveTab] = useState('dashboard')
 
   return (
     <div className="container mx-auto py-6 space-y-6">
-      {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">CI/CD 管道中心</h1>
@@ -40,7 +35,7 @@ export default function CICDPage() {
         </div>
       </div>
 
-      {/* Stats Cards with Icons */}
+      {/* Stats giữ nguyên UI Codex */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -84,7 +79,6 @@ export default function CICDPage() {
         </Card>
       </div>
 
-      {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dashboard">管道仪表板</TabsTrigger>
@@ -98,7 +92,7 @@ export default function CICDPage() {
           <CICDDashboard />
         </TabsContent>
 
-        {/* Các tab còn lại vẫn giữ layout Codex */}
+        {/* Các tab còn lại vẫn giữ layout Codex – có thể thêm dần nội dung nếu cần */}
         <TabsContent value="deployments"><div /></TabsContent>
         <TabsContent value="environments"><div /></TabsContent>
         <TabsContent value="monitoring"><div /></TabsContent>

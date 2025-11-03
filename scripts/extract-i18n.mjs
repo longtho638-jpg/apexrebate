@@ -27,8 +27,8 @@ for (const arg of args) {
 }
 
 if (directories.length === 0) {
-  directories.push(path.join(ROOT, 'src/app/(uiux-v3)'))
-  directories.push(path.join(ROOT, 'src/components/uiux-v3'))
+  directories.push(path.join(ROOT, 'src/app/uiux-v3'))
+  directories.push(path.join(ROOT, 'src/components/cicd'))
 }
 
 const outputPath = customOutput ?? path.join(ROOT, 'messages', `${locale}.uiux-v3.json`)
