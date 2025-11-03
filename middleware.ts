@@ -1,5 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Create i18n middleware
 const intlMiddleware = createMiddleware({
@@ -9,7 +9,20 @@ const intlMiddleware = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-  // Apply i18n routing
+  const { pathname } = request.nextUrl;
+
+  // Redirect /uiux-v3 → / (301 permanent)
+  if (pathname === '/uiux-v3') {
+    return NextResponse.redirect(new URL('/', request.url), 301);
+  }
+
+  // Redirect /:locale/uiux-v3 → /:locale (301 permanent)
+  if (pathname.match(/^\/(en|vi)\/uiux-v3$/)) {
+    const locale = pathname.split('/')[1];
+    return NextResponse.redirect(new URL(`/${locale}`, request.url), 301);
+  }
+
+  // Apply i18n routing for all other requests
   return intlMiddleware(request);
 }
 
