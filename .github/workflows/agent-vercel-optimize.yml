@@ -8,6 +8,8 @@ jobs:
   vercel-optimize:
     if: github.event.client_payload.agent == 'vercel-optimize'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
