@@ -1,5 +1,10 @@
 {
   "buildCommand": "prisma generate || true && next build",
   "framework": "nextjs",
-  "installCommand": "npm install --legacy-peer-deps"
+  "installCommand": "npm install --legacy-peer-deps",
+  "functions": {
+    "api/**/*.{js,ts}": {
+      "excludeFiles": ".next/cache/**"
+    }
+  }
 }
