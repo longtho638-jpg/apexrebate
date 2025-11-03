@@ -1,3 +1,4 @@
-// Render UI/UX V3 directly at the locale root.
-// We re-export the V3 page so all logic, translations, and layout are preserved.
-export { default, metadata } from "@/app/(uiux-v3)/uiux-v3/page";
+import UiUxV3Content from '@/_components/uiux-v3-content';
+
+export { metadata } from '@/_components/uiux-v3-content';
+export default UiUxV3Content;

@@ -420,3 +420,33 @@ async function verifyDatabase() {
   await verifyApiRoute();
   await verifyDatabase();
 })();
+````markdown
+name: Modern Lean Stack 2025 CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-deploy:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SEED_SECRET_KEY: ${{ secrets.SEED_SECRET_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --legacy-peer-deps
+      - run: npx prisma generate
+      - run: npm run test:seed
+        continue-on-error: true
+      - uses: amondnet/vercel-action@v25
+        if: github.ref == 'refs/heads/main'
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: --prod

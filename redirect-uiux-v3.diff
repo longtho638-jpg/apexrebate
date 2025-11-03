@@ -1,0 +1,18 @@
+diff --git a/src/app/[locale]/page.tsx b/src/app/[locale]/page.tsx
+index 1111111..2222222 100644
+--- a/src/app/[locale]/page.tsx
++++ b/src/app/[locale]/page.tsx
+@@ -1,3 +1,11 @@
+-export default function Page() {
+-  return <div>Home OK</div>;
+-}
++import { redirect } from "next/navigation";
++
++export default function LocaleRedirect({
++  params,
++}: {
++  params: { locale: string };
++}) {
++  // ✅ Redirect locale root (e.g. /vi) → new UIUX v3 route
++  redirect(`/${params.locale}/uiux-v3`);
++}
