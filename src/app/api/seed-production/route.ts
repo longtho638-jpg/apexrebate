@@ -1,8 +1,8 @@
+export const runtime = 'nodejs'
+
 import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/db';
 
 /**
  * Production Seed API Route
