@@ -1,0 +1,23 @@
+:root {
+  --color-primary: #2563eb;
+  --color-accent: #60a5fa;
+  --color-neutral: #111827;
+  --color-surface: #f9fafb;
+  --radius-card: 1.25rem;
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.text-neutral {
+  color: var(--color-neutral);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}

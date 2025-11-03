@@ -1,0 +1,17 @@
+{
+  "theme": "NeoMinimalist",
+  "palette": {
+    "primary": "#2563eb",
+    "accent": "#60a5fa",
+    "neutral": "#111827",
+    "surface": "#f9fafb"
+  },
+  "layout": "dashboard-first",
+  "interactions": ["hover-elevation", "tab-intent", "motion-safe"],
+  "components": [
+    { "id": "NavBar", "variant": "floating", "accessibility": "aria" },
+    { "id": "HeroCard", "variant": "dynamic-data" },
+    { "id": "DashboardCard", "variant": "adaptive-grid" },
+    { "id": "HangSoiFeed", "variant": "realtime-swr" }
+  ]
+}
