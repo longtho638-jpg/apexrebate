@@ -1,0 +1,23 @@
+name: Trigger Codex Fullchain Agent
+
+on:
+  push:
+    branches:
+      - codex/uiux-v3-optimize
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch repository event to run codex-fullchain agent
+        run: |
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+            -d '{"event_type":"run-agent","client_payload":{"agent":"codex-fullchain"}}'
