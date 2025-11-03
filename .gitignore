@@ -51,3 +51,5 @@ logs/
 # codex remix
 .codex_contract.json
 /codex-remix
+functions/node_modules/
+.firebase/
