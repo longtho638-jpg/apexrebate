@@ -3,7 +3,7 @@
   "framework": "nextjs",
   "installCommand": "npm install --legacy-peer-deps",
   "functions": {
-    "api/**/*.{js,ts}": {
+    "src/app/api/backup/cleanup/route.ts": {
       "excludeFiles": ".next/cache/**"
     }
   }
