@@ -1,0 +1,32 @@
+# Exclude Next.js cache and traces from Vercel deployment
+# These directories can grow very large and cause serverless function size limits to be exceeded
+
+# Next.js cache directory (can be 500+ MB)
+.next/cache/
+
+# Next.js trace files
+.next/trace/
+
+# Development files
+dev.log
+server.log
+logs/
+
+# Test files
+coverage/
+test/
+
+# Local configuration
+.env.local
+.env.*.local
+local-*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

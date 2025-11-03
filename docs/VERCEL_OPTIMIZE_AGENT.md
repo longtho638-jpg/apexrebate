@@ -6,14 +6,16 @@ Agent này tự động dọn cache Next.js và trigger redeploy lên Vercel đ�
 
 Khi Vercel build bị lỗi do:
 - Cache Next.js cũ gây conflict
+- Cache quá lớn (> 250 MB) vượt quá giới hạn serverless function
 - Pattern functions không đúng trong vercel.json
 - Build cache bị corrupted
 
 Agent này sẽ:
 1. ✅ Xóa `.next/cache` và `.next/trace`
-2. ✅ Đảm bảo `vercel.json` có cấu hình đúng
-3. ✅ Commit thay đổi tự động
-4. ✅ Trigger redeploy lên Vercel
+2. ✅ Tạo `.vercelignore` để loại trừ cache khỏi deployment
+3. ✅ Đảm bảo `vercel.json` có cấu hình đúng
+4. ✅ Commit thay đổi tự động
+5. ✅ Trigger redeploy lên Vercel
 
 ## 🚀 Cách sử dụng
 

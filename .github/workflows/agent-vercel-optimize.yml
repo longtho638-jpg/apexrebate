@@ -39,12 +39,34 @@ jobs:
           echo "Current vercel.json:"
           cat vercel.json
 
+      - name: Ensure .vercelignore excludes cache directories
+        run: |
+          if [ ! -f .vercelignore ]; then
+            echo "Creating .vercelignore to exclude cache..."
+            printf '%s\n' \
+              '# Exclude Next.js cache and traces from Vercel deployment' \
+              '.next/cache/' \
+              '.next/trace/' \
+              'dev.log' \
+              'server.log' \
+              'logs/' \
+              'coverage/' > .vercelignore
+          else
+            echo ".vercelignore exists, ensuring cache exclusions..."
+            grep -q ".next/cache" .vercelignore || \
+              echo ".next/cache/" >> .vercelignore
+            grep -q ".next/trace" .vercelignore || \
+              echo ".next/trace/" >> .vercelignore
+          fi
+          echo "Current .vercelignore:"
+          cat .vercelignore
+
       - name: Commit optimization fix
         run: |
           git config user.name "codex-vercel-bot"
           git config user.email "codex@github.local"
-          git add vercel.json || true
-          git commit -m "fix(vercel): auto-cleanup cache and exclude from build" \
+          git add vercel.json .vercelignore || true
+          git commit -m "fix(vercel): exclude cache from deployment and cleanup" \
             || echo "No changes to commit"
           git push || echo "Nothing to push"
 
