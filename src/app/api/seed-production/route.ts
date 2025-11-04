@@ -16,11 +16,19 @@ export async function POST() {
     const headersList = await headers();
     const auth = headersList.get('authorization');
     
+    // Debug logging
+    console.log('[SEED] Auth received:', auth ? `${auth.substring(0, 30)}...` : 'MISSING');
+    console.log('[SEED] ENV key exists:', !!process.env.SEED_SECRET_KEY);
+    
     // Security: only allow with secret key
     if (!process.env.SEED_SECRET_KEY || auth !== `Bearer ${process.env.SEED_SECRET_KEY}`) {
       return NextResponse.json({ 
         error: 'Unauthorized',
-        message: 'Valid SEED_SECRET_KEY required'
+        message: 'Valid SEED_SECRET_KEY required',
+        debug: {
+          hasAuth: !!auth,
+          hasEnvKey: !!process.env.SEED_SECRET_KEY
+        }
       }, { status: 401 });
     }
 
@@ -34,78 +42,46 @@ export async function POST() {
       }, { status: 400 });
     }
 
-    // Dynamic import to avoid loading seed code unnecessarily
-    console.log('Starting production seed...');
+    // Import seed function
+    const { seedMaster } = await import('@/lib/seed/seed-master');
     
-    // Import and run seed with error handling
-    try {
-      const { default: seedMaster } = await import('@/lib/seed-master');
-      await seedMaster();
-    } catch (importError: any) {
-      console.error('Failed to import seed-master:', importError);
-      throw new Error(`Seed import failed: ${importError.message}`);
-    }
+    // Run seed
+    const result = await seedMaster();
     
-    // Get final counts
-    const counts = {
-      users: await prisma.user.count(),
-      tools: await prisma.tool.count(),
-      categories: await prisma.toolCategory.count(),
-      achievements: await prisma.achievement.count(),
-      payouts: await prisma.payout.count(),
-      exchanges: await prisma.exchange.count(),
-      exchangeAccounts: await prisma.exchangeAccount.count(),
-      regions: await prisma.deploymentRegion.count(),
-      mobileUsers: await prisma.mobileUser.count(),
-      notifications: await prisma.notification.count(),
-      activities: await prisma.userActivity.count()
-    };
-
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Production database seeded successfully',
-      data: counts,
-      timestamp: new Date().toISOString()
+      data: result
     });
-
+    
   } catch (error: any) {
-    console.error('Seed production failed:', error);
+    console.error('[SEED] Error:', error);
     return NextResponse.json({ 
-      error: 'Seed failed', 
-      details: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: 'Seed failed',
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }, { status: 500 });
   }
 }
 
-// GET method to check seed status
+// GET to check seed status
 export async function GET() {
   try {
-    const counts = {
-      users: await prisma.user.count(),
-      tools: await prisma.tool.count(),
-      categories: await prisma.toolCategory.count(),
-      achievements: await prisma.achievement.count(),
-      payouts: await prisma.payout.count(),
-      exchanges: await prisma.exchange.count(),
-      exchangeAccounts: await prisma.exchangeAccount.count(),
-      regions: await prisma.deploymentRegion.count(),
-      mobileUsers: await prisma.mobileUser.count(),
-      notifications: await prisma.notification.count(),
-      activities: await prisma.userActivity.count()
-    };
-
-    const isSeeded = counts.users > 5;
-
+    const userCount = await prisma.user.count();
+    const toolCount = await prisma.tool.count();
+    
     return NextResponse.json({
-      seeded: isSeeded,
-      data: counts,
-      timestamp: new Date().toISOString()
+      seeded: userCount > 0,
+      stats: {
+        users: userCount,
+        tools: toolCount
+      },
+      message: userCount > 5 ? 'Already seeded' : 'Ready to seed'
     });
   } catch (error: any) {
     return NextResponse.json({ 
       error: 'Failed to check seed status',
-      details: error.message
+      message: error.message 
     }, { status: 500 });
   }
 }
