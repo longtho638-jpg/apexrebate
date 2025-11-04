@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "version": "2025.3",
+    "theme": "ApexRebate GPT5 UI",
+    "description": "UI/UX GPT-5 Layout for ApexRebate SEED Portal 2025",
+    "layout": "Responsive / Tailwind / App Router"
+  },
+  "colors": {
+    "primary": "#0EA5E9",
+    "secondary": "#1E293B",
+    "accent": "#22D3EE",
+    "background": "#F8FAFC",
+    "text": "#0F172A"
+  },
+  "navigation": [
+    { "path": "/", "label": "Trang chủ", "icon": "Home" },
+    { "path": "/vi/dashboard", "label": "Bảng điều khiển", "icon": "LayoutDashboard" },
+    { "path": "/vi/tools", "label": "Công cụ", "icon": "Wrench" },
+    { "path": "/vi/hang-soi", "label": "Cộng đồng Hang Sói", "icon": "Users" },
+    { "path": "/vi/payouts", "label": "Hoàn phí", "icon": "DollarSign" },
+    { "path": "/vi/profile", "label": "Hồ sơ", "icon": "User" }
+  ],
+  "components": {
+    "DashboardCard": {
+      "props": ["title", "value", "icon"],
+      "layout": "grid-4",
+      "style": "shadow-md rounded-2xl p-4 bg-white"
+    },
+    "ChartWidget": {
+      "library": "recharts",
+      "props": ["data", "xKey", "yKey"],
+      "type": "LineChart"
+    },
+    "PayoutTable": {
+      "columns": ["Ngày", "Sàn", "Số tiền", "Trạng thái", "Chứng từ"],
+      "style": "table-auto border-collapse w-full text-sm"
+    }
+  },
+  "layout": {
+    "header": {
+      "logo": "ApexRebate",
+      "actions": ["Đăng nhập", "Ngôn ngữ", "Chế độ sáng/tối"]
+    },
+    "footer": {
+      "text": "© 2025 ApexRebate · All rights reserved.",
+      "links": ["Điều khoản", "Chính sách bảo mật", "Liên hệ"]
+    }
+  },
+  "transitions": {
+    "page": "fade",
+    "modal": "scale"
+  },
+  "animation": "FramerMotion",
+  "responsiveness": ["mobile-first", "grid", "hidden-on-small"]
+}
