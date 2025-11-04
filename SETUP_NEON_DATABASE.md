@@ -38,13 +38,16 @@ postgresql://apexrebate_owner:AbC123xyz...@ep-cool-name-123456.ap-southeast-1.aw
    - **Environment:** Chọn cả 3 (Production, Preview, Development)
 4. Click **"Save"**
 
-### Cách 2: Qua CLI (Nhanh Hơn)
+### Cách 2: Qua CLI (Nhanh Hơn - KHUYẾN NGHỊ)
 
 ```bash
-# Paste connection string vào terminal
-vercel env add DATABASE_URL
-# Nhập value: postgresql://...
-# Chọn: Production, Preview, Development (space để chọn, enter để confirm)
+# QUAN TRỌNG: Dùng echo -n để tránh thêm ký tự newline (
+)
+source .env
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL production
+# Nếu muốn add cho cả preview và development:
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL preview
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL development
 ```
 
 ## Bước 5: Redeploy

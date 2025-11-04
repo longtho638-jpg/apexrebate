@@ -62,16 +62,18 @@ Stack: Vercel + Neon + Prisma + Node runtime
 | `DATABASE_URL` | Connection string từ Neon | ✅ Production, Preview, Development |
 | `SEED_SECRET_KEY` | `6f176323c1a1bdbd5ef130127322cd402aabb1d392663ed36b1dcf2d7b4fe7bb` | ✅ Production, Preview, Development |
 
-**Cách 2: Qua CLI (Nhanh)**
+**Cách 2: Qua CLI (Nhanh - KHUYẾN NGHỊ)**
 
 ```bash
-vercel env add DATABASE_URL
-# Paste connection string từ Neon
-# Chọn: Production, Preview, Development (dùng spacebar)
+# QUAN TRỌNG: Dùng echo -n để tránh thêm newline (
+)
+source .env
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL production
+echo -n "$SEED_SECRET_KEY" | vercel env add SEED_SECRET_KEY production
 
-vercel env add SEED_SECRET_KEY
-# Paste: 6f176323c1a1bdbd5ef130127322cd402aabb1d392663ed36b1dcf2d7b4fe7bb
-# Chọn: Production, Preview, Development
+# Optional: Add cho preview và development
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL preview
+echo -n "$SEED_SECRET_KEY" | vercel env add SEED_SECRET_KEY preview
 ```
 
 ---

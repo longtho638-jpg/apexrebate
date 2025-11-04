@@ -33,8 +33,11 @@ Link: https://neon.tech
 
 ### 2️⃣ Set ENV (1 phút)
 ```bash
-vercel env add DATABASE_URL
-vercel env add SEED_SECRET_KEY
+# QUAN TRỌNG: Dùng echo -n để tránh thêm newline (
+)
+source .env
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL production
+echo -n "$SEED_SECRET_KEY" | vercel env add SEED_SECRET_KEY production
 ```
 
 ### 3️⃣ Deploy (5 phút)

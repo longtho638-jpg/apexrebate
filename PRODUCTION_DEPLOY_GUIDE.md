@@ -37,9 +37,9 @@ Deploy https://apexrebate.com/vi với **TẤT CẢ** tính năng và dữ liệ
 git push origin codex/uiux-v3-optimize:main
 
 # 2. Vercel sẽ tự động deploy
-# 3. Sau deploy, chạy seed qua Vercel CLI:
-vercel env add DATABASE_URL
-# Nhập: file:./dev.db
+# 3. Sau deploy, setup ENV với echo -n (tránh newline bug):
+source .env
+echo -n "$DATABASE_URL" | vercel env add DATABASE_URL production
 
 # 4. Trigger function để seed (hoặc dùng API route)
 curl -X POST https://apexrebate.com/api/seed-production \
