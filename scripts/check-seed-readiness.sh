@@ -35,22 +35,22 @@ section "1️⃣  KIỂM TRA ENVIRONMENT VARIABLES"
 REQUIRED_VARS=(DATABASE_URL NEXTAUTH_SECRET NEXT_PUBLIC_APP_URL)
 for var in "${REQUIRED_VARS[@]}"; do
   if [ -n "${!var:-}" ]; then
-    check_pass "$var configured"
+    check_pass "$var đã được cấu hình"
   else
-    check_fail "$var MISSING - Required for deployment"
+    check_fail "$var ĐANG THIẾU - Bắt buộc cho việc triển khai"
   fi
 done
 
 if [ -n "${SEED_SECRET_KEY:-}" ]; then
-  check_pass "SEED_SECRET_KEY configured (for production seed API)"
+  check_pass "SEED_SECRET_KEY đã được cấu hình (cho API seed sản xuất)"
 else
-  check_warn "SEED_SECRET_KEY not set - Production seeding will fail"
+  check_warn "SEED_SECRET_KEY chưa được thiết lập - Việc gieo hạt sản xuất sẽ thất bại"
 fi
 
 if [ -n "${OPENAI_API_KEY:-}" ] || [ -n "${ANTHROPIC_API_KEY:-}" ]; then
-  check_pass "AI API keys configured"
+  check_pass "Các khóa API AI đã được cấu hình"
 else
-  check_warn "No AI API keys - AI features will be disabled"
+  check_warn "Không có khóa API AI - Các tính năng AI sẽ bị vô hiệu hóa"
 fi
 
 # ============================================
@@ -59,9 +59,9 @@ fi
 section "2️⃣  KIỂM TRA DATABASE (Neon Postgres)"
 
 if npx prisma db pull --force >/dev/null 2>&1; then
-  check_pass "Database connection OK (Neon reachable)"
+  check_pass "Kết nối cơ sở dữ liệu OK (Có thể truy cập Neon)"
 else
-  check_fail "Cannot connect to database - Check DATABASE_URL"
+  check_fail "Không thể kết nối đến cơ sở dữ liệu - Kiểm tra DATABASE_URL"
 fi
 
 # ============================================
@@ -71,21 +71,21 @@ section "3️⃣  KIỂM TRA GIT STATUS"
 
 UNCOMMITTED=$(git status --short 2>/dev/null | wc -l | tr -d ' ')
 if [ "$UNCOMMITTED" -eq 0 ]; then
-  check_pass "No uncommitted changes - Clean working directory"
+  check_pass "Không có thay đổi chưa được cam kết - Thư mục làm việc sạch"
 else
-  check_warn "$UNCOMMITTED uncommitted changes - Consider committing before deploy"
+  check_warn "$UNCOMMITTED thay đổi chưa được cam kết - Xem xét việc cam kết trước khi triển khai"
   git status --short | head -5
 fi
 
 BRANCH=$(git branch --show-current 2>/dev/null || echo "unknown")
 if [ "$BRANCH" = "main" ]; then
-  check_pass "On main branch"
+  check_pass "Đang ở nhánh chính"
 else
-  check_warn "On branch '$BRANCH' (not main) - Production deploys from main"
+  check_warn "Đang ở nhánh '$BRANCH' (không phải chính) - Triển khai sản xuất từ nhánh chính"
 fi
 
 LAST_COMMIT=$(git log --oneline -1 2>/dev/null || echo "unknown")
-echo -e "${BLUE}Latest commit:${NC} $LAST_COMMIT"
+echo -e "${BLUE}Cam kết mới nhất:${NC} $LAST_COMMIT"
 
 # ============================================
 # 4️⃣ PRODUCTION SITE HEALTH
@@ -96,28 +96,28 @@ SITE_URL=${NEXT_PUBLIC_APP_URL:-"https://apexrebate.com"}
 
 ROOT_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/" 2>/dev/null || echo "000")
 if [ "$ROOT_CODE" = "200" ] || [ "$ROOT_CODE" = "307" ] || [ "$ROOT_CODE" = "308" ]; then
-  check_pass "Root page accessible (HTTP $ROOT_CODE)"
+  check_pass "Trang gốc có thể truy cập (HTTP $ROOT_CODE)"
 else
-  check_fail "Root page failed (HTTP $ROOT_CODE)"
+  check_fail "Trang gốc thất bại (HTTP $ROOT_CODE)"
 fi
 
 DASH_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL/vi/dashboard" 2>/dev/null || echo "000")
 if [ "$DASH_CODE" = "200" ]; then
-  check_pass "Dashboard accessible (HTTP $DASH_CODE)"
+  check_pass "Bảng điều khiển có thể truy cập (HTTP $DASH_CODE)"
   
   DASH_HTML=$(curl -s "$SITE_URL/vi/dashboard" 2>/dev/null || echo "")
   if echo "$DASH_HTML" | grep -q "Application error"; then
-    check_fail "Dashboard has 'Application error' - Client-side bug detected"
+    check_fail "Bảng điều khiển có lỗi 'Application error' - Phát hiện lỗi phía khách hàng"
   else
-    check_pass "Dashboard renders without errors"
+    check_pass "Bảng điều khiển hiển thị mà không có lỗi"
   fi
   
   BUNDLE=$(echo "$DASH_HTML" | grep -o 'dashboard/page-[a-f0-9]*\.js' | head -1 || echo "")
   if [ -n "$BUNDLE" ]; then
-    echo -e "${BLUE}Current bundle:${NC} $BUNDLE"
+    echo -e "${BLUE}Gói hiện tại:${NC} $BUNDLE"
   fi
 else
-  check_fail "Dashboard failed (HTTP $DASH_CODE)"
+  check_fail "Bảng điều khiển thất bại (HTTP $DASH_CODE)"
 fi
 
 for endpoint in "/api/health" "/api/dashboard"; do
@@ -125,7 +125,7 @@ for endpoint in "/api/health" "/api/dashboard"; do
   if [ "$API_CODE" = "200" ]; then
     check_pass "API $endpoint OK (HTTP $API_CODE)"
   else
-    check_warn "API $endpoint returned HTTP $API_CODE"
+    check_warn "API $endpoint trả về HTTP $API_CODE"
   fi
 done
 
@@ -135,21 +135,21 @@ done
 section "5️⃣  KIỂM TRA LOCAL BUILD"
 
 if [ -d "node_modules" ]; then
-  check_pass "node_modules exists"
+  check_pass "Thư mục node_modules tồn tại"
 else
-  check_warn "node_modules missing - Run npm install"
+  check_warn "Thư mục node_modules bị thiếu - Chạy npm install"
 fi
 
 if [ -d "node_modules/.prisma/client" ]; then
-  check_pass "Prisma client generated"
+  check_pass "Khách hàng Prisma đã được tạo"
 else
-  check_warn "Prisma client not generated - Run npx prisma generate"
+  check_warn "Khách hàng Prisma chưa được tạo - Chạy npx prisma generate"
 fi
 
 if npm run -s lint 2>&1 | grep -qi "error"; then
-  check_warn "ESLint errors found - Review before deploying"
+  check_warn "Tìm thấy lỗi ESLint - Xem xét trước khi triển khai"
 else
-  check_pass "ESLint checks pass"
+  check_pass "Kiểm tra ESLint đã vượt qua"
 fi
 
 # ============================================
@@ -158,20 +158,20 @@ fi
 section "6️⃣  KIỂM TRA DEPLOYMENT TOOLS"
 
 if command -v vercel >/dev/null 2>&1; then
-  check_pass "Vercel CLI installed"
+  check_pass "Vercel CLI đã được cài đặt"
 else
-  check_warn "Vercel CLI not found - Will use git push for deploy"
+  check_warn "Vercel CLI không tìm thấy - Sẽ sử dụng git push để triển khai"
 fi
 
 GIT_REMOTE=$(git remote get-url origin 2>/dev/null || echo "none")
 if [ "$GIT_REMOTE" != "none" ]; then
-  check_pass "Git remote configured"
+  check_pass "Git remote đã được cấu hình"
 else
-  check_fail "No git remote - Cannot auto-deploy"
+  check_fail "Không có git remote - Không thể tự động triển khai"
 fi
 
-command -v curl >/dev/null 2>&1 && check_pass "curl available" || check_fail "curl missing (required)"
-command -v jq >/dev/null 2>&1 && check_pass "jq available" || check_warn "jq missing (optional)"
+command -v curl >/dev/null 2>&1 && check_pass "curl có sẵn" || check_fail "curl bị thiếu (bắt buộc)"
+command -v jq >/dev/null 2>&1 && check_pass "jq có sẵn" || check_warn "jq bị thiếu (tùy chọn)"
 
 # ============================================
 # 📊 SUMMARY
@@ -179,11 +179,11 @@ command -v jq >/dev/null 2>&1 && check_pass "jq available" || check_warn "jq mis
 section "📊  KẾT QUẢ KIỂM TRA"
 
 TOTAL=$((PASS + WARN + FAIL))
-echo -e "${GREEN}✅ PASS: $PASS${NC}"
-echo -e "${YELLOW}⚠️  WARN: $WARN${NC}"
-echo -e "${RED}❌ FAIL: $FAIL${NC}"
+echo -e "${GREEN}✅ ĐẠT: $PASS${NC}"
+echo -e "${YELLOW}⚠️  CẢNH BÁO: $WARN${NC}"
+echo -e "${RED}❌ THẤT BẠI: $FAIL${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "Total checks: $TOTAL"
+echo -e "Tổng số kiểm tra: $TOTAL"
 
 echo ""
 if [ $FAIL -eq 0 ]; then

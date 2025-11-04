@@ -7,52 +7,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                 String              @id @default(cuid())
-  email              String              @unique
-  name               String?
-  image              String?
-  password           String?
-  role               UserRole            @default(USER)
-  emailVerified      DateTime?
-  twoFactorEnabled   Boolean             @default(false)
-  twoFactorSecret    String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  tradingVolume      Float?
-  preferredBroker    String?
-  experience         String?
-  referralSource     String?
-  referralCode       String?
-  referredBy         String?
-  totalSaved         Float               @default(0)
-  referralCount      Int                 @default(0)
-  tier               UserTier            @default(BRONZE)
-  points             Int                 @default(0)
-  lastActiveAt       DateTime            @default(now())
-  streak             Int                 @default(0)
-  badgeCount         Int                 @default(0)
-  accounts           Account[]
-  emailNotifications EmailNotification[]
-  exchangeAccounts   ExchangeAccount[]
-  notifications      Notification[]      @relation("UserNotifications")
-  payouts            Payout[]
-  sessions           Session[]
-  affiliateLinks     ToolAffiliateLink[] @relation("ToolAffiliateLinks")
-  toolFavorites      ToolFavorite[]      @relation("ToolFavoriter")
-  toolsBought        ToolOrder[]         @relation("ToolBuyer")
-  toolReviews        ToolReview[]        @relation("ToolReviewer")
-  toolsSold          Tool[]              @relation("ToolSeller")
-  achievements       UserAchievement[]
-  activities         UserActivity[]
-  referrer           User?               @relation("UserReferrals", fields: [referredBy], references: [id])
-  referredUsers      User[]              @relation("UserReferrals")
-
-  @@map("users")
-}
-
-model Account {
-  id                String  @id @default(cuid())
+model accounts {
+  id                String  @id
   userId            String
   type              String
   provider          String
@@ -64,96 +20,86 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users             users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@map("accounts")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
+model achievements {
+  id                String              @id
+  name              String              @unique
+  title             String
+  description       String
+  icon              String
+  category          AchievementCategory
+  points            Int                 @default(0)
+  tier              UserTier?
+  condition         String
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  user_achievements user_achievements[]
 }
 
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
-  @@map("verification_tokens")
+model data_syncs {
+  id                                                               String             @id
+  sourceRegionId                                                   String
+  targetRegionId                                                   String
+  syncType                                                         SyncType           @default(INCREMENTAL)
+  status                                                           SyncStatus         @default(PENDING)
+  recordsTotal                                                     Int                @default(0)
+  recordsProcessed                                                 Int                @default(0)
+  recordsFailed                                                    Int                @default(0)
+  initiatedAt                                                      DateTime           @default(now())
+  startedAt                                                        DateTime?
+  completedAt                                                      DateTime?
+  errorMessage                                                     String?
+  progress                                                         Float              @default(0)
+  metadata                                                         String?
+  deployment_regions_data_syncs_sourceRegionIdTodeployment_regions deployment_regions @relation("data_syncs_sourceRegionIdTodeployment_regions", fields: [sourceRegionId], references: [id])
+  deployment_regions_data_syncs_targetRegionIdTodeployment_regions deployment_regions @relation("data_syncs_targetRegionIdTodeployment_regions", fields: [targetRegionId], references: [id])
 }
 
-model Payout {
-  id            String       @id @default(cuid())
-  userId        String
-  amount        Float
-  currency      String       @default("USD")
-  period        String
-  broker        String
-  tradingVolume Float
-  feeRate       Float
-  status        PayoutStatus @default(PENDING)
-  processedAt   DateTime?
-  notes         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("payouts")
+model deployment_configs {
+  id                  String               @id
+  name                String
+  regions             String
+  strategy            DeploymentStrategy   @default(ROUND_ROBIN)
+  failoverEnabled     Boolean              @default(true)
+  healthCheckInterval Int                  @default(30)
+  isActive            Boolean              @default(true)
+  weights             String?
+  routingRules        String?
+  metadata            String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime
+  failover_events     failover_events[]
+  deployment_regions  deployment_regions[] @relation("DeploymentConfigToDeploymentRegion")
 }
 
-model Achievement {
-  id               String              @id @default(cuid())
-  name             String              @unique
-  title            String
-  description      String
-  icon             String
-  category         AchievementCategory
-  points           Int                 @default(0)
-  tier             UserTier?
-  condition        String
-  isActive         Boolean             @default(true)
-  createdAt        DateTime            @default(now())
-  userAchievements UserAchievement[]
-
-  @@map("achievements")
+model deployment_regions {
+  id                                                               String               @id
+  name                                                             String
+  code                                                             String               @unique
+  endpoint                                                         String
+  status                                                           RegionStatus         @default(INACTIVE)
+  latency                                                          Int                  @default(0)
+  load                                                             Int                  @default(0)
+  capabilities                                                     String
+  priority                                                         Int                  @default(1)
+  isActive                                                         Boolean              @default(true)
+  lastHealthCheck                                                  DateTime?
+  metadata                                                         String?
+  createdAt                                                        DateTime             @default(now())
+  updatedAt                                                        DateTime
+  data_syncs_data_syncs_sourceRegionIdTodeployment_regions         data_syncs[]         @relation("data_syncs_sourceRegionIdTodeployment_regions")
+  data_syncs_data_syncs_targetRegionIdTodeployment_regions         data_syncs[]         @relation("data_syncs_targetRegionIdTodeployment_regions")
+  failover_events_failover_events_sourceRegionTodeployment_regions failover_events[]    @relation("failover_events_sourceRegionTodeployment_regions")
+  failover_events_failover_events_targetRegionTodeployment_regions failover_events[]    @relation("failover_events_targetRegionTodeployment_regions")
+  deployment_configs                                               deployment_configs[] @relation("DeploymentConfigToDeploymentRegion")
 }
 
-model UserAchievement {
-  id            String      @id @default(cuid())
-  userId        String
-  achievementId String
-  unlockedAt    DateTime    @default(now())
-  progress      Int         @default(0)
-  pointsAwarded Int         @default(0)
-  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, achievementId])
-  @@map("user_achievements")
-}
-
-model UserActivity {
-  id          String       @id @default(cuid())
-  userId      String
-  type        ActivityType
-  description String
-  metadata    String?
-  points      Int          @default(0)
-  createdAt   DateTime     @default(now())
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("user_activities")
-}
-
-model EmailNotification {
-  id           String    @id @default(cuid())
+model email_notifications {
+  id           String    @id
   userId       String
   type         String
   recipient    String
@@ -165,98 +111,35 @@ model EmailNotification {
   error        String?
   scheduledFor DateTime?
   createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("email_notifications")
+  updatedAt    DateTime
+  users        users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Exchange {
-  id             String                @id @default(cuid())
-  name           String                @unique
-  displayName    String
-  baseUrl        String
-  sandboxUrl     String?
-  isActive       Boolean               @default(true)
-  supportedPairs String
-  feeStructure   String
-  affiliateInfo  String
-  logoUrl        String?
-  websiteUrl     String?
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
-  accounts       ExchangeAccount[]
-  tickers        ExchangeTicker[]
-  transactions   ExchangeTransaction[]
-
-  @@map("exchanges")
-}
-
-model ExchangeAccount {
-  id            String                @id @default(cuid())
-  userId        String
-  exchangeId    String
-  apiKey        String
-  secret        String
-  passphrase    String?
-  isActive      Boolean               @default(true)
-  isSandbox     Boolean               @default(false)
-  lastSyncAt    DateTime?
-  syncError     String?
-  tradingVolume Float                 @default(0)
-  totalSaved    Float                 @default(0)
-  preferences   String?
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  exchange      Exchange              @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
-  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transactions  ExchangeTransaction[]
+model exchange_accounts {
+  id                    String                  @id
+  userId                String
+  exchangeId            String
+  apiKey                String
+  secret                String
+  passphrase            String?
+  isActive              Boolean                 @default(true)
+  isSandbox             Boolean                 @default(false)
+  lastSyncAt            DateTime?
+  syncError             String?
+  tradingVolume         Float                   @default(0)
+  totalSaved            Float                   @default(0)
+  preferences           String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  exchanges             exchanges               @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
+  users                 users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exchange_transactions exchange_transactions[]
 
   @@unique([userId, exchangeId])
-  @@map("exchange_accounts")
 }
 
-model ExchangeTransaction {
-  id            String          @id @default(cuid())
-  accountId     String
-  exchangeId    String
-  transactionId String
-  symbol        String
-  side          String
-  amount        Float
-  price         Float
-  fee           Float
-  feeCurrency   String
-  rebate        Float           @default(0)
-  rebateRate    Float           @default(0)
-  orderId       String?
-  timestamp     DateTime
-  syncedAt      DateTime        @default(now())
-  exchange      Exchange        @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
-  account       ExchangeAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-
-  @@unique([accountId, transactionId])
-  @@map("exchange_transactions")
-}
-
-model ExchangeTicker {
-  id         String   @id @default(cuid())
-  exchangeId String
-  symbol     String
-  price      Float
-  change24h  Float    @default(0)
-  volume24h  Float    @default(0)
-  high24h    Float    @default(0)
-  low24h     Float    @default(0)
-  timestamp  DateTime @default(now())
-  exchange   Exchange @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
-
-  @@unique([exchangeId, symbol])
-  @@map("exchange_tickers")
-}
-
-model ExchangeSyncLog {
-  id               String     @id @default(cuid())
+model exchange_sync_logs {
+  id               String     @id
   exchangeId       String
   accountId        String?
   type             SyncType
@@ -268,128 +151,174 @@ model ExchangeSyncLog {
   recordsUpdated   Int        @default(0)
   errorMessage     String?
   metadata         String?
-
-  @@map("exchange_sync_logs")
 }
 
-model DeploymentRegion {
-  id                   String             @id @default(cuid())
-  name                 String
-  code                 String             @unique
-  endpoint             String
-  status               RegionStatus       @default(INACTIVE)
-  latency              Int                @default(0)
-  load                 Int                @default(0)
-  capabilities         String
-  priority             Int                @default(1)
-  isActive             Boolean            @default(true)
-  lastHealthCheck      DateTime?
-  metadata             String?
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @updatedAt
-  syncTargets          DataSync[]         @relation("SyncTarget")
-  syncSources          DataSync[]         @relation("SyncSource")
-  failoverTargetEvents FailoverEvent[]    @relation("FailoverTargetRegion")
-  failoverSourceEvents FailoverEvent[]    @relation("FailoverSourceRegion")
-  deployments          DeploymentConfig[] @relation("DeploymentConfigToDeploymentRegion")
+model exchange_tickers {
+  id         String    @id
+  exchangeId String
+  symbol     String
+  price      Float
+  change24h  Float     @default(0)
+  volume24h  Float     @default(0)
+  high24h    Float     @default(0)
+  low24h     Float     @default(0)
+  timestamp  DateTime  @default(now())
+  exchanges  exchanges @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
 
-  @@map("deployment_regions")
+  @@unique([exchangeId, symbol])
 }
 
-model DeploymentConfig {
-  id                  String             @id @default(cuid())
-  name                String
-  regions             String
-  strategy            DeploymentStrategy @default(ROUND_ROBIN)
-  failoverEnabled     Boolean            @default(true)
-  healthCheckInterval Int                @default(30)
-  isActive            Boolean            @default(true)
-  weights             String?
-  routingRules        String?
-  metadata            String?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  failoverEvents      FailoverEvent[]
-  deploymentRegions   DeploymentRegion[] @relation("DeploymentConfigToDeploymentRegion")
+model exchange_transactions {
+  id                String            @id
+  accountId         String
+  exchangeId        String
+  transactionId     String
+  symbol            String
+  side              String
+  amount            Float
+  price             Float
+  fee               Float
+  feeCurrency       String
+  rebate            Float             @default(0)
+  rebateRate        Float             @default(0)
+  orderId           String?
+  timestamp         DateTime
+  syncedAt          DateTime          @default(now())
+  exchange_accounts exchange_accounts @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  exchanges         exchanges         @relation(fields: [exchangeId], references: [id], onDelete: Cascade)
 
-  @@map("deployment_configs")
+  @@unique([accountId, transactionId])
 }
 
-model FailoverEvent {
-  id              String           @id @default(cuid())
-  deploymentId    String
-  sourceRegion    String
-  targetRegion    String
-  reason          String
-  status          FailoverStatus   @default(INITIATED)
-  initiatedAt     DateTime         @default(now())
-  completedAt     DateTime?
-  errorMessage    String?
-  metadata        String?
-  targetRegionObj DeploymentRegion @relation("FailoverTargetRegion", fields: [targetRegion], references: [id])
-  sourceRegionObj DeploymentRegion @relation("FailoverSourceRegion", fields: [sourceRegion], references: [id])
-  deployment      DeploymentConfig @relation(fields: [deploymentId], references: [id])
-
-  @@map("failover_events")
+model exchanges {
+  id                    String                  @id
+  name                  String                  @unique
+  displayName           String
+  baseUrl               String
+  sandboxUrl            String?
+  isActive              Boolean                 @default(true)
+  supportedPairs        String
+  feeStructure          String
+  affiliateInfo         String
+  logoUrl               String?
+  websiteUrl            String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  exchange_accounts     exchange_accounts[]
+  exchange_tickers      exchange_tickers[]
+  exchange_transactions exchange_transactions[]
 }
 
-model DataSync {
-  id               String           @id @default(cuid())
-  sourceRegionId   String
-  targetRegionId   String
-  syncType         SyncType         @default(INCREMENTAL)
-  status           SyncStatus       @default(PENDING)
-  recordsTotal     Int              @default(0)
-  recordsProcessed Int              @default(0)
-  recordsFailed    Int              @default(0)
-  initiatedAt      DateTime         @default(now())
-  startedAt        DateTime?
-  completedAt      DateTime?
-  errorMessage     String?
-  progress         Float            @default(0)
-  metadata         String?
-  targetRegion     DeploymentRegion @relation("SyncTarget", fields: [targetRegionId], references: [id])
-  sourceRegion     DeploymentRegion @relation("SyncSource", fields: [sourceRegionId], references: [id])
-
-  @@map("data_syncs")
+model failover_events {
+  id                                                                  String             @id
+  deploymentId                                                        String
+  sourceRegion                                                        String
+  targetRegion                                                        String
+  reason                                                              String
+  status                                                              FailoverStatus     @default(INITIATED)
+  initiatedAt                                                         DateTime           @default(now())
+  completedAt                                                         DateTime?
+  errorMessage                                                        String?
+  metadata                                                            String?
+  deployment_configs                                                  deployment_configs @relation(fields: [deploymentId], references: [id])
+  deployment_regions_failover_events_sourceRegionTodeployment_regions deployment_regions @relation("failover_events_sourceRegionTodeployment_regions", fields: [sourceRegion], references: [id])
+  deployment_regions_failover_events_targetRegionTodeployment_regions deployment_regions @relation("failover_events_targetRegionTodeployment_regions", fields: [targetRegion], references: [id])
 }
 
-model RegionalMetrics {
-  id         String   @id @default(cuid())
-  regionId   String
-  metricType String
-  metricName String
-  value      Float
-  unit       String?
-  timestamp  DateTime @default(now())
-  metadata   String?
+model mobile_app_configs {
+  id                  String   @id
+  platform            Platform
+  version             String
+  buildNumber         Int
+  minSupportedVersion String?
+  features            String
+  config              String
+  isActive            Boolean  @default(true)
+  releasedAt          DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime
 
-  @@index([regionId, metricType, timestamp])
-  @@map("regional_metrics")
+  @@unique([platform, version])
 }
 
-model MobileUser {
-  id            String             @id @default(cuid())
-  userId        String
-  deviceToken   String
-  platform      Platform
-  appVersion    String
-  deviceInfo    String
-  preferences   String
-  isActive      Boolean            @default(true)
-  lastActiveAt  DateTime           @default(now())
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  events        MobileEvent[]
-  feedbacks     MobileFeedback[]
-  notifications PushNotification[]
+model mobile_events {
+  id           String        @id
+  userId       String
+  mobileUserId String?
+  eventType    String
+  eventName    String
+  properties   String?
+  sessionId    String?
+  timestamp    DateTime      @default(now())
+  mobile_users mobile_users? @relation(fields: [mobileUserId], references: [id])
+}
+
+model mobile_feedbacks {
+  id           String         @id
+  userId       String
+  mobileUserId String?
+  rating       Int
+  comment      String?
+  category     String
+  deviceInfo   String?
+  status       FeedbackStatus @default(NEW)
+  respondedAt  DateTime?
+  response     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  mobile_users mobile_users?  @relation(fields: [mobileUserId], references: [id])
+}
+
+model mobile_users {
+  id                 String               @id
+  userId             String
+  deviceToken        String
+  platform           Platform
+  appVersion         String
+  deviceInfo         String
+  preferences        String
+  isActive           Boolean              @default(true)
+  lastActiveAt       DateTime             @default(now())
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  mobile_events      mobile_events[]
+  mobile_feedbacks   mobile_feedbacks[]
+  push_notifications push_notifications[]
 
   @@unique([userId, deviceToken])
-  @@map("mobile_users")
 }
 
-model PushNotification {
-  id           String             @id @default(cuid())
+model notifications {
+  id        String   @id
+  userId    String
+  type      String
+  title     String
+  message   String
+  data      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  users     users    @relation(fields: [userId], references: [id])
+}
+
+model payouts {
+  id            String       @id
+  userId        String
+  amount        Float
+  currency      String       @default("USD")
+  period        String
+  broker        String
+  tradingVolume Float
+  feeRate       Float
+  status        PayoutStatus @default(PENDING)
+  processedAt   DateTime?
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime
+  users         users        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model push_notifications {
+  id           String             @id
   userId       String
   mobileUserId String?
   title        String
@@ -401,127 +330,92 @@ model PushNotification {
   sentAt       DateTime?
   errorMessage String?
   createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  mobileUser   MobileUser?        @relation(fields: [mobileUserId], references: [id])
-
-  @@map("push_notifications")
+  updatedAt    DateTime
+  mobile_users mobile_users?      @relation(fields: [mobileUserId], references: [id])
 }
 
-model MobileEvent {
-  id           String      @id @default(cuid())
+model regional_metrics {
+  id         String   @id
+  regionId   String
+  metricType String
+  metricName String
+  value      Float
+  unit       String?
+  timestamp  DateTime @default(now())
+  metadata   String?
+
+  @@index([regionId, metricType, timestamp])
+}
+
+model sessions {
+  id           String   @id
+  sessionToken String   @unique
   userId       String
-  mobileUserId String?
-  eventType    String
-  eventName    String
-  properties   String?
-  sessionId    String?
-  timestamp    DateTime    @default(now())
-  mobileUser   MobileUser? @relation(fields: [mobileUserId], references: [id])
-
-  @@map("mobile_events")
+  expires      DateTime
+  users        users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model MobileFeedback {
-  id           String         @id @default(cuid())
-  userId       String
-  mobileUserId String?
-  rating       Int
-  comment      String?
-  category     String
-  deviceInfo   String?
-  status       FeedbackStatus @default(NEW)
-  respondedAt  DateTime?
-  response     String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  mobileUser   MobileUser?    @relation(fields: [mobileUserId], references: [id])
+model tool_affiliate_links {
+  id          String        @id
+  toolId      String
+  affiliateId String
+  linkCode    String        @unique
+  commission  Float         @default(10.0)
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  users       users         @relation(fields: [affiliateId], references: [id])
+  tools       tools         @relation(fields: [toolId], references: [id])
+  tool_orders tool_orders[]
 
-  @@map("mobile_feedbacks")
+  @@unique([toolId, affiliateId])
 }
 
-model MobileAppConfig {
-  id                  String   @id @default(cuid())
-  platform            Platform
-  version             String
-  buildNumber         Int
-  minSupportedVersion String?
-  features            String
-  config              String
-  isActive            Boolean  @default(true)
-  releasedAt          DateTime @default(now())
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  @@unique([platform, version])
-  @@map("mobile_app_configs")
-}
-
-model ToolCategory {
-  id          String   @id @default(cuid())
+model tool_categories {
+  id          String   @id
   name        String   @unique
   description String?
   icon        String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  tools       Tool[]
-
-  @@map("tool_categories")
+  updatedAt   DateTime
+  tools       tools[]
 }
 
-model Tool {
-  id             String              @id @default(cuid())
-  name           String
-  description    String
-  price          Float
-  category       String
-  type           ToolType
-  image          String?
-  features       String?
-  requirements   String?
-  documentation  String?
-  status         ToolStatus          @default(DRAFT)
-  featured       Boolean             @default(false)
-  sellerId       String
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  affiliateLinks ToolAffiliateLink[]
-  favorites      ToolFavorite[]
-  orders         ToolOrder[]
-  reviews        ToolReview[]
-  categoryObj    ToolCategory        @relation(fields: [category], references: [id])
-  seller         User                @relation("ToolSeller", fields: [sellerId], references: [id])
+model tool_favorites {
+  id        String   @id
+  toolId    String
+  userId    String
+  createdAt DateTime @default(now())
+  tools     tools    @relation(fields: [toolId], references: [id])
+  users     users    @relation(fields: [userId], references: [id])
 
-  @@unique([name, sellerId])
-  @@map("tools")
+  @@unique([toolId, userId])
 }
 
-model ToolOrder {
-  id               String             @id @default(cuid())
-  toolId           String
-  buyerId          String
-  sellerId         String
-  affiliateLinkId  String?
-  amount           Float
-  commissionAmount Float?
-  currency         String             @default("USD")
-  status           OrderStatus        @default(PENDING)
-  paymentMethod    String?
-  paymentId        String?
-  downloadUrl      String?
-  licenseKey       String?
-  notes            String?
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  affiliateLink    ToolAffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
-  buyer            User               @relation("ToolBuyer", fields: [buyerId], references: [id])
-  tool             Tool               @relation(fields: [toolId], references: [id])
-
-  @@map("tool_orders")
+model tool_orders {
+  id                   String                @id
+  toolId               String
+  buyerId              String
+  sellerId             String
+  affiliateLinkId      String?
+  amount               Float
+  commissionAmount     Float?
+  currency             String                @default("USD")
+  status               OrderStatus           @default(PENDING)
+  paymentMethod        String?
+  paymentId            String?
+  downloadUrl          String?
+  licenseKey           String?
+  notes                String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime
+  tool_affiliate_links tool_affiliate_links? @relation(fields: [affiliateLinkId], references: [id])
+  users                users                 @relation(fields: [buyerId], references: [id])
+  tools                tools                 @relation(fields: [toolId], references: [id])
 }
 
-model ToolReview {
-  id        String   @id @default(cuid())
+model tool_reviews {
+  id        String   @id
   toolId    String
   userId    String
   rating    Int
@@ -532,74 +426,111 @@ model ToolReview {
   verified  Boolean  @default(false)
   helpful   Int      @default(0)
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation("ToolReviewer", fields: [userId], references: [id])
-  tool      Tool     @relation(fields: [toolId], references: [id])
+  updatedAt DateTime
+  tools     tools    @relation(fields: [toolId], references: [id])
+  users     users    @relation(fields: [userId], references: [id])
 
   @@unique([toolId, userId])
-  @@map("tool_reviews")
 }
 
-model ToolFavorite {
-  id        String   @id @default(cuid())
-  toolId    String
-  userId    String
-  createdAt DateTime @default(now())
-  user      User     @relation("ToolFavoriter", fields: [userId], references: [id])
-  tool      Tool     @relation(fields: [toolId], references: [id])
+model tools {
+  id                   String                 @id
+  name                 String
+  description          String
+  price                Float
+  category             String
+  type                 ToolType
+  image                String?
+  features             String?
+  requirements         String?
+  documentation        String?
+  status               ToolStatus             @default(DRAFT)
+  featured             Boolean                @default(false)
+  sellerId             String
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  tool_affiliate_links tool_affiliate_links[]
+  tool_favorites       tool_favorites[]
+  tool_orders          tool_orders[]
+  tool_reviews         tool_reviews[]
+  tool_categories      tool_categories        @relation(fields: [category], references: [id])
+  users                users                  @relation(fields: [sellerId], references: [id])
 
-  @@unique([toolId, userId])
-  @@map("tool_favorites")
+  @@unique([name, sellerId])
 }
 
-model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  type      String
-  title     String
-  message   String
-  data      String?
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+model user_achievements {
+  id            String       @id
+  userId        String
+  achievementId String
+  unlockedAt    DateTime     @default(now())
+  progress      Int          @default(0)
+  pointsAwarded Int          @default(0)
+  achievements  achievements @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  users         users        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("notifications")
+  @@unique([userId, achievementId])
 }
 
-model ToolAffiliateLink {
-  id          String      @id @default(cuid())
-  toolId      String
-  affiliateId String
-  linkCode    String      @unique
-  commission  Float       @default(10.0)
-  isActive    Boolean     @default(true)
-  createdAt   DateTime    @default(now())
-  affiliate   User        @relation("ToolAffiliateLinks", fields: [affiliateId], references: [id])
-  tool        Tool        @relation(fields: [toolId], references: [id])
-  orders      ToolOrder[]
-
-  @@unique([toolId, affiliateId])
-  @@map("tool_affiliate_links")
+model user_activities {
+  id          String       @id
+  userId      String
+  type        ActivityType
+  description String
+  metadata    String?
+  points      Int          @default(0)
+  createdAt   DateTime     @default(now())
+  users       users        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-enum UserRole {
-  USER
-  ADMIN
-  CONCIERGE
+model users {
+  id                   String                 @id
+  email                String                 @unique
+  name                 String?
+  image                String?
+  password             String?
+  role                 UserRole               @default(USER)
+  emailVerified        DateTime?
+  twoFactorEnabled     Boolean                @default(false)
+  twoFactorSecret      String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime
+  tradingVolume        Float?
+  preferredBroker      String?
+  experience           String?
+  referralSource       String?
+  referralCode         String?
+  referredBy           String?
+  totalSaved           Float                  @default(0)
+  referralCount        Int                    @default(0)
+  tier                 UserTier               @default(BRONZE)
+  points               Int                    @default(0)
+  lastActiveAt         DateTime               @default(now())
+  streak               Int                    @default(0)
+  badgeCount           Int                    @default(0)
+  accounts             accounts[]
+  email_notifications  email_notifications[]
+  exchange_accounts    exchange_accounts[]
+  notifications        notifications[]
+  payouts              payouts[]
+  sessions             sessions[]
+  tool_affiliate_links tool_affiliate_links[]
+  tool_favorites       tool_favorites[]
+  tool_orders          tool_orders[]
+  tool_reviews         tool_reviews[]
+  tools                tools[]
+  user_achievements    user_achievements[]
+  user_activities      user_activities[]
+  users                users?                 @relation("usersTousers", fields: [referredBy], references: [id])
+  other_users          users[]                @relation("usersTousers")
 }
 
-enum PayoutStatus {
-  PENDING
-  PROCESSED
-  FAILED
-}
+model verification_tokens {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-enum UserTier {
-  BRONZE
-  SILVER
-  GOLD
-  PLATINUM
-  DIAMOND
+  @@unique([identifier, token])
 }
 
 enum AchievementCategory {
@@ -622,30 +553,6 @@ enum ActivityType {
   STREAK_MILESTONE
 }
 
-enum SyncType {
-  FULL
-  INCREMENTAL
-  TICKERS
-  TRANSACTIONS
-  BALANCES
-}
-
-enum SyncStatus {
-  PENDING
-  RUNNING
-  SUCCESS
-  FAILED
-  PARTIAL
-}
-
-enum RegionStatus {
-  ACTIVE
-  INACTIVE
-  MAINTENANCE
-  DEGRADED
-  ERROR
-}
-
 enum DeploymentStrategy {
   ROUND_ROBIN
   WEIGHTED
@@ -662,16 +569,12 @@ enum FailoverStatus {
   ROLLED_BACK
 }
 
-enum Platform {
-  IOS
-  ANDROID
-}
-
-enum NotificationType {
-  TRANSACTIONAL
-  MARKETING
-  ALERT
-  SYSTEM
+enum FeedbackStatus {
+  NEW
+  REVIEWED
+  RESPONDED
+  RESOLVED
+  CLOSED
 }
 
 enum NotificationStatus {
@@ -681,20 +584,54 @@ enum NotificationStatus {
   CANCELLED
 }
 
-enum FeedbackStatus {
-  NEW
-  REVIEWED
-  RESPONDED
-  RESOLVED
-  CLOSED
+enum NotificationType {
+  TRANSACTIONAL
+  MARKETING
+  ALERT
+  SYSTEM
 }
 
-enum ToolType {
-  INDICATOR
-  BOT
-  SCANNER
-  STRATEGY
-  EDUCATION
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  CANCELLED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+enum Platform {
+  IOS
+  ANDROID
+}
+
+enum RegionStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+  DEGRADED
+  ERROR
+}
+
+enum SyncStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  PARTIAL
+}
+
+enum SyncType {
+  FULL
+  INCREMENTAL
+  TICKERS
+  TRANSACTIONS
+  BALANCES
 }
 
 enum ToolStatus {
@@ -705,10 +642,24 @@ enum ToolStatus {
   SUSPENDED
 }
 
-enum OrderStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-  CANCELLED
+enum ToolType {
+  INDICATOR
+  BOT
+  SCANNER
+  STRATEGY
+  EDUCATION
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  CONCIERGE
+}
+
+enum UserTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
 }
