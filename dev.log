@@ -1359,3 +1359,9 @@ Database error, using mock data: TypeError: Cannot read properties of undefined 
   223 |         include: {
   224 |           payouts: {
  GET /api/dashboard 200 in 79ms
+ ✓ Compiled in 252ms (390 modules)
+ ✓ Compiled in 118ms (390 modules)
+ ✓ Compiled in 104ms (390 modules)
+ ✓ Compiled in 103ms (390 modules)
+ ✓ Compiled in 112ms (390 modules)
+ ✓ Compiled in 99ms (390 modules)
