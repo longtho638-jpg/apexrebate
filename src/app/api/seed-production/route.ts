@@ -16,18 +16,25 @@ export async function POST() {
     const headersList = await headers();
     const auth = headersList.get('authorization');
     
-    // Debug logging
+    // Debug logging - show exact comparison
+    const expectedAuth = `Bearer ${process.env.SEED_SECRET_KEY}`;
     console.log('[SEED] Auth received:', auth ? `${auth.substring(0, 30)}...` : 'MISSING');
-    console.log('[SEED] ENV key exists:', !!process.env.SEED_SECRET_KEY);
+    console.log('[SEED] Auth length:', auth?.length);
+    console.log('[SEED] Expected length:', expectedAuth.length);
+    console.log('[SEED] Match:', auth === expectedAuth);
     
     // Security: only allow with secret key
-    if (!process.env.SEED_SECRET_KEY || auth !== `Bearer ${process.env.SEED_SECRET_KEY}`) {
+    if (!process.env.SEED_SECRET_KEY || auth !== expectedAuth) {
       return NextResponse.json({ 
         error: 'Unauthorized',
         message: 'Valid SEED_SECRET_KEY required',
         debug: {
           hasAuth: !!auth,
-          hasEnvKey: !!process.env.SEED_SECRET_KEY
+          hasEnvKey: !!process.env.SEED_SECRET_KEY,
+          authLength: auth?.length,
+          expectedLength: expectedAuth.length,
+          firstChars: auth?.substring(0, 15),
+          matches: auth === expectedAuth
         }
       }, { status: 401 });
     }
