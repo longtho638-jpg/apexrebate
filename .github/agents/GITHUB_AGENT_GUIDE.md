@@ -11,6 +11,7 @@
 | 🧩 Stage 1 | codex-merge-fix | Kiểm lint/build, phát hiện conflict | `@codex-merge-fix run` |
 | ✅ Stage 2 | codex-auto-approve | Tự động approve nếu pass check | `@codex-auto-approve run` |
 | 🚀 Stage 3 | codex-auto-merge | Merge PR đã được approve & pass | `@codex-auto-merge run` |
+| 🔧 Utility | vercel-optimize | Dọn cache Next.js & redeploy Vercel | `@vercel-optimize run` |
 
 ### ⚙️ Quy trình thực thi thủ công
 1. Gõ `@codex-merge-fix run` → bot chạy lint/build.  
@@ -26,6 +27,7 @@
 | 🔒 PR không được merge | Kiểm tra quyền branch protection hoặc chưa có approval. |
 | ⚠️ Lint/build fail | Sửa lỗi local, commit và push, sau đó rerun `@codex-merge-fix run`. |
 | 🚫 Agent không phản hồi | Kiểm tra Settings → Copilot → Chat features → Enable Agents. |
+| 🏗️ Vercel build fail | Chạy `@vercel-optimize run` để dọn cache và trigger redeploy. |
 
 ### 🔒 Quyền & Bảo mật
 - `codex-merge-fix`: `contents: read`  
@@ -61,6 +63,7 @@
 | 🧩 1 | codex-merge-fix | Validate PR build and detect conflicts | `@codex-merge-fix run` |
 | ✅ 2 | codex-auto-approve | Auto-approve PR if validation passed | `@codex-auto-approve run` |
 | 🚀 3 | codex-auto-merge | Merge PR and delete branch after approval | `@codex-auto-merge run` |
+| 🔧 Utility | vercel-optimize | Clean Next.js cache & redeploy to Vercel | `@vercel-optimize run` |
 
 ### ⚙️ Manual Execution Flow
 1. Type `@codex-merge-fix run` → agent runs lint/build validation.  
@@ -76,6 +79,7 @@
 | 🔒 PR not merging | Check branch protection rules or missing approval. |
 | ⚠️ Lint/build failure | Fix errors locally, commit and push, then rerun `@codex-merge-fix run`. |
 | 🚫 Agent not responding | Check Settings → Copilot → Chat features → Enable Agents. |
+| 🏗️ Vercel build failure | Run `@vercel-optimize run` to clean cache and trigger redeploy. |
 
 ### 🔒 Permissions & Security
 - `codex-merge-fix`: `contents: read`  

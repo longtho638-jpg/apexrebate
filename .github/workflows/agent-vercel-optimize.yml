@@ -1,0 +1,84 @@
+name: Vercel Optimize Runner
+
+on:
+  repository_dispatch:
+    types: [run-agent]
+
+jobs:
+  vercel-optimize:
+    if: github.event.client_payload.agent == 'vercel-optimize'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.client_payload.branch || github.ref }}
+
+      - name: Clean Next.js cache and traces
+        run: |
+          echo "🧹 Cleaning up .next/cache and .next/trace..."
+          rm -rf .next/cache || true
+          rm -rf .next/trace || true
+
+      - name: Ensure vercel.json exists with excludeFiles
+        run: |
+          if [ ! -f vercel.json ]; then
+            echo "Creating vercel.json..."
+            printf '%s\n' \
+              '{' \
+              '  "buildCommand": "prisma generate || true && next build",' \
+              '  "framework": "nextjs",' \
+              '  "installCommand": "npm install --legacy-peer-deps"' \
+              '}' > vercel.json
+          else
+            echo "vercel.json already exists, keeping current configuration..."
+          fi
+          echo "Current vercel.json:"
+          cat vercel.json
+
+      - name: Ensure .vercelignore excludes cache directories
+        run: |
+          if [ ! -f .vercelignore ]; then
+            echo "Creating .vercelignore to exclude cache..."
+            printf '%s\n' \
+              '# Exclude Next.js cache and traces from Vercel deployment' \
+              '.next/cache/' \
+              '.next/trace/' \
+              'dev.log' \
+              'server.log' \
+              'logs/' \
+              'coverage/' > .vercelignore
+          else
+            echo ".vercelignore exists, ensuring cache exclusions..."
+            grep -q ".next/cache" .vercelignore || \
+              echo ".next/cache/" >> .vercelignore
+            grep -q ".next/trace" .vercelignore || \
+              echo ".next/trace/" >> .vercelignore
+          fi
+          echo "Current .vercelignore:"
+          cat .vercelignore
+
+      - name: Commit optimization fix
+        run: |
+          git config user.name "codex-vercel-bot"
+          git config user.email "codex@github.local"
+          git add vercel.json .vercelignore || true
+          git commit -m "fix(vercel): exclude cache from deployment and cleanup" \
+            || echo "No changes to commit"
+          git push || echo "Nothing to push"
+
+      - name: Trigger redeploy to Vercel
+        run: |
+          echo "🚀 Triggering redeploy..."
+          BRANCH="${GITHUB_REF##*/}"
+          OWNER="${{ github.repository_owner }}"
+          REPO="${{ github.event.repository.name }}"
+          curl -X POST "https://api.vercel.com/v13/deployments" \
+            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\": \"${REPO}\", \"gitSource\": \
+            {\"type\": \"github\",\"org\": \"${OWNER}\",\
+            \"repo\": \"${REPO}\",\"ref\": \"${BRANCH}\"}}"
