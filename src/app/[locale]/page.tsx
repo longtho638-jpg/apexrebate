@@ -1,4 +1,6 @@
-import UiUxV3Content from '@/_components/uiux-v3-content';
+import { redirect } from 'next/navigation'
 
-export { metadata } from '@/_components/uiux-v3-content';
-export default UiUxV3Content;
+export default function LocaleHome({ params }: { params: { locale: string } }) {
+  const locale = params?.locale || 'vi'
+  redirect(`/${locale}/dashboard`)
+}
