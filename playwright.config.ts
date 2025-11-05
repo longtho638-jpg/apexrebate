@@ -17,11 +17,18 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    /* Base URL to use in actions like await page.goto('/'). */
+    // CI environment can override via --base-url flag or BASE_URL env var
+    baseURL: process.env.BASE_URL || 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    
+    /* Screenshot on failure for better debugging */
+    screenshot: 'only-on-failure',
+    
+    /* Video recording on CI for debugging */
+    video: process.env.CI ? 'retain-on-failure' : 'off',
   },
 
   /* Configure projects for major browsers */
@@ -63,9 +70,11 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  // Skip webServer in CI (Firebase preview URL is used instead)
+  webServer: process.env.CI ? undefined : {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    timeout: 120000, // 2 minutes for slow dev server startup
   },
 });
