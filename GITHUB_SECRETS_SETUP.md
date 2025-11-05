@@ -15,7 +15,7 @@ Pipeline CI/CD cần **4 secrets** được configure trong GitHub repository đ
 **Cách lấy:**
 
 1. Vào [Google Cloud Console](https://console.cloud.google.com/)
-2. Chọn project `studio-2007559230-14fa6`
+2. Chọn project `apexrebate-prod`
 3. Menu → **IAM & Admin** → **Service Accounts**
 4. Click **Create Service Account**:
    - Name: `github-actions-deployer`
@@ -26,7 +26,7 @@ Pipeline CI/CD cần **4 secrets** được configure trong GitHub repository đ
 **Thêm vào GitHub:**
 ```bash
 # Option 1: GitHub CLI
-gh secret set FIREBASE_SERVICE_ACCOUNT < serviceAccountKey.json
+gh secret set FIREBASE_SERVICE_ACCOUNT --body "$(cat serviceAccountKey.json)"
 
 # Option 2: GitHub Web UI
 # Repo → Settings → Secrets → Actions → New repository secret
@@ -41,13 +41,13 @@ gh secret set FIREBASE_SERVICE_ACCOUNT < serviceAccountKey.json
 **Cách lấy:**
 
 1. Vào [Firebase Console](https://console.firebase.google.com/)
-2. Chọn project **studio-2007559230-14fa6**
+2. Chọn project **apexrebate-prod**
 3. Project Settings (⚙️) → **General** tab
 4. Scroll xuống phần **Your apps** → Web app
 5. Copy giá trị **API Key** (dạng `AIzaSyA...`)
 
 ```bash
-gh secret set FIREBASE_API_KEY "AIzaSyApexRebate1234567890abcdefg"
+gh secret set FIREBASE_API_KEY --body "AIzaSyApexRebate1234567890abcdefg"
 ```
 
 ---
@@ -57,7 +57,7 @@ gh secret set FIREBASE_API_KEY "AIzaSyApexRebate1234567890abcdefg"
 **Cách lấy:** Firebase Console → Project Settings → Copy **Messaging Sender ID**
 
 ```bash
-gh secret set FIREBASE_SENDER_ID "1029384756"
+gh secret set FIREBASE_SENDER_ID --body "1029384756"
 ```
 
 ---
@@ -67,7 +67,7 @@ gh secret set FIREBASE_SENDER_ID "1029384756"
 **Cách lấy:** Firebase Console → Project Settings → Copy **App ID**
 
 ```bash
-gh secret set FIREBASE_APP_ID "1:1029384756:web:abcdef1234567890"
+gh secret set FIREBASE_APP_ID --body "1:1029384756:web:abcdef1234567890"
 ```
 
 ---
@@ -79,10 +79,10 @@ gh secret set FIREBASE_APP_ID "1:1029384756:web:abcdef1234567890"
 gh auth login
 
 # 2. Thiết lập toàn bộ secrets (thay giá trị thực tế)
-gh secret set FIREBASE_SERVICE_ACCOUNT < serviceAccountKey.json
-gh secret set FIREBASE_API_KEY "AIzaSyApexRebate1234567890abcdefg"
-gh secret set FIREBASE_SENDER_ID "1029384756"
-gh secret set FIREBASE_APP_ID "1:1029384756:web:abcdef1234567890"
+gh secret set FIREBASE_SERVICE_ACCOUNT --body "$(cat serviceAccountKey.json)"
+gh secret set FIREBASE_API_KEY --body "AIzaSyApexRebate1234567890abcdefg"
+gh secret set FIREBASE_SENDER_ID --body "1029384756"
+gh secret set FIREBASE_APP_ID --body "1:1029384756:web:abcdef1234567890"
 
 # 3. Verify secrets đã được tạo
 gh secret list

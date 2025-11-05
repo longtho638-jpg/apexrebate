@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-      PROJECT_ID: studio-2007559230-14fa6
+      PROJECT_ID: apexrebate-prod
       FIREBASE_CLI_PREVIEWS: hostingchannels
       PLAYWRIGHT_BROWSERS_PATH: 0
 
@@ -42,18 +42,26 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-          projectId: studio-2007559230-14fa6
+          projectId: apexrebate-prod
           channelId: pr-${{ github.event.number }}
           expires: 7d
+
+      - name: Resolve preview URL
+        id: resolve
+        run: |
+          RAW="${{ steps.firebase.outputs.urls }}"
+          URL="${RAW%%,*}"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $URL"
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run E2E tests on Firebase Preview
         env:
-          BASE_URL: ${{ steps.firebase.outputs.details_url }}
+          BASE_URL: ${{ steps.resolve.outputs.url }}
         run: |
-          echo "Using preview URL: $BASE_URL"
+          echo "Using BASE_URL=$BASE_URL"
           npx playwright test --reporter=dot --base-url="$BASE_URL"
 
       - name: Upload Playwright Report
