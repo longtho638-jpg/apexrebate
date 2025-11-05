@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
     // Calculate average rating for each tool
     const toolsWithRating = await Promise.all(
       tools.map(async (tool) => {
-        const ratingData = await db.tool_reviews.aggregate({
+        const ratingData = await db.toolReview.aggregate({
           where: { toolId: tool.id },
           _avg: { rating: true },
           _count: { rating: true }

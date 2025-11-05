@@ -37,7 +37,7 @@ export async function GET(
     }
 
     // Calculate average rating
-    const ratingData = await db.tool_reviews.aggregate({
+    const ratingData = await db.toolReview.aggregate({
       where: { toolId: id },
       _avg: { rating: true },
       _count: { rating: true }

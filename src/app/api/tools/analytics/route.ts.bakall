@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Average rating
-    const avgRatingResult = await db.tool_reviews.aggregate({
+    const avgRatingResult = await db.toolReview.aggregate({
       _avg: { rating: true }
     });
 
