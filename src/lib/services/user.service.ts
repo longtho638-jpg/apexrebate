@@ -18,6 +18,18 @@ export class UserService {
         where: { email: userData.email }
       });
 
+      // Handle referral logic - lookup referrer by referralCode
+      let referredBy = null;
+      if (userData.referralCode && !existingUser) {
+        // Only process referral for new users
+        const referrer = await db.user.findUnique({
+          where: { referralCode: userData.referralCode }
+        });
+        if (referrer) {
+          referredBy = referrer.id;
+        }
+      }
+
       if (existingUser) {
         // Update existing user
         return await db.user.update({
@@ -27,12 +39,14 @@ export class UserService {
             preferredBroker: userData.preferredBroker,
             experience: userData.experience,
             referralSource: userData.referralSource,
-            referralCode: userData.referralCode,
-            lastActiveAt: new Date()
+            lastActiveAt: new Date(),
+            updatedAt: new Date()
           }
         });
       } else {
-        // Create new user
+        // Create new user with generated referral code
+        const userReferralCode = nanoid(8).toUpperCase();
+        
         return await db.user.create({
           data: {
             email: userData.email,
@@ -41,13 +55,15 @@ export class UserService {
             preferredBroker: userData.preferredBroker,
             experience: userData.experience,
             referralSource: userData.referralSource,
-            referralCode: userData.referralCode,
+            referralCode: userReferralCode,
+            referredBy: referredBy,
             tier: UserTier.BRONZE,
             totalSaved: 0,
             referralCount: 0,
             points: 0,
             streak: 1,
-            badgeCount: 0
+            badgeCount: 0,
+            updatedAt: new Date()
           }
         });
       }
@@ -56,28 +72,6 @@ export class UserService {
       throw error;
     }
   }
-
-  // Get user by email
-  static async getUserByEmail(email: string) {
-    try {
-      return await db.user.findUnique({
-        where: { email },
-        include: {
-          payouts: {
-            orderBy: { createdAt: 'desc' },
-            take: 10
-          },
-          achievements: {
-            include: {
-              achievement: true
-            }
-          },
-          activities: {
-            orderBy: { createdAt: 'desc' },
-            take: 20
-          }
-        }
-      });
     } catch (error) {
       console.error('Error fetching user:', error);
       throw error;
