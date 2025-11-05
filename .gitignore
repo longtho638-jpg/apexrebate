@@ -54,3 +54,4 @@ logs/
 functions/node_modules/
 .firebase/
 .env
+functions/.next

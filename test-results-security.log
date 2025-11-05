@@ -1,0 +1,26 @@
+🔒 ApexRebate - Security & API Testing
+=======================================
+Date: Wed Nov  5 21:46:06 +07 2025
+
+🛡️  Testing Security Headers
+----------------------------
+✅ HSTS Header Present
+⚠️  X-Frame-Options Missing
+⚠️  X-Content-Type-Options Missing
+
+🔌 Testing Critical API Endpoints
+---------------------------------
+✅ API /api/health - Status 200 (expected)
+✅ API /api/tools - Status 200 (expected)
+⚠️  API /api/calculator - Status 400 (expected 405)
+✅ API /api/seed-production - Status 200 (expected)
+✅ API /api/auth/session - Status 200 (expected)
+✅ API /api/auth/csrf - Status 200 (expected)
+✅ API /api/auth/providers - Status 200 (expected)
+
+🚫 Testing SQL Injection Prevention
+-----------------------------------
+
+⚡ Testing Rate Limiting
+-----------------------
+Making 10 rapid requests to /api/tools...

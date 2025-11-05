@@ -1,0 +1,24 @@
+🔐 ApexRebate - Auth Flow Testing
+===================================
+Date: Wed Nov  5 21:43:09 +07 2025
+
+📝 Testing Auth Pages
+---------------------
+✅ PASS: Sign In Page - Status 200
+✅ PASS: Sign Up Page - Status 200
+❌ FAIL: Sign Out Endpoint - Expected 200, got 404
+
+🔑 Testing NextAuth Endpoints
+-----------------------------
+✅ PASS: CSRF Token Endpoint
+✅ PASS: Session Endpoint - Returns data
+✅ PASS: Providers Endpoint
+
+🔒 Testing Protected Routes
+---------------------------
+⚠️  WARNING: Dashboard NOT Protected - Returns 200 without auth
+
+📊 Test Summary
+---------------
+Total: 7 | Passed: 5 | Warnings: 1 | Failed: 1
+⚠️  Some tests failed
