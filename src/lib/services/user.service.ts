@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { User, UserTier, PayoutStatus, ActivityType } from '@prisma/client';
+import { nanoid } from 'nanoid';
 
 export class UserService {
   // Create or update user from intake form
