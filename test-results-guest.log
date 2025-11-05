@@ -1,0 +1,29 @@
+🧪 ApexRebate - Guest Flow Testing
+=================================
+Date: Wed Nov  5 21:13:38 +07 2025
+
+
+📍 Testing Core Public Pages
+----------------------------
+❌ FAIL: Homepage (Vietnamese) - Expected 200, got 307
+❌ FAIL: Homepage (English) - Expected 200, got 307
+❌ FAIL: Calculator Page - Expected 200, got 404
+❌ FAIL: Wall of Fame - Expected 200, got 404
+❌ FAIL: FAQ Page - Expected 200, got 404
+❌ FAIL: How It Works - Expected 200, got 404
+
+🧮 Testing Calculator API
+-------------------------
+✅ PASS: Calculator API - Returns rebate data
+
+🎨 Testing Tools Marketplace
+---------------------------
+✅ PASS: Tools API - Found 5 tools
+
+📊 Test Summary
+---------------
+Total Tests: 8
+Passed: 2
+Failed: 6
+
+⚠️  Some tests FAILED. Review test-results-guest.log for details.

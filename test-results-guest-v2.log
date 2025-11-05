@@ -1,0 +1,20 @@
+🧪 ApexRebate - Guest Flow Testing V2
+=====================================
+Date: Wed Nov  5 21:14:47 +07 2025
+
+📍 Testing Core Pages
+--------------------
+✅ PASS: Root Homepage - Status 200
+✅ PASS: Vietnamese Root - Status 200
+✅ PASS: English Root - Status 200
+❌ FAIL: Dashboard (needs auth) - Got 200
+❌ FAIL: Tools Marketplace - Got 500
+✅ PASS: Apex Pro Page - Status 200
+❌ FAIL: FAQ (non-locale) - Got 500
+❌ FAIL: How It Works (non-locale) - Got 500
+✅ PASS: Health Check Page - Status 200
+
+🔌 Testing API Endpoints
+------------------------
+❌ FAIL: Health API - No valid response
+✅ PASS: Calculator API
