@@ -10,7 +10,7 @@
 
 **Lấy Firebase credentials:**
 1. Vào [Firebase Console](https://console.firebase.google.com/)
-2. Chọn project **studio-2007559230-14fa6**
+2. Chọn project **apexrebate-prod**
 3. Settings ⚙️ → General → Your apps → Web app
 4. Copy 3 values:
    - API Key: `AIzaSy...`
@@ -26,10 +26,10 @@
 **Add vào GitHub:**
 ```bash
 # Option 1: GitHub CLI (nhanh)
-gh secret set FIREBASE_SERVICE_ACCOUNT < serviceAccountKey.json
-gh secret set FIREBASE_API_KEY "AIzaSy..."
-gh secret set FIREBASE_SENDER_ID "1029384756"
-gh secret set FIREBASE_APP_ID "1:1029384756:web:abc..."
+gh secret set FIREBASE_SERVICE_ACCOUNT --body "$(cat serviceAccountKey.json)"
+gh secret set FIREBASE_API_KEY --body "AIzaSy..."
+gh secret set FIREBASE_SENDER_ID --body "1029384756"
+gh secret set FIREBASE_APP_ID --body "1:1029384756:web:abc..."
 
 # Option 2: GitHub Web
 # Settings → Secrets → Actions → New secret
@@ -103,7 +103,7 @@ gh pr view --web
 → Download artifact → Mở `index.html` → Xem chi tiết lỗi
 
 ### Lỗi: "Firebase project not found"
-→ Check project ID: `studio-2007559230-14fa6`
+→ Check project ID: `apexrebate-prod`
 
 ---
 
