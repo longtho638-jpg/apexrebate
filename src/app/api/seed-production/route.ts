@@ -40,7 +40,7 @@ export async function POST() {
     }
 
     // Check if already seeded to prevent duplicate data
-    const userCount = await prisma.user.count();
+    const userCount = await prisma.users.count();
     if (userCount > 5) {
       return NextResponse.json({ 
         warning: 'Database appears to be already seeded',
@@ -74,8 +74,8 @@ export async function POST() {
 // GET to check seed status
 export async function GET() {
   try {
-    const userCount = await prisma.user.count();
-    const toolCount = await prisma.tool.count();
+    const userCount = await prisma.users.count();
+    const toolCount = await prisma.tools.count();
     
     return NextResponse.json({
       seeded: userCount > 0,
