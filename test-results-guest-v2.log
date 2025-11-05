@@ -1,6 +1,6 @@
 🧪 ApexRebate - Guest Flow Testing V2
 =====================================
-Date: Wed Nov  5 21:14:47 +07 2025
+Date: Wed Nov  5 21:17:26 +07 2025
 
 📍 Testing Core Pages
 --------------------
@@ -18,3 +18,10 @@ Date: Wed Nov  5 21:14:47 +07 2025
 ------------------------
 ❌ FAIL: Health API - No valid response
 ✅ PASS: Calculator API
+✅ PASS: Tools API (3 tools)
+✅ PASS: Seed API (users: 23)
+
+📊 Test Summary
+---------------
+Total: 13 | Passed: 8 | Failed: 5
+⚠️  5 test(s) failed
