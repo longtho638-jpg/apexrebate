@@ -60,10 +60,16 @@ export default async function middleware(request: NextRequest) {
 
   // 🔒 AUTH PROTECTION: Check for protected routes
   const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin'];
+  
+  // Extract locale from pathname if present (e.g., /vi/dashboard → vi)
+  const localeMatch = pathname.match(/^\/(en|vi)(\/.*)?$/);
+  const locale = localeMatch ? localeMatch[1] : null;
+  const pathWithoutLocale = locale ? (localeMatch[2] || '/') : pathname;
+  
+  // Check if this is a protected route (with or without locale)
   const isProtectedRoute = protectedRoutes.some(route => 
-    pathname === route || 
-    pathname.startsWith(`${route}/`) ||
-    pathname.match(new RegExp(`^/(en|vi)${route}(/|$)`))
+    pathWithoutLocale === route || 
+    pathWithoutLocale.startsWith(`${route}/`)
   );
 
   if (isProtectedRoute) {
@@ -72,17 +78,19 @@ export default async function middleware(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET 
     });
 
-    // No token = redirect to signin
+    // No token = redirect to signin (locale-aware)
     if (!token) {
-      const signInUrl = new URL('/auth/signin', request.url);
+      const signInPath = locale ? `/${locale}/auth/signin` : '/auth/signin';
+      const signInUrl = new URL(signInPath, request.url);
       signInUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(signInUrl);
     }
 
     // Admin route protection
-    if (pathname.includes('/admin')) {
+    if (pathWithoutLocale.includes('/admin')) {
       if (token.role !== 'ADMIN' && token.role !== 'CONCIERGE') {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        const dashboardPath = locale ? `/${locale}/dashboard` : '/dashboard';
+        return NextResponse.redirect(new URL(dashboardPath, request.url));
       }
     }
   }
