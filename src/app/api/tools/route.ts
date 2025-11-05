@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
           ...tool,
           rating: ratingData._avg.rating || 0,
           reviews: ratingData._count.rating || 0,
-          sales: tool._count.orders
+          sales: tool._count.tool_orders
         };
       })
     );
