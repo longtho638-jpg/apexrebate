@@ -1,5 +1,6 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
 // Create i18n middleware
 const intlMiddleware = createMiddleware({
@@ -8,7 +9,7 @@ const intlMiddleware = createMiddleware({
   localePrefix: 'as-needed'
 });
 
-export default function middleware(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Redirect /uiux-v3 → / (301 permanent)
@@ -22,6 +23,35 @@ export default function middleware(request: NextRequest) {
     const locale = match[1];
     const targetUrl = locale === 'vi' ? '/' : `/${locale}`;
     return NextResponse.redirect(new URL(targetUrl, request.url), 301);
+  }
+
+  // 🔒 AUTH PROTECTION: Check for protected routes
+  const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin'];
+  const isProtectedRoute = protectedRoutes.some(route => 
+    pathname === route || 
+    pathname.startsWith(`${route}/`) ||
+    pathname.match(new RegExp(`^/(en|vi)${route}(/|$)`))
+  );
+
+  if (isProtectedRoute) {
+    const token = await getToken({ 
+      req: request, 
+      secret: process.env.NEXTAUTH_SECRET 
+    });
+
+    // No token = redirect to signin
+    if (!token) {
+      const signInUrl = new URL('/auth/signin', request.url);
+      signInUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    // Admin route protection
+    if (pathname.includes('/admin')) {
+      if (token.role !== 'ADMIN' && token.role !== 'CONCIERGE') {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+      }
+    }
   }
 
   // Apply i18n routing for all other requests
