@@ -62,7 +62,8 @@ export class UserService {
             referralCount: 0,
             points: 0,
             streak: 1,
-            badgeCount: 0
+            badgeCount: 0,
+            updatedAt: new Date()
           }
         });
       }
