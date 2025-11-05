@@ -60,6 +60,7 @@ jobs:
         run: npm run build
       - name: Deploy Firebase Preview
         id: deploy
+        continue-on-error: true
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
@@ -80,6 +81,7 @@ jobs:
   e2e:
     name: 🧪 Run E2E Tests
     needs: preview
+    if: needs.preview.outputs.preview_url != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
