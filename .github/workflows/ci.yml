@@ -15,8 +15,6 @@ jobs:
   prepare:
     name: 🧹 Prepare & Lint + Build + Regression
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: "file:./test.db"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,10 +23,6 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-      - name: Generate Prisma Client
-        run: npx prisma generate
-      - name: Setup test database
-        run: npx prisma db push --accept-data-loss
       - name: Generate Prisma Client
         run: npx prisma generate
       - name: Run ESLint
