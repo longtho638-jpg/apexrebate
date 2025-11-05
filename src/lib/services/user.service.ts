@@ -62,8 +62,7 @@ export class UserService {
             referralCount: 0,
             points: 0,
             streak: 1,
-            badgeCount: 0,
-            updatedAt: new Date()
+            badgeCount: 0
           }
         });
       }
@@ -72,6 +71,28 @@ export class UserService {
       throw error;
     }
   }
+
+  // Get user by email
+  static async getUserByEmail(email: string) {
+    try {
+      return await db.user.findUnique({
+        where: { email },
+        include: {
+          payouts: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          },
+          achievements: {
+            include: {
+              achievement: true
+            }
+          },
+          activities: {
+            orderBy: { createdAt: 'desc' },
+            take: 20
+          }
+        }
+      });
     } catch (error) {
       console.error('Error fetching user:', error);
       throw error;
