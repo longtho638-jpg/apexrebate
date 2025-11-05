@@ -1366,3 +1366,37 @@ Database error, using mock data: TypeError: Cannot read properties of undefined 
  ✓ Compiled in 112ms (390 modules)
  ✓ Compiled in 99ms (390 modules)
  ✓ Compiled in 187ms (390 modules)
+ ✓ Compiled in 258ms (390 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 585ms (887 modules)
+ GET /ai-demo 404 in 746ms
+ GET /_next/static/css/app/layout.css?v=1762316623860 404 in 21ms
+ GET /_next/static/chunks/app-pages-internals.js 404 in 43ms
+ GET /_next/static/chunks/main-app.js?v=1762316623860 404 in 46ms
+ ✓ Compiled /favicon.ico in 61ms (524 modules)
+ ⨯ Error: Cannot find module './7719.js'
+Require stack:
+- /Users/macbookprom1/apexrebate-1/.next/server/webpack-runtime.js
+- /Users/macbookprom1/apexrebate-1/.next/server/app/favicon.ico/route.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/server/require.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/server/load-components.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/build/utils.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/build/swc/options.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/build/swc/index.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/server/config.js
+- /Users/macbookprom1/apexrebate-1/node_modules/next/dist/server/next.js
+- /Users/macbookprom1/apexrebate-1/server.ts
+    at __webpack_require__.f.require (.next/server/webpack-runtime.js:203:28)
+    at <unknown> (.next/server/webpack-runtime.js:116:40)
+    at Array.reduce (<anonymous>)
+    at __webpack_require__.e (.next/server/webpack-runtime.js:115:67)
+    at Array.map (<anonymous>)
+    at __webpack_require__.X (.next/server/webpack-runtime.js:167:22)
+    at <unknown> (.next/server/app/favicon.ico/route.js:1:91742)
+    at Object.<anonymous> (.next/server/app/favicon.ico/route.js:1:91789) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array],
+  page: '/favicon.ico'
+}
+ GET /favicon.ico 500 in 102ms
