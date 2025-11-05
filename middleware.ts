@@ -2,6 +2,28 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+// Simple in-memory rate limiter (for production, use Redis/Upstash)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 100; // requests per window
+const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const userLimit = rateLimitMap.get(ip);
+
+  if (!userLimit || now > userLimit.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + WINDOW_MS });
+    return false;
+  }
+
+  if (userLimit.count >= RATE_LIMIT) {
+    return true;
+  }
+
+  userLimit.count++;
+  return false;
+}
+
 // Create i18n middleware
 const intlMiddleware = createMiddleware({
   locales: ['en', 'vi'],
@@ -11,6 +33,17 @@ const intlMiddleware = createMiddleware({
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+  // Rate limiting for API routes
+  if (pathname.startsWith('/api/')) {
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      );
+    }
+  }
 
   // Redirect /uiux-v3 → / (301 permanent)
   if (pathname === '/uiux-v3') {
