@@ -36,9 +36,9 @@ export async function GET(request: NextRequest) {
     // Build order clause
     let orderBy: any = {};
     switch (sort) {
-      case 'rating':
-        orderBy = { rating: 'desc' };
-        break;
+//       case 'rating':
+//         orderBy = { rating: 'desc' };
+//         break;
       case 'price-low':
         orderBy = { price: 'asc' };
         break;
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         break;
       case 'popular':
       default:
-        orderBy = { sales: 'desc' };
+        orderBy = { createdAt: 'desc' };
         break;
     }
 
