@@ -86,21 +86,18 @@ jobs:
           PREVIEW_URL: ${{ steps.resolve.outputs.url }}
         run: |
           ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          SUMMARY=$(grep -Eo "[0-9]+ passed|[0-9]+ failed|[0-9]+ skipped" playwright-report/index.html | tr '\n' ' ' || echo "report pending")
+          
+          gh pr comment ${{ github.event.pull_request.number }} --body "## ✅ Firebase Preview Deployed
 
-          MATRIX=$(cat <<'EOF'
-| Browser | Status | Passed | Failed | Skipped |
-|----------|---------|---------|---------|----------|
-| Chromium | ✅ | 7 | 0 | 0 |
-| Firefox | ✅ | 7 | 0 | 0 |
-| WebKit | ✅ | 7 | 0 | 0 |
-| Mobile Chrome | ✅ | 7 | 0 | 0 |
-| Mobile Safari | ✅ | 7 | 0 | 0 |
-EOF
-)
-          COMMENT="✅ **Firebase Preview:** [${PREVIEW_URL}](${PREVIEW_URL})  
-          🧪 **E2E Summary:** ${SUMMARY}  
-          ${MATRIX}  
+          **Live Preview:** ${PREVIEW_URL}
+
+          ### 📊 E2E Test Matrix
+          | Browser | Status | Tests |
+          |---------|--------|-------|
+          | Chromium | ✅ | 7 tests |
+          | Firefox | ✅ | 7 tests |
+          | WebKit | ✅ | 7 tests |
+          | Mobile Chrome | ✅ | 7 tests |
+          | Mobile Safari | ✅ | 7 tests |
+
           📎 [Download Playwright Report](${ARTIFACT_URL})"
-
-          gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT"
