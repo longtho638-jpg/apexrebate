@@ -11,7 +11,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 admin.initializeApp();
 
 // Next.js SSR handler
-const app = next({ dev: false });
+const app = next({ dev: false, conf: { distDir: './.next' } });
 const handle = app.getRequestHandler();
 
 exports.nextServer = functions.https.onRequest(async (req, res) => {
