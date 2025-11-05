@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: session.user.id },
       select: {
         referralCode: true,
@@ -38,7 +38,7 @@ export async function GET() {
     let referralCode = user.referralCode;
     if (!referralCode) {
       referralCode = generateReferralCode(session.user.id);
-      await db.user.update({
+      await db.users.update({
         where: { id: session.user.id },
         data: { referralCode }
       });
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the referrer
-    const referrer = await db.user.findUnique({
+    const referrer = await db.users.findUnique({
       where: { referralCode }
     });
 
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has a referrer
-    const currentUser = await db.user.findUnique({
+    const currentUser = await db.users.findUnique({
       where: { id: session.user.id },
       select: { referredBy: true }
     });
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user with referrer
-    await db.user.update({
+    await db.users.update({
       where: { id: session.user.id },
       data: { referredBy: referrer.id }
     });

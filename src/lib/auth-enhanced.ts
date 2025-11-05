@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Find user by email
-        const user = await db.user.findUnique({
+        const user = await db.users.findUnique({
           where: { email: credentials.email },
           include: {
             emailNotifications: true
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Update last activity
-        await db.user.update({
+        await db.users.update({
           where: { id: user.id },
           data: { lastActiveAt: new Date() }
         })
@@ -110,7 +110,7 @@ export const authOptions: NextAuthOptions = {
 
 // Email verification functions
 export async function sendVerificationEmail(email: string) {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     where: { email }
   })
 
@@ -158,7 +158,7 @@ export async function verifyEmail(token: string) {
   }
 
   // Update user email verification
-  await db.user.update({
+  await db.users.update({
     where: { email: verificationToken.identifier },
     data: { emailVerified: new Date() }
   })
@@ -173,7 +173,7 @@ export async function verifyEmail(token: string) {
 
 // Password reset functions
 export async function sendPasswordResetEmail(email: string) {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     where: { email }
   })
 
@@ -224,7 +224,7 @@ export async function resetPassword(token: string, newPassword: string) {
   const hashedPassword = await bcrypt.hash(newPassword, 12)
 
   // Update user password
-  await db.user.update({
+  await db.users.update({
     where: { email: resetToken.identifier },
     data: { password: hashedPassword }
   })
@@ -242,7 +242,7 @@ export async function generateTwoFactorSecret(userId: string) {
   const secret = crypto.randomBytes(20).toString('hex')
   
   // Store secret (in production, encrypt this)
-  await db.user.update({
+  await db.users.update({
     where: { id: userId },
     data: { twoFactorSecret: secret }
   })
@@ -251,7 +251,7 @@ export async function generateTwoFactorSecret(userId: string) {
 }
 
 export async function enableTwoFactor(userId: string, code: string) {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     where: { id: userId }
   })
 
@@ -262,7 +262,7 @@ export async function enableTwoFactor(userId: string, code: string) {
   const isValid = await verifyTwoFactorCode(userId, code)
   
   if (isValid) {
-    await db.user.update({
+    await db.users.update({
       where: { id: userId },
       data: { twoFactorEnabled: true }
     })
@@ -273,7 +273,7 @@ export async function enableTwoFactor(userId: string, code: string) {
 }
 
 export async function verifyTwoFactorCode(userId: string, code: string): Promise<boolean> {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     where: { id: userId }
   })
 
@@ -307,7 +307,7 @@ function generateTOTP(secret: string, timeWindow: number): string {
 }
 
 export async function disableTwoFactor(userId: string, password: string) {
-  const user = await db.user.findUnique({
+  const user = await db.users.findUnique({
     where: { id: userId }
   })
 
@@ -322,7 +322,7 @@ export async function disableTwoFactor(userId: string, password: string) {
   }
 
   // Disable 2FA
-  await db.user.update({
+  await db.users.update({
     where: { id: userId },
     data: { 
       twoFactorEnabled: false,

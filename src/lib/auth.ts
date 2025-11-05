@@ -24,7 +24,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Find user by email
-        const user = await db.user.findUnique({
+        const user = await db.users.findUnique({
           where: { email: credentials.email }
         })
 

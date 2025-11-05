@@ -189,7 +189,7 @@ export class GamificationService {
    * Check and unlock achievements for a user
    */
   static async checkAchievements(userId: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId },
       include: {
         achievements: {
@@ -273,7 +273,7 @@ export class GamificationService {
     });
 
     // Award points to user
-    await db.user.update({
+    await db.users.update({
       where: { id: userId },
       data: {
         points: { increment: achievement.points },
@@ -302,7 +302,7 @@ export class GamificationService {
    * Check and update user tier based on points
    */
   static async checkTierUpgrade(userId: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     });
 
@@ -322,7 +322,7 @@ export class GamificationService {
     }
 
     if (newTier !== user.tier) {
-      await db.user.update({
+      await db.users.update({
         where: { id: userId },
         data: { tier: newTier }
       });
@@ -363,7 +363,7 @@ export class GamificationService {
 
     // Update user points if applicable
     if (points && points > 0) {
-      await db.user.update({
+      await db.users.update({
         where: { id: userId },
         data: { 
           points: { increment: points },
@@ -377,7 +377,7 @@ export class GamificationService {
    * Update user activity streak
    */
   static async updateActivityStreak(userId: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     });
 
@@ -400,7 +400,7 @@ export class GamificationService {
       return;
     }
 
-    await db.user.update({
+    await db.users.update({
       where: { id: userId },
       data: { 
         streak: newStreak,
@@ -419,7 +419,7 @@ export class GamificationService {
    * Get user gamification data
    */
   static async getUserGamification(userId: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId },
       include: {
         achievements: {
@@ -481,13 +481,13 @@ export class GamificationService {
    */
   static async processReferral(referrerId: string, referredUserId: string) {
     // Get referred user info for email
-    const referredUser = await db.user.findUnique({
+    const referredUser = await db.users.findUnique({
       where: { id: referredUserId },
       select: { name: true, email: true }
     });
 
     // Update referrer stats
-    await db.user.update({
+    await db.users.update({
       where: { id: referrerId },
       data: {
         referralCount: { increment: 1 }
@@ -516,7 +516,7 @@ export class GamificationService {
    * Update savings and check milestones
    */
   static async updateSavings(userId: string, amount: number) {
-    await db.user.update({
+    await db.users.update({
       where: { id: userId },
       data: {
         totalSaved: { increment: amount }

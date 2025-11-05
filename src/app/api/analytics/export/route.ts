@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type') || 'full'
 
     // Get user's data
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: session.user.id },
       include: {
         payouts: {

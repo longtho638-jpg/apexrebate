@@ -14,7 +14,7 @@ export async function GET() {
       );
     }
 
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: session.user.id },
       include: {
         referredUsers: {
@@ -114,7 +114,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update user profile
-    const updatedUser = await db.user.update({
+    const updatedUser = await db.users.update({
       where: { id: session.user.id },
       data: {
         name: name.trim(),
@@ -132,7 +132,7 @@ export async function PUT(request: NextRequest) {
     });
 
     // Fetch updated profile with relations
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: session.user.id },
       include: {
         referredUsers: {

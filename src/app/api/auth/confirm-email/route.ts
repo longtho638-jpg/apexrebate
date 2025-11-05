@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Find the user
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { email }
     });
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Mark email as verified
-    await db.user.update({
+    await db.users.update({
       where: { email },
       data: { emailVerified: new Date() }
     });

@@ -14,7 +14,7 @@ export async function GET() {
       );
     }
 
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: session.user.id },
       include: {
         referredUsers: {
@@ -71,7 +71,7 @@ export async function GET() {
     const conversionRate = totalReferrals > 0 ? (activeReferrals / totalReferrals) * 100 : 0;
 
     // Check if user is a top earner (simplified logic)
-    const allUsers = await db.user.findMany({
+    const allUsers = await db.users.findMany({
       include: {
         referredUsers: {
           include: {
@@ -104,7 +104,7 @@ export async function GET() {
     let referralCode = user.referralCode;
     if (!referralCode) {
       referralCode = generateReferralCode(user.name || user.email);
-      await db.user.update({
+      await db.users.update({
         where: { id: session.user.id },
         data: { referralCode }
       });

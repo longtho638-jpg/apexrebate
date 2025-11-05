@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get users with their statistics
-    const users = await db.user.findMany({
+    const users = await db.users.findMany({
       include: {
         payouts: {
           select: { amount: true }

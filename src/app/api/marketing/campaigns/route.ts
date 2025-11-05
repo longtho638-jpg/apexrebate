@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
           )
         }
         // Get user details
-        const user = await db.user.findUnique({
+        const user = await db.users.findUnique({
           where: { id: userId },
           select: { email: true, name: true }
         })

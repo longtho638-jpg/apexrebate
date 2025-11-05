@@ -168,7 +168,7 @@ export class MarketingAutomation {
       // Find inactive users (30+ days)
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
       
-      const inactiveUsers = await db.user.findMany({
+      const inactiveUsers = await db.users.findMany({
         where: {
           emailVerified: true,
           lastActiveAt: { lt: thirtyDaysAgo },
@@ -222,7 +222,7 @@ export class MarketingAutomation {
     ]
 
     // Get active users who might benefit from educational content
-    const activeUsers = await db.user.findMany({
+    const activeUsers = await db.users.findMany({
       where: {
         emailVerified: true,
         lastActiveAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
@@ -251,7 +251,7 @@ export class MarketingAutomation {
   async createReferralCampaign() {
     try {
       // Find users with high referral potential
-      const potentialReferrers = await db.user.findMany({
+      const potentialReferrers = await db.users.findMany({
         where: {
           emailVerified: true,
           totalSaved: { gt: 100 }, // Users who have saved significant amount
@@ -342,7 +342,7 @@ export class MarketingAutomation {
   async createMilestoneCampaigns() {
     try {
       // Find users approaching milestones
-      const users = await db.user.findMany({
+      const users = await db.users.findMany({
         where: {
           emailVerified: true,
           totalSaved: { gt: 0 }
@@ -446,7 +446,7 @@ export class MarketingAutomation {
         whereClause.emailVerified = criteria.emailVerified
       }
 
-      const users = await db.user.findMany({
+      const users = await db.users.findMany({
         where: whereClause,
         take: 1000
       })

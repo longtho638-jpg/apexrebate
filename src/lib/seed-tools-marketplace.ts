@@ -56,12 +56,12 @@ async function seedToolsMarketplace() {
     console.log('✅ Created categories');
 
     // Find or create a demo seller user
-    let sellerUser = await db.user.findFirst({
+    let sellerUser = await db.users.findFirst({
       where: { email: 'seller@apexrebate.com' }
     });
 
     if (!sellerUser) {
-      sellerUser = await db.user.create({
+      sellerUser = await db.users.create({
         data: {
           email: 'seller@apexrebate.com',
           name: 'Tool Seller',
@@ -196,7 +196,7 @@ async function seedToolsMarketplace() {
     ];
 
     for (const toolData of sampleTools) {
-      await db.tool.upsert({
+      await db.tools.upsert({
         where: { 
           name_sellerId: {
             name: toolData.name,
@@ -211,8 +211,8 @@ async function seedToolsMarketplace() {
     console.log('✅ Created sample tools');
 
     // Create some sample reviews
-    const tools = await db.tool.findMany();
-    const reviewerUser = await db.user.findFirst({
+    const tools = await db.tools.findMany();
+    const reviewerUser = await db.users.findFirst({
       where: { email: 'user@example.com' }
     });
 

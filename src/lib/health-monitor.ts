@@ -180,7 +180,7 @@ class HealthMonitor {
       check: async () => {
         try {
           // Check if core application components are working
-          const userCount = await db.user.count();
+          const userCount = await db.users.count();
           return userCount >= 0; // Should always be true if DB is working
         } catch (error) {
           logger.error('Application health check failed', { error: error.message });

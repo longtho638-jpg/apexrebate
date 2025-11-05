@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
       currentMonthPayouts
     ] = await Promise.all([
       // Total users
-      db.user.count(),
+      db.users.count(),
       
       // Verified users
-      db.user.count({
+      db.users.count({
         where: { emailVerified: { not: null } }
       }),
       
@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       }),
       
       // Current month signups
-      db.user.count({
+      db.users.count({
         where: {
           createdAt: {
             gte: new Date(currentYear, currentMonth, 1),

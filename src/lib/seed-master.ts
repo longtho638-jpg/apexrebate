@@ -22,7 +22,7 @@ async function seedMaster() {
     // ========================================
     console.log('👥 Seeding Users...');
     
-    const adminUser = await db.user.upsert({
+    const adminUser = await db.users.upsert({
       where: { email: 'admin@apexrebate.com' },
       update: {},
       create: {
@@ -43,7 +43,7 @@ async function seedMaster() {
       }
     });
 
-    const conciergeUser = await db.user.upsert({
+    const conciergeUser = await db.users.upsert({
       where: { email: 'concierge@apexrebate.com' },
       update: {},
       create: {
@@ -71,7 +71,7 @@ async function seedMaster() {
 
     for (let i = 0; i < 20; i++) {
       const tier = tiers[i % tiers.length];
-      const user = await db.user.upsert({
+      const user = await db.users.upsert({
         where: { email: `trader${i + 1}@example.com` },
         update: {},
         create: {
@@ -143,7 +143,7 @@ async function seedMaster() {
 
     const tools: any[] = [];
     for (const toolData of toolsData) {
-      const tool = await db.tool.upsert({
+      const tool = await db.tools.upsert({
         where: { 
           name_sellerId: { 
             name: toolData.name, 
@@ -514,8 +514,8 @@ async function seedMaster() {
     // ========================================
     console.log('\n🎉 MASTER SEED COMPLETED!\n');
     console.log('Summary:');
-    console.log(`  👥 Users: ${await db.user.count()}`);
-    console.log(`  🛠️  Tools: ${await db.tool.count()}`);
+    console.log(`  👥 Users: ${await db.users.count()}`);
+    console.log(`  🛠️  Tools: ${await db.tools.count()}`);
     console.log(`  📦 Categories: ${await db.toolCategory.count()}`);
     console.log(`  🏆 Achievements: ${await db.achievement.count()}`);
     console.log(`  💵 Payouts: ${await db.payout.count()}`);

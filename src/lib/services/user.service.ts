@@ -14,7 +14,7 @@ export class UserService {
     referralCode?: string;
   }) {
     try {
-      const existingUser = await db.user.findUnique({
+      const existingUser = await db.users.findUnique({
         where: { email: userData.email }
       });
 
@@ -22,7 +22,7 @@ export class UserService {
       let referredBy = null;
       if (userData.referralCode && !existingUser) {
         // Only process referral for new users
-        const referrer = await db.user.findUnique({
+        const referrer = await db.users.findUnique({
           where: { referralCode: userData.referralCode }
         });
         if (referrer) {
@@ -32,7 +32,7 @@ export class UserService {
 
       if (existingUser) {
         // Update existing user
-        return await db.user.update({
+        return await db.users.update({
           where: { email: userData.email },
           data: {
             tradingVolume: userData.tradingVolume ? parseFloat(userData.tradingVolume) : undefined,
@@ -47,7 +47,7 @@ export class UserService {
         // Create new user with generated referral code
         const userReferralCode = nanoid(8).toUpperCase();
         
-        return await db.user.create({
+        return await db.users.create({
           data: {
             email: userData.email,
             name: userData.name,
@@ -76,7 +76,7 @@ export class UserService {
   // Get user by email
   static async getUserByEmail(email: string) {
     try {
-      return await db.user.findUnique({
+      return await db.users.findUnique({
         where: { email },
         include: {
           payouts: {
@@ -103,7 +103,7 @@ export class UserService {
   // Update user savings and tier
   static async updateUserSavings(userId: string, savingsAmount: number) {
     try {
-      const user = await db.user.findUnique({
+      const user = await db.users.findUnique({
         where: { id: userId }
       });
 
@@ -115,7 +115,7 @@ export class UserService {
       const newTier = this.calculateUserTier(newTotalSaved);
 
       // Update user
-      const updatedUser = await db.user.update({
+      const updatedUser = await db.users.update({
         where: { id: userId },
         data: {
           totalSaved: newTotalSaved,
@@ -190,7 +190,7 @@ export class UserService {
   // Get Wall of Fame data
   static async getWallOfFame(limit: number = 50) {
     try {
-      const users = await db.user.findMany({
+      const users = await db.users.findMany({
         where: {
           totalSaved: { gt: 0 }
         },
@@ -235,7 +235,7 @@ export class UserService {
   // Get dashboard analytics
   static async getDashboardAnalytics(userId: string) {
     try {
-      const user = await db.user.findUnique({
+      const user = await db.users.findUnique({
         where: { id: userId },
         include: {
           payouts: {

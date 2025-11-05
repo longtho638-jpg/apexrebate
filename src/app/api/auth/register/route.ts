@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await db.user.findUnique({
+    const existingUser = await db.users.findUnique({
       where: { email }
     })
 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     // Handle referral logic
     let referredBy = null
     if (referralCode) {
-      const referrer = await db.user.findUnique({
+      const referrer = await db.users.findUnique({
         where: { referralCode }
       })
       if (referrer) {
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user
-    const user = await db.user.create({
+    const user = await db.users.create({
       data: {
         name,
         email,

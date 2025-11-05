@@ -9,7 +9,7 @@ export interface EmailTriggerData {
 
 class EmailTriggers {
   static async triggerWelcomeEmail(userId: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     })
     
@@ -20,7 +20,7 @@ class EmailTriggers {
   }
 
   static async triggerCashbackEmail(userId: string, amount: number, period: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     })
     
@@ -31,7 +31,7 @@ class EmailTriggers {
   }
 
   static async triggerMilestoneEmail(userId: string, milestone: string) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     })
     
@@ -42,7 +42,7 @@ class EmailTriggers {
   }
 
   static async triggerReferralEmail(userId: string, referralData: any) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     })
     
@@ -53,7 +53,7 @@ class EmailTriggers {
   }
 
   static async triggerMonthlyReport(userId: string, reportData: any) {
-    const user = await db.user.findUnique({
+    const user = await db.users.findUnique({
       where: { id: userId }
     })
     

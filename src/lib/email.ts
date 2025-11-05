@@ -458,7 +458,7 @@ export class EmailService {
 
   async getUserEmailPreferences(userId: string) {
     try {
-      const user = await db.user.findUnique({
+      const user = await db.users.findUnique({
         where: { id: userId },
         select: {
           email: true,

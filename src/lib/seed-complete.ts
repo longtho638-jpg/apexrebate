@@ -3,7 +3,7 @@ import { ToolType, ToolStatus } from '@prisma/client';
 
 async function createSampleUser() {
   try {
-    const user = await db.user.upsert({
+    const user = await db.users.upsert({
       where: { email: 'seller@example.com' },
       update: {},
       create: {
@@ -238,7 +238,7 @@ export async function seedToolsMarketplace() {
     ];
 
     for (const toolData of tools) {
-      await db.tool.upsert({
+      await db.tools.upsert({
         where: { slug: toolData.slug },
         update: toolData,
         create: {
@@ -251,7 +251,7 @@ export async function seedToolsMarketplace() {
     }
 
     // Create sample reviews
-    const createdTools = await db.tool.findMany({
+    const createdTools = await db.tools.findMany({
       where: { sellerId: sellerUser.id }
     });
 
