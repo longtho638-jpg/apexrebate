@@ -4,7 +4,7 @@
 # Usage: ./run-regression.sh [environment]
 # Environment: dev (default), preview, prod
 
-set -e
+# set -e removed - let script continue to calculate pass rate
 
 ENVIRONMENT=${1:-dev}
 BASE_URL="http://localhost:3000"
