@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth';
 import DashboardClient from './dashboard-client';
 
 export const metadata: Metadata = {
@@ -75,10 +76,10 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   
   if (!session) {
-    redirect('/auth/signin');
+    redirect('/vi/auth/signin?callbackUrl=/dashboard');
   }
 
   return <DashboardClient />;
