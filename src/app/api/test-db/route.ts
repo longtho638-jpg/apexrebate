@@ -7,72 +7,48 @@ export async function GET() {
     const hasDbUrl = !!process.env.DATABASE_URL;
     const dbUrlLength = process.env.DATABASE_URL?.length || 0;
     
-    let prismaImportSuccess = false;
-    let prismaClientType = 'unknown';
-    try {
-      const { PrismaClient } = await import('@prisma/client');
-      prismaImportSuccess = true;
-      prismaClientType = typeof PrismaClient;
-    } catch (e: any) {
-      return NextResponse.json({
-        error: 'Failed to import PrismaClient',
-        message: e.message,
-        hasDbUrl,
-        dbUrlLength
-      });
-    }
+    // Import Prisma
+    const { PrismaClient } = await import('@prisma/client');
+    const { prisma } = await import('@/lib/db');
     
-    let dbImportSuccess = false;
-    let prismaInstance: any = null;
-    try {
-      const { prisma } = await import('@/lib/db');
-      dbImportSuccess = true;
-      prismaInstance = prisma;
-    } catch (e: any) {
-      return NextResponse.json({
-        error: 'Failed to import db module',
-        message: e.message,
-        hasDbUrl,
-        dbUrlLength,
-        prismaImportSuccess,
-        prismaClientType
-      });
-    }
+    // Deep inspect prisma instance
+    const prismaKeys = Object.keys(prisma);
+    const prismaHasUser = 'user' in prisma;
+    const userValue = (prisma as any).user;
+    const userType = typeof userValue;
+    const userKeys = userValue ? Object.keys(userValue) : [];
     
-    const prismaType = typeof prismaInstance;
-    const hasPrismaCount = typeof prismaInstance?.user?.count === 'function';
-    
-    let querySuccess = false;
-    let userCount = 0;
-    let queryError = null;
+    // Try manual query
+    let manualQueryError = null;
+    let manualQuerySuccess = false;
     try {
-      userCount = await prismaInstance.user.count();
-      querySuccess = true;
+      const newPrisma = new PrismaClient();
+      const count = await newPrisma.user.count();
+      manualQuerySuccess = true;
+      await newPrisma.$disconnect();
     } catch (e: any) {
-      queryError = e.message;
+      manualQueryError = e.message;
     }
     
     return NextResponse.json({
-      success: querySuccess,
       diagnostics: {
         hasDbUrl,
         dbUrlLength,
         dbUrlPrefix: process.env.DATABASE_URL?.substring(0, 20) + '...',
-        prismaImportSuccess,
-        prismaClientType,
-        dbImportSuccess,
-        prismaType,
-        hasPrismaCount,
-        querySuccess,
-        userCount,
-        queryError
+        prismaKeys: prismaKeys.slice(0, 20),
+        prismaHasUser,
+        userType,
+        userKeys: userKeys.slice(0, 10),
+        manualQuerySuccess,
+        manualQueryError
       }
     });
     
   } catch (error: any) {
     return NextResponse.json({ 
       error: 'Test failed',
-      message: error.message
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     }, { status: 500 });
   }
 }
