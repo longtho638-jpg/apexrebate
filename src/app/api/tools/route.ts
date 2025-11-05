@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
     const tools = await db.tools.findMany({
       where: whereClause,
       include: {
-        seller: {
+        users: {
           select: {
             id: true,
             name: true,
@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
         },
         _count: {
           select: {
-            reviews: true,
-            orders: true
+            tool_reviews: true,
+            tool_orders: true
           }
         }
       },
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
         status: 'PENDING'
       },
       include: {
-        seller: {
+        users: {
           select: {
             id: true,
             name: true,
