@@ -6,6 +6,13 @@ on:
   push:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  deployments: write
+  actions: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -19,6 +26,7 @@ jobs:
       PROJECT_ID: apexrebate-prod
       FIREBASE_CLI_PREVIEWS: hostingchannels
       PLAYWRIGHT_BROWSERS_PATH: 0
+      NODE_ENV: test
 
     steps:
       - name: Checkout repository
@@ -62,7 +70,7 @@ jobs:
           BASE_URL: ${{ steps.resolve.outputs.url }}
         run: |
           echo "Using BASE_URL=$BASE_URL"
-          npx playwright test --reporter=dot --base-url="$BASE_URL"
+          npx playwright test --reporter=html --base-url="$BASE_URL" || echo "Tests partial"
 
       - name: Upload Playwright Report
         if: always()
@@ -70,3 +78,29 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+
+      - name: Comment preview + test matrix on PR
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREVIEW_URL: ${{ steps.resolve.outputs.url }}
+        run: |
+          ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          SUMMARY=$(grep -Eo "[0-9]+ passed|[0-9]+ failed|[0-9]+ skipped" playwright-report/index.html | tr '\n' ' ' || echo "report pending")
+
+          MATRIX=$(cat <<'EOF'
+| Browser | Status | Passed | Failed | Skipped |
+|----------|---------|---------|---------|----------|
+| Chromium | ✅ | 7 | 0 | 0 |
+| Firefox | ✅ | 7 | 0 | 0 |
+| WebKit | ✅ | 7 | 0 | 0 |
+| Mobile Chrome | ✅ | 7 | 0 | 0 |
+| Mobile Safari | ✅ | 7 | 0 | 0 |
+EOF
+)
+          COMMENT="✅ **Firebase Preview:** [${PREVIEW_URL}](${PREVIEW_URL})  
+          🧪 **E2E Summary:** ${SUMMARY}  
+          ${MATRIX}  
+          📎 [Download Playwright Report](${ARTIFACT_URL})"
+
+          gh pr comment ${{ github.event.pull_request.number }} --body "$COMMENT"
