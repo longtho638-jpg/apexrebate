@@ -22,13 +22,9 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
+      - name: Generate Prisma Client
+        run: npx prisma generate
         run: npm ci --legacy-peer-deps
-      - name: Generate Prisma Client
-        run: npx prisma generate
-      - name: Setup test database
-        run: npx prisma db push --accept-data-loss
-      - name: Generate Prisma Client
-        run: npx prisma generate
       - name: Run ESLint
         run: npm run lint
       - name: Build project
@@ -57,9 +53,11 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
       - name: Generate Prisma Client
         run: npx prisma generate
+      - name: Generate Prisma Client
+        run: npx prisma generate
+        run: npm ci --legacy-peer-deps
       - name: Build project
         run: npm run build
       - name: Deploy Firebase Preview
@@ -92,9 +90,9 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
       - name: Generate Prisma Client
         run: npx prisma generate
+        run: npm ci --legacy-peer-deps
       - name: Install Playwright
         run: npx playwright install --with-deps
       - name: Run Playwright tests
@@ -144,9 +142,9 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
       - name: Generate Prisma Client
         run: npx prisma generate
+        run: npm ci --legacy-peer-deps
       - name: Build project
         run: npm run build
       - name: Deploy to Firebase Production
