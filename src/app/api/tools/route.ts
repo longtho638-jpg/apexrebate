@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching tools:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch tools' },
+      { error: "Failed to fetch tools", message: (error as any).message },
       { status: 500 }
     );
   }
