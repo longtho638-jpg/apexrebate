@@ -27,7 +27,11 @@ jobs:
         run: npm run lint
       - name: Build project
         run: npm run build
-      - name: Make regression script executable (fallback)
+      - name: Start dev server in background
+        run: npm run dev &
+      - name: Wait for dev server to be ready
+        run: npx wait-on http://localhost:3000 -t 30000 || echo "⚠️ Server not ready but continuing"
+      - name: Make regression script executable
         run: chmod +x tests/run-regression.sh || true
       - name: Run API regression tests
         shell: bash
@@ -58,18 +62,20 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: apexrebate-prod
           channelId: pr-${{ github.event.pull_request.number }}
-      - name: Resolve preview URL
+      - name: Resolve preview URL from outputs
         id: resolve
         run: |
-          RAW="${{ steps.deploy.outputs.urls }}"
-          URL="${RAW%%,*}"
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
-          echo "Preview URL: $URL"
+          URLS='${{ steps.deploy.outputs.urls }}'
+          PREVIEW_URL=$(echo "$URLS" | jq -r '.[0]' || echo "$URLS")
+          if [ -z "$PREVIEW_URL" ]; then
+            PREVIEW_URL="${{ steps.deploy.outputs.details_url }}"
+          fi
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "✅ Preview URL: $PREVIEW_URL"
 
   e2e:
-    name: 🎭 Playwright E2E on Preview
+    name: 🧪 Run E2E Tests
     needs: preview
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -79,37 +85,47 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-      - name: Install Playwright browsers
+      - name: Install Playwright
         run: npx playwright install --with-deps
-      - name: Run Playwright Tests
+      - name: Run Playwright tests
         env:
-          BASE_URL: ${{ needs.preview.outputs.preview_url }}
-        run: npx playwright test --reporter=html --base-url="$BASE_URL"
+          PLAYWRIGHT_TEST_BASE_URL: ${{ needs.preview.outputs.preview_url }}
+        run: npm run test:e2e
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
-          path: playwright-report/**
-          if-no-files-found: warn
-      - name: Comment on PR
+          path: playwright-report/
+          retention-days: 30
+      - name: Comment E2E results on PR
         if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PREVIEW_URL: ${{ needs.preview.outputs.preview_url }}
-        run: |
-          if [ "${{ job.status }}" = "success" ]; then
-            gh pr comment ${{ github.event.pull_request.number }} \
-              --body "✅ CI/CD hoàn tất. [Xem Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n🔗 Preview: ${PREVIEW_URL}"
-          else
-            gh pr comment ${{ github.event.pull_request.number }} \
-              --body "❌ Lỗi test hoặc deploy. [Xem log](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n🔗 Preview: ${PREVIEW_URL}"
-          fi
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let comment = '## 🧪 E2E Test Results\n\n';
+            try {
+              const report = JSON.parse(fs.readFileSync('./playwright-report/results.json', 'utf8'));
+              const passed = report.suites.reduce((acc, s) => acc + s.specs.filter(sp => sp.ok).length, 0);
+              const failed = report.suites.reduce((acc, s) => acc + s.specs.filter(sp => !sp.ok).length, 0);
+              comment += passed > 0 ? `✅ **${passed} tests passed**\n` : '';
+              comment += failed > 0 ? `❌ **${failed} tests failed**\n` : '';
+            } catch (e) {
+              comment += '⚠️ Could not parse test results\n';
+            }
+            comment += `\n🔗 [View detailed report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
 
   production:
-    name: 🚢 Deploy Firebase Production
+    name: 🌐 Deploy to Production
     needs: prepare
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -121,10 +137,10 @@ jobs:
         run: npm ci --legacy-peer-deps
       - name: Build project
         run: npm run build
-      - name: Deploy to Firebase (live)
+      - name: Deploy to Firebase Production
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          channelId: live
           projectId: apexrebate-prod
+          channelId: live
