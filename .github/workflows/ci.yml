@@ -1,8 +1,8 @@
-name: ApexRebate CI/CD Pipeline
+name: ApexRebate Unified CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
 
 permissions:
@@ -12,62 +12,45 @@ permissions:
   id-token: write
 
 jobs:
-  lint-and-test:
-    name: 🧪 Lint + Build + API Regression
+  prepare:
+    name: 🧹 Prepare & Lint + Build + Regression
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Run ESLint
         run: npm run lint
-
       - name: Build project
         run: npm run build
-
-      - name: Start dev server (background)
-        run: |
-          npm run dev &
-          sleep 12
-
       - name: Make regression script executable (fallback)
         run: chmod +x tests/run-regression.sh || true
-
       - name: Run API regression tests
         shell: bash
         run: bash tests/run-regression.sh
 
-  deploy-preview:
-    name: 🚀 Deploy Firebase Preview (PR)
-    needs: lint-and-test
+  preview:
+    name: 🚀 Deploy Firebase Preview
+    needs: prepare
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       preview_url: ${{ steps.resolve.outputs.url }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Build project
         run: npm run build
-
-      - name: Deploy to Firebase Preview
+      - name: Deploy Firebase Preview
         id: deploy
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -75,7 +58,6 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           projectId: apexrebate-prod
           channelId: pr-${{ github.event.pull_request.number }}
-
       - name: Resolve preview URL
         id: resolve
         run: |
@@ -84,33 +66,25 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Preview URL: $URL"
 
-  e2e-test:
-    name: 🎭 Playwright E2E Tests on Preview
-    needs: deploy-preview
+  e2e:
+    name: 🎭 Playwright E2E on Preview
+    needs: preview
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
-
-      - name: Run E2E Tests on Firebase Preview
+      - name: Run Playwright Tests
         env:
-          BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
-        run: |
-          echo "Testing against $BASE_URL"
-          npx playwright test --reporter=html --base-url="$BASE_URL"
-
+          BASE_URL: ${{ needs.preview.outputs.preview_url }}
+        run: npx playwright test --reporter=html --base-url="$BASE_URL"
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -118,42 +92,36 @@ jobs:
           name: playwright-report
           path: playwright-report/**
           if-no-files-found: warn
-
-      - name: Comment Result on PR
+      - name: Comment on PR
         if: always()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+          PREVIEW_URL: ${{ needs.preview.outputs.preview_url }}
         run: |
           if [ "${{ job.status }}" = "success" ]; then
             gh pr comment ${{ github.event.pull_request.number }} \
-              --body "✅ E2E passed on: ${PREVIEW_URL} — [View Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              --body "✅ CI/CD hoàn tất. [Xem Playwright Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n🔗 Preview: ${PREVIEW_URL}"
           else
             gh pr comment ${{ github.event.pull_request.number }} \
-              --body "❌ E2E failed — [Check logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+              --body "❌ Lỗi test hoặc deploy. [Xem log](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})\n🔗 Preview: ${PREVIEW_URL}"
           fi
 
-  deploy-production:
+  production:
     name: 🚢 Deploy Firebase Production
-    needs: lint-and-test
+    needs: prepare
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-
       - name: Build project
         run: npm run build
-
-      - name: Deploy to Firebase Hosting (prod)
+      - name: Deploy to Firebase (live)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
