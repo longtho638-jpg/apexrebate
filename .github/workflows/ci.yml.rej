@@ -1,0 +1,11 @@
+@@ -23,6 +25,10 @@
+           cache: npm
+       - name: Install dependencies
+         run: npm ci --legacy-peer-deps
++      - name: Generate Prisma Client
++        run: npx prisma generate
++      - name: Setup test database
++        run: npx prisma db push --accept-data-loss
+       - name: Run ESLint
+         run: npm run lint
+       - name: Build project
