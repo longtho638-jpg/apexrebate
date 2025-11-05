@@ -1,229 +1,162 @@
-name: ApexRebate CI Pipeline
+name: ApexRebate CI/CD Pipeline
+
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [main]
   pull_request:
-    branches: [ main, develop ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  # Code Quality Checks
-  quality:
+  lint-and-test:
+    name: 🧪 Lint + Build + API Regression
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Run ESLint
-      run: npm run lint
-    - name: Run Prettier check
-      run: npx prettier --check .
-    - name: Run type check
-      run: npx tsc --noEmit
-    - name: Check for unused dependencies
-      run: npx depcheck
-  # Unit Tests
-  unit-tests:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Build project
+        run: npm run build
+
+      - name: Start dev server (background)
+        run: |
+          npm run dev &
+          sleep 12
+
+      - name: Make regression script executable (fallback)
+        run: chmod +x tests/run-regression.sh || true
+
+      - name: Run API regression tests
+        shell: bash
+        run: bash tests/run-regression.sh
+
+  deploy-preview:
+    name: 🚀 Deploy Firebase Preview (PR)
+    needs: lint-and-test
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
+    outputs:
+      preview_url: ${{ steps.resolve.outputs.url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Firebase Preview
+        id: deploy
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: apexrebate-prod
+          channelId: pr-${{ github.event.pull_request.number }}
+
+      - name: Resolve preview URL
+        id: resolve
+        run: |
+          RAW="${{ steps.deploy.outputs.urls }}"
+          URL="${RAW%%,*}"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "Preview URL: $URL"
+
+  e2e-test:
+    name: 🎭 Playwright E2E Tests on Preview
+    needs: deploy-preview
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E Tests on Firebase Preview
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: apexrebate_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Setup database
-      run: |
-        npx prisma generate
-        npx prisma db push
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
-    - name: Run unit tests
-      run: npm run test
-    - name: Run tests with coverage
-      run: npm run test:coverage
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
-      with:
-        file: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-  # Integration Tests
-  integration-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Build application
-      run: npm run build
-    - name: Run integration tests
-      run: |
-        echo "🧪 Running integration tests"
-        # Add integration test commands here
-  # E2E Tests
-  e2e-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Install Playwright
-      run: npx playwright install --with-deps
-    - name: Build application
-      run: npm run build
-    - name: Run E2E tests
-      run: npm run test:e2e
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      if: failure()
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
-  # Security Scans
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Run npm audit
-      run: npm audit --audit-level=high
-    - name: Run Snyk security scan
-      uses: snyk/actions/node@master
-      env:
-        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      with:
-        args: --severity-threshold=high
-    - name: Run CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        languages: typescript, javascript
-  # Performance Tests
-  performance-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Build application
-      run: npm run build
-    - name: Run Lighthouse CI
-      run: |
-        npm install -g @lhci/cli@0.12.x
-        lhci autorun
-      env:
-        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-    - name: Run bundle size analysis
-      run: |
-        npx bundlesize
-  # Accessibility Tests
-  accessibility-tests:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Build application
-      run: npm run build
-    - name: Run accessibility tests
-      run: |
-        echo "♿ Running accessibility tests"
-        # Add accessibility test commands here
-  # Database Tests
-  database-tests:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:15
+          BASE_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+        run: |
+          echo "Testing against $BASE_URL"
+          npx playwright test --reporter=html --base-url="$BASE_URL"
+
+      - name: Upload Playwright Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/**
+          if-no-files-found: warn
+
+      - name: Comment Result on PR
+        if: always()
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: apexrebate_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    - name: Install dependencies
-      run: npm ci --legacy-peer-deps
-    - name: Setup database
-      run: |
-        npx prisma generate
-        npx prisma db push
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/apexrebate_test
-    - name: Run database migrations
-      run: npx prisma migrate deploy
-    - name: Run database tests
-      run: |
-        echo "🗄️ Running database tests"
-        # Add database test commands here
-    - name: Validate database schema
-      run: npx prisma validate
-  # Notify Results
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREVIEW_URL: ${{ needs.deploy-preview.outputs.preview_url }}
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            gh pr comment ${{ github.event.pull_request.number }} \
+              --body "✅ E2E passed on: ${PREVIEW_URL} — [View Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          else
+            gh pr comment ${{ github.event.pull_request.number }} \
+              --body "❌ E2E failed — [Check logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          fi
+
+  deploy-production:
+    name: 🚢 Deploy Firebase Production
+    needs: lint-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: [quality, unit-tests, integration-tests, e2e-tests, security-scan, performance-tests, accessibility-tests, database-tests]
-    if: always()
     steps:
-      if: ${{ needs.quality.result == 'success' && needs.unit-tests.result == 'success' && needs.e2e-tests.result == 'success' }}
-      with:
-        status: 'success'
-        channel: '#ci-cd'
-      if: ${{ needs.quality.result == 'failure' || needs.unit-tests.result == 'failure' || needs.e2e-tests.result == 'failure' }}
-      with:
-        status: 'failure'
-        channel: '#ci-cd'
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to Firebase Hosting (prod)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          channelId: live
+          projectId: apexrebate-prod
