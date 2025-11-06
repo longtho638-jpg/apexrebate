@@ -34,6 +34,26 @@ jobs:
         run: npm run dev &
       - name: Wait for dev server to be ready
         run: npx wait-on http://localhost:3000 -t 30000 || echo "⚠️ Server not ready but continuing"
+      - name: Seed local test user
+        env:
+          SEED_SECRET_KEY: ${{ secrets.SEED_SECRET_KEY }}
+        run: |
+          curl -s -X POST "http://localhost:3000/api/testing/seed-test-user" \
+            -H "Authorization: Bearer $SEED_SECRET_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"ci.e2e.tester@apexrebate.com","password":"Password123!"}' || true
+      - name: Seed local test data (payouts)
+        env:
+          SEED_SECRET_KEY: ${{ secrets.SEED_SECRET_KEY }}
+        run: |
+          curl -s -X POST "http://localhost:3000/api/testing/seed-test-data" \
+            -H "Authorization: Bearer $SEED_SECRET_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"ci.e2e.tester@apexrebate.com","payouts":6,"startMonthsAgo":5,"brokers":["binance","bybit","okx"],"clean":true}' || true
+      - name: Run Postman (Newman) API tests
+        env:
+          BASE_URL: http://localhost:3000
+        run: npm run test:api || echo "⚠️ Newman tests failed but continuing"
       - name: Make regression script executable
         run: chmod +x tests/run-regression.sh || true
       - name: Run API regression tests
@@ -96,9 +116,29 @@ jobs:
         run: npx prisma generate
       - name: Install Playwright
         run: npx playwright install --with-deps
+      - name: Seed test user on Preview
+        env:
+          SEED_SECRET_KEY: ${{ secrets.SEED_SECRET_KEY }}
+          PREVIEW_URL: ${{ needs.preview.outputs.preview_url }}
+        run: |
+          curl -s -X POST "$PREVIEW_URL/api/testing/seed-test-user" \
+            -H "Authorization: Bearer $SEED_SECRET_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"ci.e2e.tester@apexrebate.com","password":"Password123!"}' || true
+      - name: Seed test data on Preview (payouts)
+        env:
+          SEED_SECRET_KEY: ${{ secrets.SEED_SECRET_KEY }}
+          PREVIEW_URL: ${{ needs.preview.outputs.preview_url }}
+        run: |
+          curl -s -X POST "$PREVIEW_URL/api/testing/seed-test-data" \
+            -H "Authorization: Bearer $SEED_SECRET_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"email":"ci.e2e.tester@apexrebate.com","payouts":6,"startMonthsAgo":5,"brokers":["binance","bybit","okx"],"clean":true}' || true
       - name: Run Playwright tests
         env:
-          PLAYWRIGHT_TEST_BASE_URL: ${{ needs.preview.outputs.preview_url }}
+          BASE_URL: ${{ needs.preview.outputs.preview_url }}
+          TEST_USER_EMAIL: ci.e2e.tester@apexrebate.com
+          TEST_USER_PASSWORD: Password123!
         run: npm run test:e2e
       - name: Upload Playwright Report
         if: always()
@@ -134,7 +174,7 @@ jobs:
   production:
     name: 🌐 Deploy to Production
     needs: prepare
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
