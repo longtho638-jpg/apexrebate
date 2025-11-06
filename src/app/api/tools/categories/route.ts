@@ -27,20 +27,22 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, description, icon } = body;
+    const { id, name, description, icon } = body;
 
-    if (!name) {
+    if (!id || !name) {
       return NextResponse.json(
-        { error: 'Category name is required' },
+        { error: 'Category ID and name are required' },
         { status: 400 }
       );
     }
 
     const category = await db.tool_categories.create({
       data: {
+        id,
         name,
         description,
-        icon
+        icon,
+        updatedAt: new Date()
       }
     });
 
