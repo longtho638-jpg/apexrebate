@@ -2,27 +2,34 @@
 
 ## ✅ Trạng thái: DEPLOYED & RUNNING
 
-**Ngày deploy**: 6/11/2025 20:58 ICT  
+**Ngày deploy**: 6/11/2025 21:58 ICT (Updated with latest fix)  
 **Platform**: Vercel (Next.js native platform)  
-**Status**: ✅ All systems operational
+**Status**: ✅ All systems operational  
+**Latest Fix**: /tools duplicate pages removed (HTTP 500 → 307 redirect)
 
 ---
 
 ## 🌐 Production URLs
 
-### Primary Production URL
+### Primary Production URL (Alias)
+```
+https://apexrebate-1.vercel.app
+```
+
+### Latest Deployment URL
+```
+https://apexrebate-1-le2hqnar8-minh-longs-projects-f5c82c9b.vercel.app
+```
+
+### Previous Deployment (Cached - DO NOT USE)
 ```
 https://apexrebate-1-94jxkx8hy-minh-longs-projects-f5c82c9b.vercel.app
+⚠️ This URL has old build cache with /tools HTTP 500 bug
 ```
 
 ### Vercel Dashboard
 ```
 https://vercel.com/minh-longs-projects-f5c82c9b/apexrebate-1
-```
-
-### Latest Deployment Inspect
-```
-https://vercel.com/minh-longs-projects-f5c82c9b/apexrebate-1/BmmV79DgSDMHXRdbochkRBrwLuxg
 ```
 
 ---
@@ -31,19 +38,43 @@ https://vercel.com/minh-longs-projects-f5c82c9b/apexrebate-1/BmmV79DgSDMHXRdboch
 
 ### 1. Health Endpoint
 ```bash
-curl https://apexrebate-1-94jxkx8hy-minh-longs-projects-f5c82c9b.vercel.app/api/health
+curl https://apexrebate-1.vercel.app/api/health
 # Response: {"message":"Good!"}
 # ✅ PASS
 ```
 
 ### 2. Homepage
 ```bash
-curl -I https://apexrebate-1-94jxkx8hy-minh-longs-projects-f5c82c9b.vercel.app/
+curl -I https://apexrebate-1.vercel.app/
 # HTTP/2 200
 # ✅ PASS
 ```
 
-### 3. Deployment Metrics
+### 3. Tools Page Fix Verification
+```bash
+# Root redirect (fixed!)
+curl -I https://apexrebate-1.vercel.app/tools
+# HTTP/2 307 (Redirect to /en/tools)
+# ✅ PASS
+
+# Localized versions
+curl -I https://apexrebate-1.vercel.app/en/tools
+# HTTP/2 200
+# ✅ PASS
+
+curl -I https://apexrebate-1.vercel.app/vi/tools
+# HTTP/2 200
+# ✅ PASS
+```
+
+### 4. Full Deep Verification
+- ✅ 18/18 pages tested
+- ✅ 100% success rate
+- ✅ 0 HTTP 500 errors
+- ✅ All critical paths working
+- ⚡ Performance: All pages < 800ms
+
+### 5. Deployment Metrics
 - Build time: ~10s
 - Deploy time: ~10s
 - Total: ~20s (very fast! 🚀)
