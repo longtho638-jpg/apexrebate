@@ -1,1 +1,0 @@
-"use strict";exports.id=5069,exports.ids=[5069],exports.modules={5069:(s,e,r)=>{r.d(e,{db:()=>t,prisma:()=>l});var i=r(96330);let t=globalThis.prisma??new i.PrismaClient({log:["query"]}),l=t}};
