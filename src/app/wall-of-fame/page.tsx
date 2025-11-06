@@ -39,120 +39,131 @@ export default function WallOfFamePage() {
   const [filter, setFilter] = useState('all');
   const [timeRange, setTimeRange] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchWallOfFame = async () => {
       setIsLoading(true);
+      setError(null);
       try {
         const response = await fetch('/api/wall-of-fame');
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         const data = await response.json();
         
-        if (data.success) {
+        if (data.success && Array.isArray(data.data)) {
           setUsers(data.data);
           setStats(data.stats);
         } else {
           // Fallback to mock data
-          const mockUsers: WallOfFameUser[] = [
-            {
-              id: '1',
-              anonymousName: 'Trader Alpha',
-              totalSavings: 2847,
-              broker: 'Binance',
-              memberSince: '2024-01-15',
-              monthlyVolume: 2500000,
-              tradesCount: 1250,
-              rank: 1,
-              previousRank: 2,
-              achievements: ['Early Adopter', 'Top Saver', 'Consistent Trader'],
-              joinDate: '2024-01-15',
-              lastActive: '2024-10-07'
-            },
-            {
-              id: '2',
-              anonymousName: 'Trader Beta',
-              totalSavings: 1923,
-              broker: 'Bybit',
-              memberSince: '2024-01-20',
-              monthlyVolume: 1800000,
-              tradesCount: 890,
-              rank: 2,
-              previousRank: 3,
-              achievements: ['Referral Master', 'Volume King'],
-              joinDate: '2024-01-20',
-              lastActive: '2024-10-06'
-            },
-            {
-              id: '3',
-              anonymousName: 'Trader Gamma',
-              totalSavings: 1567,
-              broker: 'OKX',
-              memberSince: '2024-02-01',
-              monthlyVolume: 1500000,
-              tradesCount: 750,
-              rank: 3,
-              previousRank: 1,
-              achievements: ['Quick Starter', 'Multi-Broker'],
-              joinDate: '2024-02-01',
-              lastActive: '2024-10-07'
-            },
-            {
-              id: '4',
-              anonymousName: 'Trader Delta',
-              totalSavings: 1234,
-              broker: 'Binance',
-              memberSince: '2024-02-10',
-              monthlyVolume: 1200000,
-              tradesCount: 600,
-              rank: 4,
-              previousRank: 5,
-              achievements: ['Steady Performer'],
-              joinDate: '2024-02-10',
-              lastActive: '2024-10-05'
-            },
-            {
-              id: '5',
-              anonymousName: 'Trader Epsilon',
-              totalSavings: 987,
-              broker: 'Bybit',
-              memberSince: '2024-02-15',
-              monthlyVolume: 900000,
-              tradesCount: 450,
-              rank: 5,
-              previousRank: 6,
-              achievements: ['Rising Star'],
-              joinDate: '2024-02-15',
-              lastActive: '2024-10-07'
-            },
-            {
-              id: '6',
-              anonymousName: 'Trader Zeta',
-              totalSavings: 856,
-              broker: 'OKX',
-              memberSince: '2024-03-01',
-              monthlyVolume: 800000,
-              tradesCount: 400,
-              rank: 6,
-              previousRank: 4,
-              achievements: ['Newcomer'],
-              joinDate: '2024-03-01',
-              lastActive: '2024-10-06'
-            }
-          ];
-
-          const mockStats: StatsOverview = {
-            totalUsers: 156,
-            totalSavings: mockUsers.reduce((sum, user) => sum + user.totalSavings, 0),
-            averageSavings: 1245,
-            topSaver: { name: 'Trader Alpha', amount: 2847 },
-            newUsersThisMonth: 23,
-            totalTrades: mockUsers.reduce((sum, user) => sum + user.tradesCount, 0)
-          };
-
-          setUsers(mockUsers);
-          setStats(mockStats);
+          throw new Error('Invalid data format');
         }
-      } catch (error) {
-        console.error('Failed to fetch wall of fame:', error);
+      } catch (err) {
+        console.error('Failed to fetch wall of fame:', err);
+        setError('Không thể tải dữ liệu. Đang hiển thị dữ liệu mẫu.');
+        
+        // Fallback to mock data
+        const mockUsers: WallOfFameUser[] = [
+          {
+            id: '1',
+            anonymousName: 'Trader Alpha',
+            totalSavings: 2847,
+            broker: 'Binance',
+            memberSince: '2024-01-15',
+            monthlyVolume: 2500000,
+            tradesCount: 1250,
+            rank: 1,
+            previousRank: 2,
+            achievements: ['Early Adopter', 'Top Saver', 'Consistent Trader'],
+            joinDate: '2024-01-15',
+            lastActive: '2024-10-07'
+          },
+          {
+            id: '2',
+            anonymousName: 'Trader Beta',
+            totalSavings: 1923,
+            broker: 'Bybit',
+            memberSince: '2024-01-20',
+            monthlyVolume: 1800000,
+            tradesCount: 890,
+            rank: 2,
+            previousRank: 3,
+            achievements: ['Referral Master', 'Volume King'],
+            joinDate: '2024-01-20',
+            lastActive: '2024-10-06'
+          },
+          {
+            id: '3',
+            anonymousName: 'Trader Gamma',
+            totalSavings: 1567,
+            broker: 'OKX',
+            memberSince: '2024-02-01',
+            monthlyVolume: 1500000,
+            tradesCount: 750,
+            rank: 3,
+            previousRank: 1,
+            achievements: ['Quick Starter', 'Multi-Broker'],
+            joinDate: '2024-02-01',
+            lastActive: '2024-10-07'
+          },
+          {
+            id: '4',
+            anonymousName: 'Trader Delta',
+            totalSavings: 1234,
+            broker: 'Binance',
+            memberSince: '2024-02-10',
+            monthlyVolume: 1200000,
+            tradesCount: 600,
+            rank: 4,
+            previousRank: 5,
+            achievements: ['Steady Performer'],
+            joinDate: '2024-02-10',
+            lastActive: '2024-10-05'
+          },
+          {
+            id: '5',
+            anonymousName: 'Trader Epsilon',
+            totalSavings: 987,
+            broker: 'Bybit',
+            memberSince: '2024-02-15',
+            monthlyVolume: 900000,
+            tradesCount: 450,
+            rank: 5,
+            previousRank: 6,
+            achievements: ['Rising Star'],
+            joinDate: '2024-02-15',
+            lastActive: '2024-10-07'
+          },
+          {
+            id: '6',
+            anonymousName: 'Trader Zeta',
+            totalSavings: 856,
+            broker: 'OKX',
+            memberSince: '2024-03-01',
+            monthlyVolume: 800000,
+            tradesCount: 400,
+            rank: 6,
+            previousRank: 4,
+            achievements: ['Newcomer'],
+            joinDate: '2024-03-01',
+            lastActive: '2024-10-06'
+          }
+        ];
+
+        const mockStats: StatsOverview = {
+          totalUsers: 156,
+          totalSavings: mockUsers.reduce((sum, user) => sum + user.totalSavings, 0),
+          averageSavings: 1245,
+          topSaver: { name: 'Trader Alpha', amount: 2847 },
+          newUsersThisMonth: 23,
+          totalTrades: mockUsers.reduce((sum, user) => sum + user.tradesCount, 0)
+        };
+
+        setUsers(mockUsers);
+        setStats(mockStats);
       } finally {
         setIsLoading(false);
       }
@@ -215,6 +226,13 @@ export default function WallOfFamePage() {
             Vinh danh những trader ưu tú đã tối ưu hóa lợi nhuận với ApexRebate
           </p>
         </div>
+
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">{error}</p>
+          </div>
+        )}
 
         {/* Stats Overview */}
         {stats && (

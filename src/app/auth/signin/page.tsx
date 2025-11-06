@@ -47,8 +47,17 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
+        // Map technical errors to user-friendly messages
         if (result.error.includes('Two-factor code required')) {
           setRequiresTwoFactor(true)
+        } else if (result.error === 'CredentialsSignin' || result.error.includes('CredentialsSignin')) {
+          setError('Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.')
+        } else if (result.error.includes('email')) {
+          setError('Email không tồn tại trong hệ thống.')
+        } else if (result.error.includes('password')) {
+          setError('Mật khẩu không chính xác.')
+        } else if (result.error.includes('verify')) {
+          setError('Tài khoản chưa được xác thực. Vui lòng kiểm tra email.')
         } else {
           setError(result.error)
         }
@@ -56,7 +65,7 @@ export default function SignInPage() {
         router.push(callbackUrl)
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      setError('Đã xảy ra lỗi. Vui lòng thử lại sau.')
     } finally {
       setLoading(false)
     }

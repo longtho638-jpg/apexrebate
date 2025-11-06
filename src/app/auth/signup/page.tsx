@@ -64,17 +64,29 @@ export default function SignUpPage() {
 
   const validateStep1 = () => {
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setError('Please fill in all required fields')
+      setError('Vui lòng điền đầy đủ các trường bắt buộc')
+      return false
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setError('Email không hợp lệ')
       return false
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setError('Mật khẩu xác nhận không khớp')
       return false
     }
 
-    if (passwordStrength.score < 4) {
-      setError('Please choose a stronger password')
+    if (formData.password.length < 8) {
+      setError('Mật khẩu phải có ít nhất 8 ký tự')
+      return false
+    }
+
+    if (passwordStrength.score < 3) {
+      setError('Mật khẩu chưa đủ mạnh. Vui lòng chọn mật khẩu phức tạp hơn')
       return false
     }
 
@@ -85,6 +97,7 @@ export default function SignUpPage() {
     if (!validateStep1()) return
 
     // Check if email already exists
+    setLoading(true)
     try {
       const response = await fetch('/api/auth/check-email', {
         method: 'POST',
@@ -93,13 +106,25 @@ export default function SignUpPage() {
       })
 
       if (response.status === 409) {
-        setError('An account with this email already exists')
+        setError('Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc đăng nhập.')
+        setLoading(false)
         return
       }
 
+      if (!response.ok) {
+        setError('Không thể kiểm tra email. Vui lòng thử lại.')
+        setLoading(false)
+        return
+      }
+
+      // Success - move to step 2
+      setError('')
       setStep(2)
     } catch (error) {
-      setError('Error checking email availability')
+      console.error('Error checking email:', error)
+      setError('Có lỗi xảy ra khi kiểm tra email. Vui lòng thử lại.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -118,13 +143,21 @@ export default function SignUpPage() {
       const data = await response.json()
 
       if (response.ok) {
-        setSuccess('Account created successfully! Please check your email to verify your account.')
+        setSuccess('Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.')
         setStep(3)
       } else {
-        setError(data.error || 'Failed to create account')
+        // Map technical errors to user-friendly messages
+        if (data.error && data.error.includes('email')) {
+          setError('Email đã tồn tại trong hệ thống')
+        } else if (data.error && data.error.includes('password')) {
+          setError('Mật khẩu không đủ mạnh')
+        } else {
+          setError(data.error || 'Không thể tạo tài khoản. Vui lòng thử lại.')
+        }
       }
     } catch (error) {
-      setError('An error occurred. Please try again.')
+      console.error('Registration error:', error)
+      setError('Có lỗi xảy ra. Vui lòng thử lại sau.')
     } finally {
       setLoading(false)
     }

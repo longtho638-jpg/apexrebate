@@ -82,16 +82,28 @@ export default function CalculatorPage() {
   const [tradesPerMonth, setTradesPerMonth] = useState('20');
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
 
   const calculateSavings = async () => {
     setIsLoading(true);
+    setError('');
     
     try {
       const volumeNum = parseFloat(volume) || 0;
       const tradesNum = parseInt(tradesPerMonth) || 20;
       
+      // Validation
       if (volumeNum <= 0) {
+        setError('Vui lòng nhập khối lượng giao dịch hợp lệ (lớn hơn 0)');
         setResult(null);
+        setIsLoading(false);
+        return;
+      }
+
+      if (tradesNum <= 0) {
+        setError('Vui lòng nhập số lệnh giao dịch hợp lệ (lớn hơn 0)');
+        setResult(null);
+        setIsLoading(false);
         return;
       }
 
@@ -126,6 +138,7 @@ export default function CalculatorPage() {
       });
     } catch (error) {
       console.error('Calculation error:', error);
+      setError('Có lỗi xảy ra khi tính toán. Vui lòng thử lại.');
     } finally {
       setIsLoading(false);
     }
@@ -166,10 +179,15 @@ export default function CalculatorPage() {
                     id="volume"
                     type="number"
                     value={volume}
-                    onChange={(e) => setVolume(e.target.value)}
+                    onChange={(e) => {
+                      setVolume(e.target.value);
+                      setError('');
+                    }}
                     placeholder="1,000,000"
                     className="mt-1"
+                    min="0"
                   />
+                  <p className="text-xs text-slate-500 mt-1">Nhập khối lượng giao dịch hàng tháng của bạn</p>
                 </div>
 
                 <div>
@@ -205,11 +223,21 @@ export default function CalculatorPage() {
                     id="trades"
                     type="number"
                     value={tradesPerMonth}
-                    onChange={(e) => setTradesPerMonth(e.target.value)}
+                    onChange={(e) => {
+                      setTradesPerMonth(e.target.value);
+                      setError('');
+                    }}
                     placeholder="20"
                     className="mt-1"
+                    min="1"
                   />
                 </div>
+
+                {error && (
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-600">{error}</p>
+                  </div>
+                )}
 
                 <Button 
                   onClick={calculateSavings} 
