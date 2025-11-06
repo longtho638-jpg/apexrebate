@@ -63,6 +63,8 @@ export default function ToolsMarketplace() {
       if (response.ok) {
         const data = await response.json();
         setTools(data.tools || []); // Fix: API trả về { tools: [], pagination: {} }
+      } else {
+        console.error('Failed to fetch tools, status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch tools:', error);
@@ -77,6 +79,8 @@ export default function ToolsMarketplace() {
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
+      } else {
+        console.error('Failed to fetch categories, status:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch categories:', error);

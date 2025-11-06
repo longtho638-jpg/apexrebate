@@ -1,0 +1,39 @@
+(()=>{var e={};e.id=8791,e.ids=[7838,8791],e.modules={3295:e=>{"use strict";e.exports=require("next/dist/server/app-render/after-task-async-storage.external.js")},10846:e=>{"use strict";e.exports=require("next/dist/compiled/next-server/app-page.runtime.prod.js")},21820:e=>{"use strict";e.exports=require("os")},29294:e=>{"use strict";e.exports=require("next/dist/server/app-render/work-async-storage.external.js")},31256:(e,t,r)=>{"use strict";r.r(t),r.d(t,{patchFetch:()=>f,routeModule:()=>d,serverHooks:()=>h,workAsyncStorage:()=>p,workUnitAsyncStorage:()=>m});var o={};r.r(o),r.d(o,{GET:()=>u,POST:()=>l});var a=r(96559),i=r(48088),s=r(37719),n=r(32190),c=r(87838);async function l(e){try{let t=await e.json();if(!t.businessType||!t.teamSize||!t.technicalLevel||!t.primaryGoal)return n.NextResponse.json({error:"缺少必要的用户信息"},{status:400});let r=[];try{let e=await c.default.create(),o=`
+作为一个工作流自动化专家，基于以下用户画像，推荐最适合的工作流方案：
+
+用户信息：
+- 业务类型: ${t.businessType}
+- 团队规模: ${t.teamSize}
+- 技术水平: ${t.technicalLevel}
+- 主要目标: ${t.primaryGoal}
+- 当前挑战: ${t.currentChallenges}
+
+请生成3-4个工作流推荐，每个推荐包含：
+1. 标题和描述
+2. 复杂度等级 (low/medium/high)
+3. 预计实施时间
+4. 预期ROI
+5. 匹配度评分 (0-100)
+6. 核心功能列表
+7. 步骤数量
+8. 推荐理由
+
+请以JSON格式返回，格式如下：
+{
+  "recommendations": [
+    {
+      "id": "1",
+      "title": "推荐标题",
+      "description": "详细描述",
+      "category": "分类",
+      "complexity": "medium",
+      "estimatedTime": "2-3天",
+      "roi": "300%",
+      "matchScore": 95,
+      "features": ["功能1", "功能2"],
+      "steps": 8,
+      "reasoning": "推荐理由"
+    }
+  ]
+}
+`,a=await e.chat.completions.create({messages:[{role:"system",content:"你是一个专业的工作流自动化顾问，擅长根据用户需求推荐最佳解决方案。请始终以JSON格式返回结果。"},{role:"user",content:o}],temperature:.7,max_tokens:2e3}),i=a.choices[0]?.message?.content;if(i)try{let e=i.trim();e.startsWith("```json")?e=e.replace(/```json\s*/,"").replace(/```\s*$/,""):e.startsWith("```")&&(e=e.replace(/```\s*/,"").replace(/```\s*$/,"")),r=JSON.parse(e).recommendations||[]}catch(e){console.error("AI响应解析失败:",e),console.error("原始AI响应:",i)}}catch(e){console.error("AI服务调用失败:",e)}return 0===r.length&&(r=function(e){let t=[];return("trading"===e.businessType||"rebate"===e.businessType)&&t.push({id:"rebate-calc",title:"智能返佣计算工作流",description:"自动化处理多平台返佣计算，支持实时数据同步和智能分润",category:"返佣管理",complexity:"beginner"===e.technicalLevel?"low":"medium",estimatedTime:"beginner"===e.technicalLevel?"3-4天":"2-3天",roi:"300%",matchScore:95,features:["多平台集成","实时计算","智能分润","自动报表"],steps:8,reasoning:"根据您的交易平台业务，返佣计算是核心需求，此方案能显著提升效率"}),("efficiency"===e.primaryGoal||"cost"===e.primaryGoal)&&t.push({id:"data-sync",title:"数据同步与报表自动化",description:"多源数据自动同步，生成可视化报表和业务洞察",category:"数据分析",complexity:"low",estimatedTime:"1-2天",roi:"200%",matchScore:85,features:["数据同步","自动报表","可视化图表","趋势分析"],steps:6,reasoning:"自动化数据处理能大幅提升工作效率，降低人工成本"}),("1-5"===e.teamSize||"6-20"===e.teamSize)&&t.push({id:"user-management",title:"用户生命周期管理",description:"从注册到活跃的全流程自动化，提升用户留存和转化率",category:"用户管理",complexity:"medium",estimatedTime:"5-7天",roi:"250%",matchScore:80,features:["智能画像","个性化推荐","自动化营销","流失预警"],steps:12,reasoning:"对于中小团队，自动化用户管理能有效提升运营效率"}),("advanced"===e.technicalLevel||"expert"===e.technicalLevel)&&t.push({id:"risk-control",title:"风险控制监控系统",description:"实时监控交易风险，自动识别异常行为并触发预警机制",category:"风险控制",complexity:"high",estimatedTime:"7-10天",roi:"400%",matchScore:75,features:["实时监控","智能预警","自动处置","风险分析"],steps:15,reasoning:"考虑到您的技术水平，复杂的风控系统能够带来更高的业务价值"}),t.length<3&&t.push({id:"notification",title:"智能通知系统",description:"多渠道通知发送，支持个性化消息和智能调度",category:"通知系统",complexity:"low",estimatedTime:"2-3天",roi:"180%",matchScore:70,features:["多渠道发送","个性化消息","智能调度","发送统计"],steps:7,reasoning:"通知系统是业务自动化的基础组件，适用性广泛"}),t.slice(0,4).map((e,t)=>({...e,id:e.id||`rule-${t+1}`,matchScore:e.matchScore-5*t}))}(t)),n.NextResponse.json({success:!0,recommendations:r,profile:t,generatedAt:new Date().toISOString()})}catch(e){return console.error("工作流推荐API错误:",e),n.NextResponse.json({error:"服务器内部错误"},{status:500})}}async function u(){return n.NextResponse.json({message:"AI工作流推荐API运行正常",version:"1.0.0",endpoints:{POST:"/api/ai-workflow/recommendations",description:"根据用户画像生成工作流推荐"}})}let d=new a.AppRouteRouteModule({definition:{kind:i.RouteKind.APP_ROUTE,page:"/api/ai-workflow/recommendations/route",pathname:"/api/ai-workflow/recommendations",filename:"route",bundlePath:"app/api/ai-workflow/recommendations/route"},resolvedPagePath:"/Users/macbookprom1/apexrebate-1/src/app/api/ai-workflow/recommendations/route.ts",nextConfigOutput:"standalone",userland:o}),{workAsyncStorage:p,workUnitAsyncStorage:m,serverHooks:h}=d;function f(){return(0,s.patchFetch)({workAsyncStorage:p,workUnitAsyncStorage:m})}},33873:e=>{"use strict";e.exports=require("path")},44870:e=>{"use strict";e.exports=require("next/dist/compiled/next-server/app-route.runtime.prod.js")},63033:e=>{"use strict";e.exports=require("next/dist/server/app-render/work-unit-async-storage.external.js")},78335:()=>{},79748:e=>{"use strict";e.exports=require("fs/promises")},87838:(e,t,r)=>{"use strict";r.r(t),r.d(t,{default:()=>c});var o=r(79748),a=r(33873),i=r(21820);let s=async()=>{let e=i.homedir();for(let t of[a.join(process.cwd(),".z-ai-config"),a.join(e,".z-ai-config"),"/etc/.z-ai-config"])try{let e=await o.readFile(t,"utf-8"),r=JSON.parse(e);if(r.baseUrl&&r.apiKey)return r}catch(e){"ENOENT"!==e.code&&console.error(`Error reading or parsing config file at ${t}:`,e)}throw Error("Configuration file not found or invalid. Please create .z-ai-config in your project, home directory, or /etc.")};class n{constructor(e){this.config=e,this.chat={completions:{create:this.createChatCompletion.bind(this)}},this.images={generations:{create:this.createImageGeneration.bind(this)}},this.functions={invoke:this.invokeFunction.bind(this)}}static async create(){return new n(await s())}async createChatCompletion(e){let{baseUrl:t,chatId:r,userId:o,apiKey:a}=this.config,i=`${t}/chat/completions`,s={"Content-Type":"application/json",Authorization:`Bearer ${a}`,"X-Z-AI-From":"Z"};r&&(s["X-Chat-Id"]=r),o&&(s["X-User-Id"]=o);try{let t=await fetch(i,{method:"POST",headers:s,body:JSON.stringify(e)});if(!t.ok){let e=await t.text();throw Error(`API request failed with status ${t.status}: ${e}`)}return await t.json()}catch(e){throw console.error("Failed to make API request:",e),e}}async createImageGeneration(e){let{baseUrl:t,apiKey:r,chatId:o,userId:a}=this.config,i=`${t}/images/generations`,s={"Content-Type":"application/json",Authorization:`Bearer ${r}`,"X-Z-AI-From":"Z"};o&&(s["X-Chat-Id"]=o),a&&(s["X-User-Id"]=a);let n={...e};try{let e=await fetch(i,{method:"POST",headers:s,body:JSON.stringify(n)});if(!e.ok){let t=await e.text();throw Error(`API request failed with status ${e.status}: ${t}`)}let t=await e.json(),r=await Promise.all(t.data.map(async e=>e.url?{base64:await this.downloadImageAsBase64(e.url),format:"png"}:e));return{...t,data:r}}catch(e){throw console.error("Failed to make image generation request:",e),e}}async downloadImageAsBase64(e){try{let t=await fetch(e);if(!t.ok)throw Error(`Failed to download image: ${t.status}`);let r=await t.arrayBuffer(),o=Buffer.from(r).toString("base64");return`${o}`}catch(e){throw console.error("Failed to download and convert image to base64:",e),e}}async invokeFunction(e,t){let{baseUrl:r,apiKey:o,chatId:a,userId:i}=this.config,s=`${r}/functions/invoke`,n={"Content-Type":"application/json",Authorization:`Bearer ${o}`,"X-Z-AI-From":"Z"};a&&(n["X-Chat-Id"]=a),i&&(n["X-User-Id"]=i);try{let r=await fetch(s,{method:"POST",headers:n,body:JSON.stringify({function_name:e,arguments:t})});if(!r.ok){let e=await r.text();throw Error(`Function invoke failed with status ${r.status}: ${e}`)}return(await r.json()).result}catch(e){throw console.error("Failed to invoke remote function:",e),e}}}let c=n},96487:()=>{}};var t=require("../../../../webpack-runtime.js");t.C(e);var r=e=>t(t.s=e),o=t.X(0,[7719,580],()=>r(31256));module.exports=o})();
