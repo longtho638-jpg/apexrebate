@@ -55,31 +55,39 @@ export async function GET(request: NextRequest) {
     }
 
     // Get tools with seller info
-    const tools = await db.tools.findMany({
-      where: whereClause,
-      include: {
-        users: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true
+    let tools: any[] = [];
+    let total = 0;
+    
+    try {
+      tools = await db.tools.findMany({
+        where: whereClause,
+        include: {
+          users: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true
+            }
+          },
+          _count: {
+            select: {
+              tool_reviews: true,
+              tool_orders: true
+            }
           }
         },
-        _count: {
-          select: {
-            tool_reviews: true,
-            tool_orders: true
-          }
-        }
-      },
-      orderBy,
-      skip: offset,
-      take: limit
-    });
+        orderBy,
+        skip: offset,
+        take: limit
+      });
 
-    // Get total count for pagination
-    const total = await db.tools.count({ where: whereClause });
+      // Get total count for pagination
+      total = await db.tools.count({ where: whereClause });
+    } catch (dbError) {
+      console.error('Database error in /api/tools:', dbError);
+      // Return empty array instead of crashing
+    }
 
     // Calculate average rating for each tool
     const toolsWithRating = await Promise.all(
