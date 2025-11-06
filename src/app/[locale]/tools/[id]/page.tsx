@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useParams, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -78,6 +78,7 @@ export default function ToolDetailPage() {
   const params = useParams();
   const router = useRouter();
   const t = useTranslations();
+  const locale = useLocale();
   
   const [tool, setTool] = useState<Tool | null>(null);
   const [reviews, setReviews] = useState<ToolReview[]>([]);
@@ -99,8 +100,8 @@ export default function ToolDetailPage() {
         const data = await response.json();
         setTool(data);
       } else {
-        toast.error('Không tìm thấy công cụ');
-        router.push('/tools');
+  toast.error('Không tìm thấy công cụ');
+  router.push(`/${locale}/tools`);
       }
     } catch (error) {
       console.error('Error fetching tool:', error);
@@ -243,7 +244,7 @@ export default function ToolDetailPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Không tìm thấy công cụ</h1>
-            <Link href="/tools">
+            <Link href={`/${locale}/tools`}>
               <Button>Quay lại Chợ Công Cụ</Button>
             </Link>
           </div>
@@ -257,7 +258,7 @@ export default function ToolDetailPage() {
       {/* Header */}
       <div className="border-b">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/tools">
+          <Link href={`/${locale}/tools`}>
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Quay lại

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -43,6 +43,7 @@ interface ToolCategory {
 export default function ToolsMarketplace() {
   const { data: session } = useSession();
   const t = useTranslations();
+  const locale = useLocale();
   const [tools, setTools] = useState<Tool[]>([]);
   const [categories, setCategories] = useState<ToolCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +63,29 @@ export default function ToolsMarketplace() {
       const response = await fetch('/api/tools');
       if (response.ok) {
         const data = await response.json();
-        setTools(data);
+        // API trả về { tools, pagination } trên endpoint hiện tại
+        // Chuẩn hóa dữ liệu về shape UI đang render (có field seller)
+        const list = Array.isArray(data) ? data : (data?.tools || []);
+        const mapped: Tool[] = list.map((tool: any) => ({
+          id: tool.id,
+          name: tool.name,
+          description: tool.description,
+          price: tool.price,
+          category: tool.category,
+          type: tool.type,
+          image: tool.image,
+          rating: typeof tool.rating === 'number' ? tool.rating : 0,
+          reviews: typeof tool.reviews === 'number' ? tool.reviews : 0,
+          sales: typeof tool.sales === 'number' ? tool.sales : (tool._count?.tool_orders ?? 0),
+          seller: {
+            id: tool.users?.id ?? tool.seller?.id ?? '',
+            name: tool.users?.name ?? tool.seller?.name ?? 'Seller',
+            avatar: tool.users?.image ?? tool.seller?.avatar ?? undefined,
+          },
+          featured: !!tool.featured,
+          createdAt: tool.createdAt,
+        }));
+        setTools(mapped);
       }
     } catch (error) {
       console.error('Failed to fetch tools:', error);
@@ -175,7 +198,7 @@ export default function ToolsMarketplace() {
             </div>
             <div className="flex gap-2">
               {session && (
-                <Link href="/tools/upload">
+                <Link href={`/${locale}/tools/upload`}>
                   <Button className="bg-white text-green-600 hover:bg-green-50">
                     <Upload className="w-4 h-4 mr-2" />
                     Đăng Công Cụ
@@ -183,7 +206,7 @@ export default function ToolsMarketplace() {
                 </Link>
               )}
               {session?.user?.role === 'ADMIN' && (
-                <Link href="/tools/analytics">
+                <Link href={`/${locale}/tools/analytics`}>
                   <Button variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
                     <BarChart3 className="w-4 h-4 mr-2" />
                     Phân Tích
@@ -325,7 +348,7 @@ export default function ToolsMarketplace() {
                           ${tool.price}
                         </span>
                       </div>
-                      <Link href={`/tools/${tool.id}`}>
+                      <Link href={`/${locale}/tools/${tool.id}`}>
                         <Button className="bg-green-600 hover:bg-green-700">
                           Xem chi tiết
                         </Button>
@@ -415,7 +438,7 @@ export default function ToolsMarketplace() {
                             ${tool.price}
                           </span>
                         </div>
-                        <Link href={`/tools/${tool.id}`}>
+                        <Link href={`/${locale}/tools/${tool.id}`}>
                           <Button size="sm" className="bg-green-600 hover:bg-green-700">
                             Xem chi tiết
                           </Button>

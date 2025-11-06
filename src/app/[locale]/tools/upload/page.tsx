@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +28,7 @@ export default function ToolUpload() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const t = useTranslations();
+  const locale = useLocale();
   
   const [categories, setCategories] = useState<ToolCategory[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +52,7 @@ export default function ToolUpload() {
     if (status === 'loading') return;
     
     if (!session) {
-      router.push('/auth/signin');
+  router.push('/auth/signin');
       return;
     }
 
@@ -167,7 +168,7 @@ export default function ToolUpload() {
       if (response.ok) {
         const tool = await response.json();
         toast.success(publish ? 'Công cụ đã được gửi để duyệt' : 'Nháp đã được lưu');
-        router.push(`/tools/${tool.id}`);
+  router.push(`/${locale}/tools/${tool.id}`);
       } else {
         const error = await response.json();
         toast.error(error.error || 'Failed to create tool');
@@ -201,7 +202,7 @@ export default function ToolUpload() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href="/tools">
+              <Link href={`/${locale}/tools`}>
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Quay lại

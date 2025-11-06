@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-// import { useTranslations, useLocale } from 'next-intl';
+// import { useTranslations } from 'next-intl';
+import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -18,7 +19,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 export default function Navbar() {
   const { data: session, status } = useSession();
   // const t = useTranslations();
-  const locale = 'vi';
+  const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -118,7 +119,7 @@ export default function Navbar() {
               <Users className="w-4 h-4 inline mr-1" />
               Hang Sói
             </Link>
-            <Link href="/tools" className="text-green-600 hover:text-green-700 font-semibold transition-colors">
+            <Link href={`/${locale}/tools`} className="text-green-600 hover:text-green-700 font-semibold transition-colors">
               <ShoppingBag className="w-4 h-4 inline mr-1" />
               Chợ Công Cụ
             </Link>
@@ -242,7 +243,7 @@ export default function Navbar() {
               Hang Sói
             </Link>
             <Link 
-              href="/tools" 
+              href={`/${locale}/tools`} 
               onClick={handleMobileMenuClose}
               className="block px-4 py-3 rounded-lg text-base font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
               role="menuitem"
