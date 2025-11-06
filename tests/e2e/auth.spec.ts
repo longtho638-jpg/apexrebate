@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { clickNavLink } from './helpers/navigation';
 
 test.describe('Authentication', () => {
   test.beforeEach(async ({ page }) => {
@@ -6,19 +7,20 @@ test.describe('Authentication', () => {
   });
 
   test('should display sign in page', async ({ page }) => {
-    await page.click('text=Đăng nhập');
+    // Desktop: Click vào link trực tiếp (không cần hamburger menu)
+    await page.click('a[href="/auth/signin"], button:has-text("Đăng nhập")');
     await expect(page).toHaveURL(/.*auth\/signin/);
     await expect(page.locator('h1')).toContainText('Chào mừng trở lại');
   });
 
   test('should display sign up page', async ({ page }) => {
-    await page.click('text=Đăng ký');
+    await page.click('a[href="/auth/signup"], button:has-text("Đăng ký")');
     await expect(page).toHaveURL(/.*auth\/signup/);
     await expect(page.locator('h1')).toContainText('Tạo tài khoản ApexRebate');
   });
 
   test('should show validation errors on empty form submission', async ({ page }) => {
-    await page.click('text=Đăng nhập');
+    await page.click('a[href="/auth/signin"], button:has-text("Đăng nhập")');
     await page.click('button[type="submit"]');
     
     // HTML5 validation should prevent form submission
@@ -27,13 +29,13 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to calculator page', async ({ page }) => {
-    await page.click('text=Tính toán');
+    await clickNavLink(page, 'Tính toán');
     await expect(page).toHaveURL(/.*calculator/);
     await expect(page.locator('h1')).toContainText('Tính toán Hoàn phí');
   });
 
   test('should navigate to Wall of Fame', async ({ page }) => {
-    await page.click('text=Danh Vọng');
+    await clickNavLink(page, 'Danh Vọng');
     await expect(page).toHaveURL(/.*wall-of-fame/);
     await expect(page.locator('h1')).toContainText('Wall of Fame');
   });
@@ -52,8 +54,10 @@ test.describe('Navigation', () => {
     ];
 
     for (const item of navItems) {
-      await page.click(`text=${item.text}`);
+      await clickNavLink(page, item.text);
       await expect(page).toHaveURL(item.expectedUrl);
+      // Quay về home để test link tiếp theo
+      await page.goto('/');
     }
   });
 
@@ -64,10 +68,11 @@ test.describe('Navigation', () => {
     // Check mobile navigation
     await expect(page.locator('nav')).toBeVisible();
     
-    // Test mobile menu if it exists
-    const mobileMenuButton = page.locator('button[aria-label="Toggle menu"]');
+    // Test mobile menu với helper
+    const mobileMenuButton = page.locator('button[aria-label*="menu" i], button[aria-label*="Toggle" i]');
     if (await mobileMenuButton.isVisible()) {
       await mobileMenuButton.click();
+      await page.waitForTimeout(300);
       await expect(page.locator('nav')).toContainText('Tính toán');
     }
   });

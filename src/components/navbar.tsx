@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { useTranslations, useLocale } from 'next-intl';
+// import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -17,8 +17,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  const t = useTranslations();
-  const locale = useLocale();
+  // const t = useTranslations();
+  const locale = 'vi';
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -107,7 +107,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden sm:flex items-center space-x-8">
             <Link href="/calculator" className="text-muted-foreground hover:text-foreground transition-colors">
               Tính toán
             </Link>
@@ -132,20 +132,38 @@ export default function Navbar() {
 
           {/* Desktop Right side */}
           <div className="hidden md:flex items-center space-x-4">
+          {session ? (
+            <>
             {/* Notification Bell */}
-            <Button variant="ghost" size="sm" className="relative">
-              <Bell className="h-5 w-5" />
-            </Button>
-            
-            {/* Dashboard Button */}
-            <Link href={`/${locale}/dashboard`}>
-              <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
-                Dashboard
-                <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
-                  <span className="text-white text-xs">M</span>
-                </div>
+              <Button variant="ghost" size="sm" className="relative">
+                <Bell className="h-5 w-5" />
               </Button>
-            </Link>
+
+            {/* Dashboard Button */}
+          <Link href={`/${locale}/dashboard`}>
+            <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
+            Dashboard
+              <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
+                  <span className="text-white text-xs">M</span>
+                  </div>
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                {/* Auth Buttons for Guests */}
+                <Link href="/auth/signin">
+                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                    Đăng nhập
+                  </Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                    Đăng ký
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -202,7 +220,7 @@ export default function Navbar() {
               role="menuitem"
               tabIndex={isMobileMenuOpen ? 0 : -1}
             >
-              {t('nav.calculator')}
+              Tính toán
             </Link>
             <Link 
               href="/wall-of-fame" 
@@ -211,7 +229,7 @@ export default function Navbar() {
               role="menuitem"
               tabIndex={isMobileMenuOpen ? 0 : -1}
             >
-              {t('nav.wallOfFame')}
+              Bức tường danh vọng
             </Link>
             <Link 
               href="/hang-soi" 
@@ -240,7 +258,7 @@ export default function Navbar() {
               role="menuitem"
               tabIndex={isMobileMenuOpen ? 0 : -1}
             >
-              {t('nav.faq')}
+              FAQ
             </Link>
             <Link 
               href="/how-it-works" 
@@ -249,7 +267,7 @@ export default function Navbar() {
               role="menuitem"
               tabIndex={isMobileMenuOpen ? 0 : -1}
             >
-              {t('nav.howItWorks')}
+              Cách hoạt động
             </Link>
             
             {/* Mobile Auth Section */}
@@ -278,91 +296,91 @@ export default function Navbar() {
                   </div>
                   
                   {/* Mobile User Menu */}
-                  <Link 
-                    href={`/${locale}/dashboard`} 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href={`/${locale}/dashboard`}
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <TrendingUp className="inline w-4 h-4 mr-2" />
-                    {t('nav.dashboard')}
+                  <TrendingUp className="inline w-4 h-4 mr-2" />
+                  Dashboard
                   </Link>
-                  <Link 
-                    href={`/${locale}/profile`} 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href={`/${locale}/profile`}
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <User className="inline w-4 h-4 mr-2" />
-                    {t('nav.profile')}
+                  <User className="inline w-4 h-4 mr-2" />
+                  Profile
                   </Link>
-                  <Link 
-                    href={`/${locale}/payouts`} 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href={`/${locale}/payouts`}
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <DollarSign className="inline w-4 h-4 mr-2" />
-                    {t('common.total')}
+                  <DollarSign className="inline w-4 h-4 mr-2" />
+                  Payouts
                   </Link>
-                  <Link 
-                    href={`/${locale}/referrals`} 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href={`/${locale}/referrals`}
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <Users className="inline w-4 h-4 mr-2" />
-                    {t('common.search')}
+                  <Users className="inline w-4 h-4 mr-2" />
+                  Referrals
                   </Link>
                   {(session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') && (
-                    <Link 
-                      href="/admin" 
-                      onClick={handleMobileMenuClose}
-                      className="block px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                      role="menuitem"
-                      tabIndex={isMobileMenuOpen ? 0 : -1}
-                    >
-                      <Settings className="inline w-4 h-4 mr-2" />
-                      {t('common.settings')}
-                    </Link>
+                  <Link
+                  href="/admin"
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
+                  >
+                  <Settings className="inline w-4 h-4 mr-2" />
+                  Admin
+                  </Link>
                   )}
                   <button
-                    onClick={() => {
-                      handleSignOut();
-                      handleMobileMenuClose();
-                    }}
-                    className="w-full text-left px-4 py-3 rounded-lg text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  onClick={() => {
+                  handleSignOut();
+                  handleMobileMenuClose();
+                  }}
+                  className="w-full text-left px-4 py-3 rounded-lg text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <LogOut className="inline w-4 h-4 mr-2" />
-                    {t('nav.logout')}
+                  <LogOut className="inline w-4 h-4 mr-2" />
+                  Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link 
-                    href="/auth/signin" 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href="/auth/signin"
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    {t('nav.login')}
+                  Đăng nhập
                   </Link>
-                  <Link 
-                    href="/auth/signup" 
-                    onClick={handleMobileMenuClose}
-                    className="block px-4 py-3 rounded-lg text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-                    role="menuitem"
-                    tabIndex={isMobileMenuOpen ? 0 : -1}
+                  <Link
+                  href="/auth/signup"
+                  onClick={handleMobileMenuClose}
+                  className="block px-4 py-3 rounded-lg text-base font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+                  role="menuitem"
+                  tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                    <Shield className="inline w-4 h-4 mr-2" />
-                    {t('hero.cta')}
+                  <Shield className="inline w-4 h-4 mr-2" />
+                  Đăng ký
                   </Link>
                 </>
               )}
