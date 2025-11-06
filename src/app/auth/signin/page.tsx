@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -27,6 +27,19 @@ export default function SignInPage() {
     password: '',
     twoFactorCode: ''
   })
+
+  // Map lỗi từ query param ?error=CredentialsSignin sang thông báo thân thiện
+  useEffect(() => {
+    const err = searchParams.get('error')
+    if (!err) return
+    if (err === 'CredentialsSignin') {
+      setError('Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.')
+    } else if (/verify/i.test(err)) {
+      setError('Tài khoản chưa được xác thực. Vui lòng kiểm tra email.')
+    } else {
+      setError(err)
+    }
+  }, [searchParams])
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))

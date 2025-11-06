@@ -49,9 +49,27 @@ export async function POST() {
       }, { status: 400 });
     }
 
-    // Import seed function
-    const { seedMaster } = await import('@/lib/seed/seed-master');
-    
+    // Env gate: chỉ cho phép import module seed khi bật SEED_ENABLE
+    if (!process.env.SEED_ENABLE) {
+      return NextResponse.json({ 
+        error: 'Seed disabled', 
+        message: 'Set SEED_ENABLE=1 and include lib/seed/seed-master to enable production seeding.' 
+      }, { status: 400 });
+    }
+
+    // Import động module seed theo cách tránh bundler resolve ở build-time
+    let seedMaster: any
+    try {
+      const dynamicImport = new Function('p', 'return import(p)') as (p: string) => Promise<any>
+      const mod = await dynamicImport('@/lib/seed/seed-master')
+      seedMaster = mod.seedMaster
+    } catch (e) {
+      return NextResponse.json({ 
+        error: 'Seed module not found',
+        message: `Module '@/lib/seed/seed-master' is unavailable in this build.`,
+      }, { status: 500 })
+    }
+
     // Run seed
     const result = await seedMaster();
     

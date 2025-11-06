@@ -93,7 +93,8 @@ export default function SignUpPage() {
     return true
   }
 
-  const handleNext = async () => {
+  const handleNext = async (e: React.FormEvent) => {
+    e.preventDefault()
     if (!validateStep1()) return
 
     // Check if email already exists

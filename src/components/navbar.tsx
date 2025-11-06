@@ -34,6 +34,23 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Đóng các overlay (Radix Select/Popover/Menu) khi route thay đổi để tránh "overlay không biến mất"
+  useEffect(() => {
+    // Đóng mobile menu nếu đang mở
+    setIsMobileMenuOpen(false);
+    // Thử đóng các overlay phổ biến bằng cách gửi phím Escape và ẩn các node data-state=open
+    const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+    document.dispatchEvent(escEvent);
+    // Fallback: ẩn các phần tử Radix đang mở
+    const openNodes = document.querySelectorAll('[data-state="open"]');
+    openNodes.forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.style.display = 'none';
+        node.setAttribute('data-state', 'closed');
+      }
+    });
+  }, [pathname]);
+
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -193,13 +193,13 @@ export default function CalculatorPage() {
                 <div>
                   <Label htmlFor="broker">Sàn giao dịch</Label>
                   <Select value={broker} onValueChange={setBroker}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" data-testid="exchange-trigger">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="binance">Binance Futures</SelectItem>
-                      <SelectItem value="bybit">Bybit Futures</SelectItem>
-                      <SelectItem value="okx">OKX Futures</SelectItem>
+                      <SelectItem value="binance" data-testid="exchange-option-binance">Binance Futures</SelectItem>
+                      <SelectItem value="bybit" data-testid="exchange-option-bybit">Bybit Futures</SelectItem>
+                      <SelectItem value="okx" data-testid="exchange-option-okx">OKX Futures</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -207,12 +207,12 @@ export default function CalculatorPage() {
                 <div>
                   <Label htmlFor="tradeType">Loại giao dịch</Label>
                   <Select value={tradeType} onValueChange={setTradeType}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" data-testid="trade-type-trigger">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="maker">Maker (Giới hạn)</SelectItem>
-                      <SelectItem value="taker">Taker (Thị trường)</SelectItem>
+                      <SelectItem value="maker" data-testid="trade-type-option-maker">Maker (Giới hạn)</SelectItem>
+                      <SelectItem value="taker" data-testid="trade-type-option-taker">Taker (Thị trường)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

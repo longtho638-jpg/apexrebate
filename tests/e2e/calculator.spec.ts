@@ -9,10 +9,9 @@ test.describe('Guest - Calculator', () => {
     // Nhập volume
     await page.fill('#volume', '1000000')
 
-    // Chọn sàn (giữ mặc định binance)
-    // Chọn loại giao dịch (taker)
-    await page.getByRole('button', { name: /Loại giao dịch/i }).click()
-    await page.getByRole('option', { name: /Taker/ }).click()
+    // Chọn loại giao dịch bằng data-testid (ổn định, không phụ thuộc locale)
+    await page.locator('[data-testid="trade-type-trigger"]').click()
+    await page.locator('[data-testid="trade-type-option-taker"]').click()
 
     // Bấm tính toán
     await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
@@ -32,13 +31,13 @@ test.describe('Guest - Calculator', () => {
   test('Đổi sàn/loại giao dịch cập nhật kết quả', async ({ page }) => {
     await page.fill('#volume', '250000000') // đủ để lên VIP cao hơn
 
-    // Đổi sàn sang Bybit
-    await page.getByRole('button', { name: /Sàn giao dịch/i }).click()
-    await page.getByRole('option', { name: /Bybit Futures/i }).click()
+    // Đổi sàn sang Bybit bằng data-testid
+    await page.locator('[data-testid="exchange-trigger"]').click()
+    await page.locator('[data-testid="exchange-option-bybit"]').click()
 
-    // Đổi loại giao dịch sang Maker
-    await page.getByRole('button', { name: /Loại giao dịch/i }).click()
-    await page.getByRole('option', { name: /Maker/ }).click()
+    // Đổi loại giao dịch sang Maker bằng data-testid
+    await page.locator('[data-testid="trade-type-trigger"]').click()
+    await page.locator('[data-testid="trade-type-option-maker"]').click()
 
     await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
 
