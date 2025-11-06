@@ -62,7 +62,7 @@ export default function ToolsMarketplace() {
       const response = await fetch('/api/tools');
       if (response.ok) {
         const data = await response.json();
-        setTools(data);
+        setTools(data.tools || []); // Fix: API trả về { tools: [], pagination: {} }
       }
     } catch (error) {
       console.error('Failed to fetch tools:', error);

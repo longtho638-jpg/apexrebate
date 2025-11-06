@@ -194,21 +194,21 @@ function calculateProjection(volume: number, broker: string, tradeType: string, 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { volume, broker, tradeType, tradesPerMonth } = body;
+    const { volume, exchange, broker, tradeType, tradesPerMonth, tier } = body;
+
+    // Support both 'exchange' and 'broker' parameters for compatibility
+    const brokerName = broker || exchange || 'binance';
 
     // For POST requests, we can handle bulk calculations or more complex scenarios
     if (Array.isArray(volume)) {
       // Handle multiple volume calculations
       const results = volume.map(v => {
-        const params = new URLSearchParams({
-          volume: v.toString(),
-          broker: broker || 'binance',
-          tradeType: tradeType || 'taker',
-          tradesPerMonth: (tradesPerMonth || 20).toString(),
-        });
-        
-        // This would normally call the GET logic, but for simplicity we'll inline it
-        return calculateSingleRebate(parseFloat(v.toString()), broker || 'binance', tradeType || 'taker', tradesPerMonth || 20);
+        return calculateSingleRebate(
+          parseFloat(v.toString()), 
+          brokerName, 
+          tradeType || 'taker', 
+          tradesPerMonth || 20
+        );
       });
 
       return NextResponse.json({
@@ -225,15 +225,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Single calculation (same as GET)
+    const result = calculateSingleRebate(volume, brokerName, tradeType || 'taker', tradesPerMonth || 20);
+    
     return NextResponse.json({
       success: true,
-      data: calculateSingleRebate(volume, broker, tradeType, tradesPerMonth)
+      data: result
     });
 
   } catch (error) {
     console.error('Calculator POST error:', error);
     return NextResponse.json(
-      { error: 'Failed to calculate rebate' },
+      { error: 'Failed to calculate rebate', details: (error as Error).message },
       { status: 500 }
     );
   }
