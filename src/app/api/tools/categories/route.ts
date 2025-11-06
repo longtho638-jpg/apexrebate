@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   try {
-    const categories = await db.toolCategory.findMany({
+    const categories = await db.tool_categories.findMany({
       orderBy: { name: 'asc' },
       include: {
         _count: {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await db.toolCategory.create({
+    const category = await db.tool_categories.create({
       data: {
         name,
         description,
