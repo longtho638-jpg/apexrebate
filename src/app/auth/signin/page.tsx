@@ -31,6 +31,7 @@ export default function SignInPage() {
   // Map lỗi từ query param ?error=CredentialsSignin sang thông báo thân thiện
   useEffect(() => {
     const err = searchParams.get('error')
+    console.log('[SignIn] Query params:', { error: err, all: searchParams.toString() })
     if (!err) return
     if (err === 'CredentialsSignin') {
       setError('Email hoặc mật khẩu không đúng. Vui lòng kiểm tra lại.')
