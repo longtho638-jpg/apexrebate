@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -43,6 +43,11 @@ export default function ConciergeClaimPage() {
   })
   const [evidencePreview, setEvidencePreview] = useState<EvidencePreview | null>(null)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  // Set page title
+  useEffect(() => {
+    document.title = 'Submit Rebate Claim | ApexRebate Concierge'
+  }, [])
 
   const exchanges = [
     { value: 'binance', label: 'Binance' },

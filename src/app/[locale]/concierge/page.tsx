@@ -16,10 +16,19 @@ import {
   Sparkles
 } from 'lucide-react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useEffect } from 'react'
 import EmailRitualTracker from '@/components/concierge/email-ritual-tracker'
 import WallOfFame from '@/components/hang-soi/wall-of-fame'
 
 export default function ConciergePage() {
+  const params = useParams()
+  const locale = params.locale as string
+
+  // Set page title dynamically
+  useEffect(() => {
+    document.title = 'Concierge Dashboard | ApexRebate'
+  }, [])
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="text-center space-y-2">
@@ -35,7 +44,7 @@ export default function ConciergePage() {
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <Link href="/concierge/claim">
+          <Link href={`/${locale}/concierge/claim`}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-blue-500" />
