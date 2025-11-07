@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - img [ref=e6]
+        - heading "Tính toán Tiết kiệm" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Tính toán chính xác số tiền bạn có thể tiết kiệm với dịch vụ hoàn phí của ApexRebate
+    - generic [ref=e10]:
+      - generic [ref=e12]:
+        - generic [ref=e14]:
+          - img [ref=e15]
+          - text: Thông số Giao dịch
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - generic [ref=e19]: Khối lượng hàng tháng (USD)
+            - spinbutton "Khối lượng hàng tháng (USD)" [active] [ref=e20]: "1000000"
+          - generic [ref=e21]:
+            - generic [ref=e22]: Sàn giao dịch
+            - combobox [ref=e23]:
+              - generic: Binance Futures
+              - img
+          - generic [ref=e24]:
+            - generic [ref=e25]: Loại giao dịch
+            - combobox [ref=e26]:
+              - generic: Taker (Thị trường)
+              - img
+          - generic [ref=e27]:
+            - generic [ref=e28]: Số lệnh hàng tháng
+            - spinbutton "Số lệnh hàng tháng" [ref=e29]: "20"
+          - button "Tính toán" [ref=e30]
+      - generic [ref=e32]:
+        - generic [ref=e34]: Binance Futures - VIP 0
+        - generic [ref=e35]:
+          - tablist [ref=e36]:
+            - tab "Tiết kiệm" [selected] [ref=e37]
+            - tab "Phí giao dịch" [ref=e38]
+            - tab "Phân tích" [ref=e39]
+          - tabpanel "Tiết kiệm" [ref=e40]:
+            - generic [ref=e41]:
+              - generic [ref=e44]:
+                - generic [ref=e45]:
+                  - paragraph [ref=e46]: Tiết kiệm hàng tháng
+                  - paragraph [ref=e47]: $16.00
+                - img [ref=e48]
+              - generic [ref=e52]:
+                - generic [ref=e53]:
+                  - paragraph [ref=e54]: Tiết kiệm hàng năm
+                  - paragraph [ref=e55]: $192.00
+                - img [ref=e56]
+            - generic [ref=e60]:
+              - heading "Tổng quan Tiết kiệm" [level=3] [ref=e61]
+              - generic [ref=e62]:
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Tỷ lệ hoàn phí
+                  - generic [ref=e65]: 4%
+                - generic [ref=e66]:
+                  - generic [ref=e67]: Hiệu quả hàng năm
+                  - generic [ref=e68]: 0.230%
+  - alert [ref=e69]
+```

@@ -45,18 +45,7 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Redirect /uiux-v3 → / (301 permanent)
-  if (pathname === '/uiux-v3') {
-    return NextResponse.redirect(new URL('/', request.url), 301);
-  }
-
-  // Redirect /:locale/uiux-v3 → /:locale (301 permanent) - BEFORE intl middleware
-  const match = pathname.match(/^\/(en|vi)\/uiux-v3$/);
-  if (match) {
-    const locale = match[1];
-    const targetUrl = locale === 'vi' ? '/' : `/${locale}`;
-    return NextResponse.redirect(new URL(targetUrl, request.url), 301);
-  }
+  // Removed redirects for /uiux-v3 as we now have client-only pages
 
   // 🔒 AUTH PROTECTION: Check for protected routes
   const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin'];

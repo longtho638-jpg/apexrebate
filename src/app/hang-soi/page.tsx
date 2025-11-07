@@ -9,12 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Users, 
-  Shield, 
-  BarChart3, 
-  MessageSquare, 
-  Trophy, 
+import {
+  Users,
+  Shield,
+  BarChart3,
+  MessageSquare,
+  Trophy,
   Star,
   Lock,
   Eye,
@@ -29,6 +29,8 @@ import {
   Crown,
   Filter
 } from 'lucide-react'
+import SocialGraph from '@/components/hang-soi/social-graph'
+import ARPUUplift from '@/components/gamification/arpu-uplift'
 
 export default function HangSoiPage() {
   const [activeTab, setActiveTab] = useState('overview')
@@ -201,15 +203,23 @@ export default function HangSoiPage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-4">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                Tổng quan
-              </TabsTrigger>
-              <TabsTrigger value="discussions" className="flex items-center gap-2">
-                <MessageSquare className="w-4 h-4" />
-                Thảo luận
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-6">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+            <Eye className="w-4 h-4" />
+            Tổng quan
+            </TabsTrigger>
+            <TabsTrigger value="network" className="flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Mạng lưới
+            </TabsTrigger>
+            <TabsTrigger value="gamification" className="flex items-center gap-2">
+            <Trophy className="w-4 h-4" />
+            Thử thách
+            </TabsTrigger>
+            <TabsTrigger value="discussions" className="flex items-center gap-2">
+            <MessageSquare className="w-4 h-4" />
+            Thảo luận
+            </TabsTrigger>
               <TabsTrigger value="members" className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Thành viên
@@ -370,6 +380,16 @@ export default function HangSoiPage() {
                   </Card>
                 </div>
               </div>
+            </TabsContent>
+
+            {/* Social Network Tab */}
+            <TabsContent value="network" className="space-y-8">
+              <SocialGraph />
+            </TabsContent>
+
+            {/* Gamification Tab */}
+            <TabsContent value="gamification" className="space-y-8">
+              <ARPUUplift />
             </TabsContent>
 
             {/* Discussions Tab */}

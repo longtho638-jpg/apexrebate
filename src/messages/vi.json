@@ -3,5 +3,58 @@
     "welcome": "Chào mừng bạn đến với ApexRebate!",
     "subtitle": "Tối ưu hóa lợi nhuận ròng cho trader Việt 🇻🇳",
     "cta": "Bắt đầu ngay"
+  },
+  "navigation": {
+    "home": "Trang chủ",
+    "dashboard": "Bảng điều khiển",
+    "profile": "Hồ sơ",
+    "referrals": "Giới thiệu",
+    "admin": "Quản trị",
+    "signIn": "Đăng nhập",
+    "signOut": "Đăng xuất",
+    "language": "Ngôn ngữ"
+  },
+  "buttons": {
+    "submit": "Gửi",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "edit": "Chỉnh sửa",
+    "delete": "Xóa",
+    "refresh": "Làm mới",
+    "loadMore": "Tải thêm",
+    "close": "Đóng"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirmPassword": "Xác nhận mật khẩu",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "phone": "Số điện thoại",
+    "required": "Bắt buộc",
+    "optional": "Tùy chọn"
+  },
+  "errors": {
+    "general": "Có lỗi xảy ra",
+    "network": "Lỗi kết nối mạng",
+    "validation": "Dữ liệu không hợp lệ",
+    "unauthorized": "Không có quyền truy cập"
+  },
+  "loading": {
+    "text": "Đang tải...",
+    "processing": "Đang xử lý..."
+  },
+  "cicd": {
+    "title": "CI/CD Pipeline Center",
+    "subtitle": "Quản lý quy trình tích hợp và triển khai liên tục",
+    "activePipelines": "Pipeline hoạt động",
+    "todayDeployments": "Triển khai hôm nay",
+    "averageDeployTime": "Thời gian triển khai trung bình",
+    "successRate": "Tỷ lệ thành công",
+    "pipelineDashboard": "Bảng điều khiển Pipeline",
+    "deploymentManagement": "Quản lý Triển khai",
+    "environmentManagement": "Quản lý Môi trường",
+    "monitoringLogs": "Giám sát Nhật ký",
+    "settingsConfiguration": "Cài đặt Cấu hình"
   }
 }

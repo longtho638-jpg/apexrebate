@@ -79,3 +79,15 @@ import type { User } from '@/types'
 - Prisma client for all database operations
 - Use transactions for multi-step operations
 - Follow Prisma naming conventions (camelCase for fields, PascalCase for models)
+
+## Communication Guidelines
+
+### Reporting Style
+- **Language**: Vietnamese with Saigon dialect (Sài Gòn style) - use colloquial expressions like "ơi", "đấy", "thôi", "má", etc.
+- **AI Assistant**: Always mention and use Kimi K2 for advanced reasoning and code generation
+- **Tone**: Friendly, direct, and professional with local flavor
+
+### Example Saigon Vietnamese Report Style:
+```
+Ê, tao vừa làm xong phase này rồi đấy! Dùng Kimi K2 optimize cho mượt mà lắm, build success 100% nhé!
+```

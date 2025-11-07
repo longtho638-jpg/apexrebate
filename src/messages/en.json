@@ -3,5 +3,58 @@
     "welcome": "Welcome to ApexRebate!",
     "subtitle": "Optimize your net trading profit globally 🌍",
     "cta": "Start Now"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "referrals": "Referrals",
+    "admin": "Admin",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "language": "Language"
+  },
+  "buttons": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "loadMore": "Load More",
+    "close": "Close"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phone": "Phone Number",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "errors": {
+    "general": "An error occurred",
+    "network": "Network error",
+    "validation": "Invalid data",
+    "unauthorized": "Unauthorized access"
+  },
+  "loading": {
+    "text": "Loading...",
+    "processing": "Processing..."
+  },
+  "cicd": {
+    "title": "CI/CD Pipeline Center",
+    "subtitle": "Manage continuous integration and deployment processes",
+    "activePipelines": "Active Pipelines",
+    "todayDeployments": "Today's Deployments",
+    "averageDeployTime": "Average Deploy Time",
+    "successRate": "Success Rate",
+    "pipelineDashboard": "Pipeline Dashboard",
+    "deploymentManagement": "Deployment Management",
+    "environmentManagement": "Environment Management",
+    "monitoringLogs": "Monitoring Logs",
+    "settingsConfiguration": "Settings Configuration"
   }
 }

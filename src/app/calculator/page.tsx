@@ -1,5 +1,6 @@
 'use client';
 
+// Calculator component with data-testid for E2E testing
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
