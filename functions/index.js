@@ -10,13 +10,17 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 // Initialize Firebase Admin
 admin.initializeApp();
 
-// Next.js SSR handler
-const app = next({ dev: false, conf: { distDir: './.next' } });
-const handle = app.getRequestHandler();
+// Next.js SSR handler using standalone server
+let nextHandler;
 
-exports.nextServer = functions.https.onRequest(async (req, res) => {
-  await app.prepare();
-  return handle(req, res);
+exports.nextServer = onRequest(async (req, res) => {
+  if (!nextHandler) {
+    // Dynamically import standalone server
+    const standaloneServer = require(path.join(__dirname, 'standalone', 'server.js'));
+    nextHandler = standaloneServer.default || standaloneServer;
+  }
+  
+  return nextHandler(req, res);
 });
 
 // Manual Payout Process - Concierge Service
