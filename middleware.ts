@@ -48,7 +48,8 @@ export default async function middleware(request: NextRequest) {
   // Removed redirects for /uiux-v3 as we now have client-only pages
 
   // 🔒 AUTH PROTECTION: Check for protected routes
-  const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin'];
+  // NOTE: /tools (browsing) is PUBLIC but /tools/upload and /tools/analytics are protected
+  const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin', '/tools/upload', '/tools/analytics'];
   
   // Extract locale from pathname if present (e.g., /vi/dashboard → vi)
   const localeMatch = pathname.match(/^\/(en|vi)(\/.*)?$/);
@@ -75,9 +76,12 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
-    // Admin route protection
-    if (pathWithoutLocale.includes('/admin')) {
-      if (token.role !== 'ADMIN' && token.role !== 'CONCIERGE') {
+    // ✅ Enhanced admin route protection with proper path matching
+    if (pathWithoutLocale === '/admin' || pathWithoutLocale.startsWith('/admin/')) {
+      const userRole = (token.role as string) || 'USER';
+      
+      // Only ADMIN and CONCIERGE can access /admin
+      if (userRole !== 'ADMIN' && userRole !== 'CONCIERGE') {
         const dashboardPath = locale ? `/${locale}/dashboard` : '/dashboard';
         return NextResponse.redirect(new URL(dashboardPath, request.url));
       }

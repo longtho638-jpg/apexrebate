@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Filter, Grid, List, Star, Users, DollarSign, TrendingUp, Plus, Upload, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 interface Tool {
   id: string;
@@ -167,19 +169,21 @@ export default function ToolsMarketplace() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-64 bg-muted rounded-lg"></div>
-              ))}
-            </div>
-          </div>
-        </div>
+  return (
+  <div className="min-h-screen bg-background">
+  <Navbar />
+  <div className="container mx-auto px-4 py-8">
+  <div className="animate-pulse">
+  <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
+  <div className="h-4 bg-muted rounded w-1/2 mb-8"></div>
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {[...Array(6)].map((_, i) => (
+    <div key={i} className="h-64 bg-muted rounded-lg"></div>
+    ))}
+    </div>
+    </div>
+    </div>
+      <Footer />
       </div>
     );
   }
@@ -197,11 +201,18 @@ export default function ToolsMarketplace() {
               </p>
             </div>
             <div className="flex gap-2">
-              {session && (
+              {session ? (
                 <Link href={`/${locale}/tools/upload`}>
                   <Button className="bg-white text-green-600 hover:bg-green-50">
                     <Upload className="w-4 h-4 mr-2" />
                     Đăng Công Cụ
+                  </Button>
+                </Link>
+              ) : (
+                <Link href={`/${locale}/auth/signup?callbackUrl=/${locale}/tools/upload`}>
+                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-green-600">
+                    <Upload className="w-4 h-4 mr-2" />
+                    Đăng Công Cụ (Đăng ký)
                   </Button>
                 </Link>
               )}
@@ -452,6 +463,7 @@ export default function ToolsMarketplace() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
