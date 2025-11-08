@@ -1,11 +1,9 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'https://apexrebate.com';
-
 test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
   test.describe('Dashboard Page', () => {
     test('should load Vietnamese concierge dashboard', async ({ page }) => {
-      await page.goto(`${BASE_URL}/vi/concierge`);
+  await page.goto(`/vi/concierge`);
       
       // Verify page loads successfully
       await expect(page).toHaveTitle(/Concierge|ApexRebate/i);
@@ -19,7 +17,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
     });
 
     test('should load English concierge dashboard', async ({ page }) => {
-      await page.goto(`${BASE_URL}/en/concierge`);
+  await page.goto(`/en/concierge`);
       
       // Verify page loads
       await expect(page).toHaveTitle(/Concierge|ApexRebate/i);
@@ -29,7 +27,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
     });
 
     test('should have quick action cards', async ({ page }) => {
-      await page.goto(`${BASE_URL}/vi/concierge`);
+  await page.goto(`/vi/concierge`);
       
       // Wait for page to be interactive
       await page.waitForLoadState('networkidle');
@@ -42,7 +40,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
 
   test.describe('Claim Page', () => {
     test('should load Vietnamese claim form', async ({ page }) => {
-      await page.goto(`${BASE_URL}/vi/concierge/claim`);
+  await page.goto(`/vi/concierge/claim`);
       
       // Verify page loads
       await expect(page).toHaveTitle(/Claim|Yêu cầu|ApexRebate/i);
@@ -53,7 +51,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
     });
 
     test('should load English claim form', async ({ page }) => {
-      await page.goto(`${BASE_URL}/en/concierge/claim`);
+  await page.goto(`/en/concierge/claim`);
       
       // Verify page loads
       await expect(page).toHaveTitle(/Claim|ApexRebate/i);
@@ -63,7 +61,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
     });
 
     test('should have file upload capability', async ({ page }) => {
-      await page.goto(`${BASE_URL}/vi/concierge/claim`);
+  await page.goto(`/vi/concierge/claim`);
       
       await page.waitForLoadState('networkidle');
       
@@ -76,7 +74,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
   test.describe('Navigation & Performance', () => {
     test('should navigate between dashboard and claim page', async ({ page }) => {
       // Start at dashboard
-      await page.goto(`${BASE_URL}/vi/concierge`);
+  await page.goto(`/vi/concierge`);
       await expect(page).toHaveURL(/\/vi\/concierge$/);
       
       // Navigate to claim (if link exists)
@@ -89,7 +87,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
 
     test('should load dashboard within 3 seconds', async ({ page }) => {
       const startTime = Date.now();
-      await page.goto(`${BASE_URL}/vi/concierge`);
+  await page.goto(`/vi/concierge`);
       await page.waitForLoadState('domcontentloaded');
       const loadTime = Date.now() - startTime;
       
@@ -99,7 +97,7 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
     test('should be responsive on mobile', async ({ page }) => {
       // Set mobile viewport
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto(`${BASE_URL}/vi/concierge`);
+  await page.goto(`/vi/concierge`);
       
       // Verify page is still usable
       await expect(page.locator('body')).toBeVisible();
@@ -107,14 +105,14 @@ test.describe('Concierge Pages - Phase 1 Manual Excellence', () => {
   });
 
   test.describe('Locale Switching', () => {
-    test('should support both Vietnamese and English', async ({ page }) => {
+    test('should support both Vietnamese and English', async ({ page, baseURL }) => {
       // Test Vietnamese
-      await page.goto(`${BASE_URL}/vi/concierge`);
-      await expect(page).toHaveURL(/\/vi\//);
+      await page.goto(`/vi/concierge`);
+      await expect(page).toHaveURL(new RegExp(`${baseURL?.replace(/\//g, '\\/') || ''}.*\/vi\/concierge`));
       
       // Test English
-      await page.goto(`${BASE_URL}/en/concierge`);
-      await expect(page).toHaveURL(/\/en\//);
+      await page.goto(`/en/concierge`);
+      await expect(page).toHaveURL(new RegExp(`${baseURL?.replace(/\//g, '\\/') || ''}.*\/en\/concierge`));
     });
   });
 });

@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useTranslations } from 'next-intl'
 
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Button } from '@/components/ui/button'
@@ -9,15 +8,19 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 
 const navItems = [
-  { href: '#objectives', key: 'sections.objectives' },
-  { href: '#roadmap', key: 'sections.roadmap' },
-  { href: '#tasks', key: 'sections.tasks' },
-  { href: '#experts', key: 'sections.experts' },
-  { href: '#governance', key: 'sections.governance' },
+  { href: '#objectives', key: 'sections.objectives', label: 'UX Objectives' },
+  { href: '#roadmap', key: 'sections.roadmap', label: 'Roadmap' },
+  { href: '#tasks', key: 'sections.tasks', label: 'Tasks' },
+  { href: '#experts', key: 'sections.experts', label: 'Experts' },
+  { href: '#governance', key: 'sections.governance', label: 'Governance' },
 ] as const
 
 export function SiteHeader() {
-  const t = useTranslations('uiuxV3.nav')
+  // Hardcoded text thay vì useTranslations do uiux-v3 messages đã bị remove
+  const brand = 'AR ApexRebate UI/UX v3'
+  const ariaMain = 'Primary navigation'
+  const mode = 'Hybrid Mode ⚡'
+  const docs = 'Canvas playbook'
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,9 +31,9 @@ export function SiteHeader() {
           data-i18n="nav.brand"
         >
           <span className="inline-flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">AR</span>
-          {t('brand')}
+          {brand}
         </Link>
-        <nav aria-label={t('ariaMain')} className="hidden items-center gap-1 md:flex">
+        <nav aria-label={ariaMain} className="hidden items-center gap-1 md:flex">
           {navItems.map(item => (
             <Link
               key={item.key}
@@ -41,21 +44,21 @@ export function SiteHeader() {
                 'text-muted-foreground hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
               )}
             >
-              {t(item.key)}
+              {item.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="hidden md:inline-flex" data-i18n="nav.mode">
-            {t('mode')}
+            {mode}
           </Badge>
           <ThemeToggle />
           <Button asChild size="sm" data-i18n="nav.docs">
-            <Link href="#tasks">{t('docs')}</Link>
+            <Link href="#tasks">{docs}</Link>
           </Button>
         </div>
       </div>
-      <nav className="md:hidden" aria-label={t('ariaMain')}>
+      <nav className="md:hidden" aria-label={ariaMain}>
         <div className="container flex snap-x gap-2 overflow-x-auto pb-3 pt-2">
           {navItems.map(item => (
             <Link
@@ -64,7 +67,7 @@ export function SiteHeader() {
               data-i18n={`nav.${item.key}`}
               className="snap-start rounded-full bg-muted/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              {t(item.key)}
+              {item.label}
             </Link>
           ))}
         </div>

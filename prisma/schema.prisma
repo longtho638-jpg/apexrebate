@@ -484,45 +484,79 @@ model user_activities {
 }
 
 model users {
-  id                   String                 @id
-  email                String                 @unique
-  name                 String?
-  image                String?
-  password             String?
-  role                 UserRole               @default(USER)
-  emailVerified        DateTime?
-  twoFactorEnabled     Boolean                @default(false)
-  twoFactorSecret      String?
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime
-  tradingVolume        Float?
-  preferredBroker      String?
-  experience           String?
-  referralSource       String?
-  referralCode         String?
-  referredBy           String?
-  totalSaved           Float                  @default(0)
-  referralCount        Int                    @default(0)
-  tier                 UserTier               @default(BRONZE)
-  points               Int                    @default(0)
-  lastActiveAt         DateTime               @default(now())
-  streak               Int                    @default(0)
-  badgeCount           Int                    @default(0)
-  accounts             accounts[]
-  email_notifications  email_notifications[]
-  exchange_accounts    exchange_accounts[]
-  notifications        notifications[]
-  payouts              payouts[]
-  sessions             sessions[]
-  tool_affiliate_links tool_affiliate_links[]
-  tool_favorites       tool_favorites[]
-  tool_orders          tool_orders[]
-  tool_reviews         tool_reviews[]
-  tools                tools[]
-  user_achievements    user_achievements[]
-  user_activities      user_activities[]
-  users                users?                 @relation("usersTousers", fields: [referredBy], references: [id])
-  other_users          users[]                @relation("usersTousers")
+id                   String                 @id
+email                String                 @unique
+name                 String?
+image                String?
+password             String?
+role                 UserRole               @default(USER)
+emailVerified        DateTime?
+twoFactorEnabled     Boolean                @default(false)
+twoFactorSecret      String?
+createdAt            DateTime               @default(now())
+updatedAt            DateTime
+tradingVolume        Float?
+preferredBroker      String?
+experience           String?
+referralSource       String?
+referralCode         String?
+referredBy           String?
+totalSaved           Float                  @default(0)
+referralCount        Int                    @default(0)
+tier                 UserTier               @default(BRONZE)
+points               Int                    @default(0)
+lastActiveAt         DateTime               @default(now())
+streak               Int                    @default(0)
+badgeCount           Int                    @default(0)
+hangSoiMember        Boolean                @default(false)
+hangSoiJoinedAt      DateTime?
+accounts             accounts[]
+email_notifications  email_notifications[]
+exchange_accounts    exchange_accounts[]
+hangSoiMemberships   hangSoiMembership[]
+notifications        notifications[]
+payouts              payouts[]
+sessions             sessions[]
+tool_affiliate_links tool_affiliate_links[]
+tool_favorites       tool_favorites[]
+tool_orders          tool_orders[]
+tool_reviews         tool_reviews[]
+tools                tools[]
+user_achievements    user_achievements[]
+user_activities      user_activities[]
+referrer             users?                 @relation("referrer", fields: [referredBy], references: [id])
+referredUsers        users[]                @relation("referrer")
+}
+
+model hangSoiMembership {
+  id           String   @id @default(cuid())
+  userId       String
+  status       String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  appliedAt    DateTime @default(now())
+  approvedAt   DateTime?
+  rejectedAt   DateTime?
+  reason       String?
+  user         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId])
+  @@index([status])
+}
+
+model hangSoiJoinRequest {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  experience    String
+  monthlyVolume Int
+  reason        String
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  appliedAt     DateTime @default(now())
+  approvedAt    DateTime?
+  reviewedAt    DateTime?
+  notes         String?
+  
+  @@index([status])
+  @@index([email])
 }
 
 model verification_tokens {

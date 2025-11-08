@@ -1,0 +1,55 @@
+(()=>{var e={};e.id=2647,e.ids=[2647,5069],e.modules={3295:e=>{"use strict";e.exports=require("next/dist/server/app-render/after-task-async-storage.external.js")},5069:(e,t,r)=>{"use strict";r.d(t,{db:()=>s,prisma:()=>n});var a=r(96330);let s=globalThis.prisma??new a.PrismaClient({log:["query"]}),n=s},10846:e=>{"use strict";e.exports=require("next/dist/compiled/next-server/app-page.runtime.prod.js")},11723:e=>{"use strict";e.exports=require("querystring")},12412:e=>{"use strict";e.exports=require("assert")},12909:(e,t,r)=>{"use strict";r.d(t,{N:()=>l});var a=r(60890),s=r(13581),n=r(36344),i=r(5069),o=r(85663);let l={adapter:(0,a.y)(i.db),providers:[...process.env.GOOGLE_CLIENT_ID&&process.env.GOOGLE_CLIENT_SECRET?[(0,n.A)({clientId:process.env.GOOGLE_CLIENT_ID,clientSecret:process.env.GOOGLE_CLIENT_SECRET})]:[],(0,s.A)({name:"credentials",credentials:{email:{label:"Email",type:"email"},password:{label:"Password",type:"password"}},async authorize(e){if(!e?.email||!e?.password)return null;let t=await i.db.users.findUnique({where:{email:e.email}});return t&&t.password&&await o.Ay.compare(e.password,t.password)?{id:t.id,email:t.email,name:t.name,role:t.role}:null}})],session:{strategy:"jwt"},callbacks:{jwt:async({token:e,user:t})=>(t&&(e.role=t.role),e),session:async({session:e,token:t})=>(t&&(e.user.id=t.sub,e.user.role=t.role),e)},pages:{signIn:"/auth/signin"}}},13581:(e,t)=>{"use strict";t.A=function(e){return{id:"credentials",name:"Credentials",type:"credentials",credentials:{},authorize:()=>null,options:e}}},28354:e=>{"use strict";e.exports=require("util")},29294:e=>{"use strict";e.exports=require("next/dist/server/app-render/work-async-storage.external.js")},36344:(e,t)=>{"use strict";t.A=function(e){return{id:"google",name:"Google",type:"oauth",wellKnown:"https://accounts.google.com/.well-known/openid-configuration",authorization:{params:{scope:"openid email profile"}},idToken:!0,checks:["pkce","state"],profile:e=>({id:e.sub,name:e.name,email:e.email,image:e.picture}),style:{logo:"/google.svg",bg:"#fff",text:"#000"},options:e}}},44870:e=>{"use strict";e.exports=require("next/dist/compiled/next-server/app-route.runtime.prod.js")},55511:e=>{"use strict";e.exports=require("crypto")},55591:e=>{"use strict";e.exports=require("https")},60890:(e,t)=>{"use strict";t.y=void 0,t.y=function(e){return{createUser:t=>e.user.create({data:t}),getUser:t=>e.user.findUnique({where:{id:t}}),getUserByEmail:t=>e.user.findUnique({where:{email:t}}),async getUserByAccount(t){var r;let a=await e.account.findUnique({where:{provider_providerAccountId:t},select:{user:!0}});return null!=(r=null==a?void 0:a.user)?r:null},updateUser:({id:t,...r})=>e.user.update({where:{id:t},data:r}),deleteUser:t=>e.user.delete({where:{id:t}}),linkAccount:t=>e.account.create({data:t}),unlinkAccount:t=>e.account.delete({where:{provider_providerAccountId:t}}),async getSessionAndUser(t){let r=await e.session.findUnique({where:{sessionToken:t},include:{user:!0}});if(!r)return null;let{user:a,...s}=r;return{user:a,session:s}},createSession:t=>e.session.create({data:t}),updateSession:t=>e.session.update({where:{sessionToken:t.sessionToken},data:t}),deleteSession:t=>e.session.delete({where:{sessionToken:t}}),async createVerificationToken(t){let r=await e.verificationToken.create({data:t});return r.id&&delete r.id,r},async useVerificationToken(t){try{let r=await e.verificationToken.delete({where:{identifier_token:t}});return r.id&&delete r.id,r}catch(e){if("P2025"===e.code)return null;throw e}}}}},63033:e=>{"use strict";e.exports=require("next/dist/server/app-render/work-unit-async-storage.external.js")},74075:e=>{"use strict";e.exports=require("zlib")},78335:()=>{},79428:e=>{"use strict";e.exports=require("buffer")},79551:e=>{"use strict";e.exports=require("url")},81630:e=>{"use strict";e.exports=require("http")},94735:e=>{"use strict";e.exports=require("events")},96330:e=>{"use strict";e.exports=require("@prisma/client")},96487:()=>{},96926:(e,t,r)=>{"use strict";r.r(t),r.d(t,{patchFetch:()=>f,routeModule:()=>p,serverHooks:()=>g,workAsyncStorage:()=>h,workUnitAsyncStorage:()=>m});var a={};r.r(a),r.d(a,{GET:()=>d});var s=r(96559),n=r(48088),i=r(37719),o=r(32190),l=r(19854),u=r(12909),c=r(5069);async function d(e){try{var t,r,a,s,n,i,d,p,h;let m=await (0,l.getServerSession)(u.N);if(!m?.user?.id)return o.NextResponse.json({success:!1,error:{code:"UNAUTHORIZED",message:"Bạn cần đăng nhập để xuất dữ liệu"}},{status:401});let{searchParams:g}=new URL(e.url),f=g.get("format")||"csv",y=g.get("period")||"6m",v=g.get("type")||"full",w=await c.db.users.findUnique({where:{id:m.user.id},include:{payouts:{where:{status:"PROCESSED"},orderBy:{createdAt:"asc"}},referredUsers:{include:{payouts:{where:{status:"PROCESSED"}}}},achievements:{include:{achievement:!0}},activities:{orderBy:{createdAt:"desc"},take:200}}});if(!w)return o.NextResponse.json({success:!1,error:{code:"USER_NOT_FOUND",message:"Kh\xf4ng t\xecm thấy người d\xf9ng"}},{status:404});let x=new Date,b=new Date;switch(y){case"1m":b.setMonth(x.getMonth()-1);break;case"3m":b.setMonth(x.getMonth()-3);break;case"6m":b.setMonth(x.getMonth()-6);break;case"1y":b.setFullYear(x.getFullYear()-1);break;default:b=new Date(0)}let k=w.payouts.filter(e=>new Date(e.createdAt)>=b),A=w.referredUsers.filter(e=>new Date(e.createdAt)>=b),T=w.activities.filter(e=>new Date(e.createdAt)>=b),$="",S="",O="";if("csv"===f){let e;t=w,r=k,a=A,s=0,n=v,e="",("full"===n||"payouts"===n)&&(e+="=== B\xc1O C\xc1O HO\xc0N PH\xcd ===\nNg\xe0y,S\xe0n giao dịch,Khối lượng,Ho\xe0n ph\xed,Trạng th\xe1i\n",r.forEach(t=>{e+=`${t.createdAt},${t.broker},${t.tradingVolume},${t.amount},${t.status}
+`}),e+="\n"),("full"===n||"referrals"===n)&&(e+="=== B\xc1O C\xc1O GIỚI THIỆU ===\nNgười được giới thiệu,Email,Ng\xe0y tham gia,Tổng ho\xe0n ph\xed,Số lần ho\xe0n ph\xed\n",a.forEach(t=>{let r=t.payouts.reduce((e,t)=>e+t.amount,0);e+=`"${t.name||"Anonymous"}","${t.email}","${t.createdAt}",${r},${t.payouts.length}
+`}),e+="\n"),("full"===n||"achievements"===n)&&(e+="=== B\xc1O C\xc1O TH\xc0NH TỰCH ===\nTh\xe0nh tựh,Loại,Điểm,Ng\xe0y mở kh\xf3a\n",t.achievements.forEach(t=>{e+=`"${t.achievement.title}","${t.achievement.category}",${t.achievement.points},"${t.unlockedAt}"
+`}),e+="\n"),("full"===n||"summary"===n)&&(e+=`=== T\xd3M TẮT HIỆU SUẤT ===
+Chỉ số,Gi\xe1 trị
+Tổng ho\xe0n ph\xed,${r.reduce((e,t)=>e+t.amount,0)}
+Khối lượng giao dịch,${r.reduce((e,t)=>e+(t.tradingVolume||0),0)}
+Số người giới thiệu,${a.length}
+Số th\xe0nh tựh,${t.achievements.length}
+Điểm hiện tại,${t.points}
+Hạng hiện tại,${t.tier}
+Chuỗi hoạt động,${t.streak}
+
+`),$=e,S="text/csv",O=`apexrebate-analytics-${y}-${new Date().toISOString().split("T")[0]}.csv`}else if("json"===f)$=function(e,t,r,a,s){var n;let i={generatedAt:new Date().toISOString(),user:{id:e.id,email:e.email,name:e.name,tier:e.tier,points:e.points,streak:e.streak,totalSaved:e.totalSaved,referralCount:e.referralCount}};return("full"===s||"payouts"===s)&&(i.payouts=t.map(e=>({date:e.createdAt,broker:e.broker,tradingVolume:e.tradingVolume,amount:e.amount,status:e.status,feeRate:e.feeRate}))),("full"===s||"referrals"===s)&&(i.referrals=r.map(e=>({name:e.name,email:e.email,joinedAt:e.createdAt,totalPayouts:e.payouts.reduce((e,t)=>e+t.amount,0),payoutCount:e.payouts.length}))),("full"===s||"achievements"===s)&&(i.achievements=e.achievements.map(e=>({title:e.achievement.title,category:e.achievement.category,points:e.achievement.points,unlockedAt:e.unlockedAt,progress:e.progress}))),("full"===s||"summary"===s)&&(i.summary={totalPayouts:t.reduce((e,t)=>e+t.amount,0),totalTradingVolume:t.reduce((e,t)=>e+(t.tradingVolume||0),0),totalReferrals:r.length,totalAchievements:e.achievements.length,averagePayout:t.length>0?t.reduce((e,t)=>e+t.amount,0)/t.length:0,bestBroker:(n=t,Object.entries(n.reduce((e,t)=>(e[t.broker]||(e[t.broker]=0),e[t.broker]+=t.amount,e),{})).reduce((e,[t,r])=>r>e.amount?{broker:t,amount:r}:e,{broker:"N/A",amount:0}).broker),growthRate:function(e){if(e.length<2)return 0;let t=e.sort((e,t)=>new Date(e.createdAt).getTime()-new Date(t.createdAt).getTime()),r=t.slice(0,Math.floor(t.length/2)),a=t.slice(Math.floor(t.length/2)),s=r.reduce((e,t)=>e+t.amount,0),n=a.reduce((e,t)=>e+t.amount,0);return s>0?Math.round((n-s)/s*100):0}(t)}),JSON.stringify(i,null,2)}(w,k,A,0,v),S="application/json",O=`apexrebate-analytics-${y}-${new Date().toISOString().split("T")[0]}.json`;else{if("pdf"!==f)return o.NextResponse.json({success:!1,error:{code:"INVALID_FORMAT",message:"Định dạng kh\xf4ng được hỗ trợ"}},{status:400});i=w,d=k,p=A,h=0,$=`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>ApexRebate Analytics Report</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>ApexRebate Analytics Report</h1>
+        <p>Generated for: ${i.email}</p>
+        <p>Date: ${new Date().toLocaleDateString()}</p>
+      </div>
+      
+      <div class="section">
+        <h2>Summary</h2>
+        <table>
+          <tr><th>Metric</th><th>Value</th></tr>
+          <tr><td>Total Payouts</td><td>$${d.reduce((e,t)=>e+t.amount,0).toFixed(2)}</td></tr>
+          <tr><td>Total Referrals</td><td>${p.length}</td></tr>
+          <tr><td>Current Tier</td><td>${i.tier}</td></tr>
+          <tr><td>Total Points</td><td>${i.points}</td></tr>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>Recent Payouts</h2>
+        <table>
+          <tr><th>Date</th><th>Broker</th><th>Amount</th></tr>
+          ${d.slice(-10).map(e=>`<tr><td>${new Date(e.createdAt).toLocaleDateString()}</td><td>${e.broker}</td><td>$${e.amount.toFixed(2)}</td></tr>`).join("")}
+        </table>
+      </div>
+    </body>
+    </html>
+  `,S="application/pdf",O=`apexrebate-report-${y}-${new Date().toISOString().split("T")[0]}.pdf`}return new o.NextResponse($,{headers:{"Content-Type":S,"Content-Disposition":`attachment; filename="${O}"`,"Cache-Control":"no-cache, no-store, must-revalidate"}})}catch(e){return console.error("Export API error:",e),o.NextResponse.json({success:!1,error:{code:"INTERNAL_ERROR",message:"Lỗi server nội bộ"}},{status:500})}}let p=new s.AppRouteRouteModule({definition:{kind:n.RouteKind.APP_ROUTE,page:"/api/analytics/export/route",pathname:"/api/analytics/export",filename:"route",bundlePath:"app/api/analytics/export/route"},resolvedPagePath:"/Users/macbookprom1/apexrebate-1/src/app/api/analytics/export/route.ts",nextConfigOutput:"standalone",userland:a}),{workAsyncStorage:h,workUnitAsyncStorage:m,serverHooks:g}=p;function f(){return(0,i.patchFetch)({workAsyncStorage:h,workUnitAsyncStorage:m})}}};var t=require("../../../../webpack-runtime.js");t.C(e);var r=e=>t(t.s=e),a=t.X(0,[7719,4999,580,8044,9854],()=>r(96926));module.exports=a})();

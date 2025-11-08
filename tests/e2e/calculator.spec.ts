@@ -51,6 +51,9 @@ test.describe('Guest - Calculator', () => {
     await page.fill('#volume', '-5')
     await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
 
+    // Chờ calculation hoàn thành
+    await page.getByRole('button', { name: 'Tính toán' }).waitFor()
+
     // Với volume <= 0 sẽ không có kết quả → hiển thị card "Chưa có kết quả"
     await expect(page.getByText(/Chưa có kết quả/i)).toBeVisible()
   })

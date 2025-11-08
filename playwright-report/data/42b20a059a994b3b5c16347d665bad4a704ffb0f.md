@@ -1,0 +1,187 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e4]:
+      - link "ApexRebate" [ref=e5]:
+        - /url: /vi
+        - generic [ref=e7]: ApexRebate
+      - generic [ref=e8]:
+        - link "Tính toán" [ref=e9]:
+          - /url: /calculator
+        - link "Danh vọng" [ref=e10]:
+          - /url: /wall-of-fame
+        - link "Hang Sói" [ref=e11]:
+          - /url: /hang-soi
+          - img [ref=e12]
+          - text: Hang Sói
+        - link "Chợ Công Cụ" [ref=e17]:
+          - /url: /vi/tools
+          - img [ref=e18]
+          - text: Chợ Công Cụ
+        - link "FAQ" [ref=e21]:
+          - /url: /vi/faq
+        - link "Cách hoạt động" [ref=e22]:
+          - /url: /how-it-works
+      - generic [ref=e23]:
+        - link "Đăng nhập" [ref=e24]:
+          - /url: /auth/signin
+          - button "Đăng nhập" [ref=e25]
+        - link "Đăng ký" [ref=e26]:
+          - /url: /auth/signup
+          - button "Đăng ký" [ref=e27]
+  - generic [ref=e28]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - img [ref=e32]
+          - heading "Tính toán Tiết kiệm" [level=1] [ref=e34]
+        - paragraph [ref=e35]: Tính toán chính xác số tiền bạn có thể tiết kiệm với dịch vụ hoàn phí của ApexRebate
+      - generic [ref=e36]:
+        - generic [ref=e38]:
+          - generic [ref=e40]:
+            - img [ref=e41]
+            - text: Thông số Giao dịch
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]: Khối lượng hàng tháng (USD)
+              - spinbutton "Khối lượng hàng tháng (USD)" [ref=e46]: "1000000"
+              - paragraph [ref=e47]: Nhập khối lượng giao dịch hàng tháng của bạn
+            - generic [ref=e48]:
+              - generic [ref=e49]: Sàn giao dịch
+              - combobox [ref=e50]:
+                - generic: Binance Futures
+                - img
+            - generic [ref=e51]:
+              - generic [ref=e52]: Loại giao dịch
+              - combobox [ref=e53]:
+                - generic: Taker (Thị trường)
+                - img
+            - generic [ref=e54]:
+              - generic [ref=e55]: Số lệnh hàng tháng
+              - spinbutton "Số lệnh hàng tháng" [ref=e56]: "20"
+            - button "Tính toán" [ref=e57]
+        - generic [ref=e59]:
+          - generic [ref=e61]: Binance Futures - VIP 0
+          - generic [ref=e62]:
+            - tablist [ref=e63]:
+              - tab "Tiết kiệm" [selected] [ref=e64]
+              - tab "Phí giao dịch" [ref=e65]
+              - tab "Phân tích" [ref=e66]
+            - tabpanel "Tiết kiệm" [ref=e67]:
+              - generic [ref=e68]:
+                - generic [ref=e71]:
+                  - generic [ref=e72]:
+                    - paragraph [ref=e73]: Tiết kiệm hàng tháng
+                    - paragraph [ref=e74]: $16.00
+                  - img [ref=e75]
+                - generic [ref=e79]:
+                  - generic [ref=e80]:
+                    - paragraph [ref=e81]: Tiết kiệm hàng năm
+                    - paragraph [ref=e82]: $192.00
+                  - img [ref=e83]
+              - generic [ref=e87]:
+                - heading "Tổng quan Tiết kiệm" [level=3] [ref=e88]
+                - generic [ref=e89]:
+                  - generic [ref=e90]:
+                    - generic [ref=e91]: Tỷ lệ hoàn phí
+                    - generic [ref=e92]: 4%
+                  - generic [ref=e93]:
+                    - generic [ref=e94]: Hiệu quả hàng năm
+                    - generic [ref=e95]: 0.230%
+    - contentinfo [ref=e96]:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - generic [ref=e102]: ApexRebate
+            - paragraph [ref=e103]: Tối ưu hóa lợi nhuận cho trader nghiêm túc
+            - generic [ref=e104]:
+              - link [ref=e105]:
+                - /url: "#"
+                - img [ref=e106]
+              - link [ref=e108]:
+                - /url: "#"
+                - img [ref=e109]
+              - link [ref=e111]:
+                - /url: "#"
+                - img [ref=e112]
+              - link [ref=e116]:
+                - /url: "#"
+                - img [ref=e117]
+          - generic [ref=e120]:
+            - heading "Sản phẩm" [level=3] [ref=e121]
+            - list [ref=e122]:
+              - listitem [ref=e123]:
+                - link "Hoàn phí" [ref=e124]:
+                  - /url: /calculator
+              - listitem [ref=e125]:
+                - link "ApexPro" [ref=e126]:
+                  - /url: /apex-pro
+              - listitem [ref=e127]:
+                - link "Hang Sói" [ref=e128]:
+                  - /url: /hang-soi
+          - generic [ref=e129]:
+            - heading "Công ty" [level=3] [ref=e130]
+            - list [ref=e131]:
+              - listitem [ref=e132]:
+                - link "Về chúng tôi" [ref=e133]:
+                  - /url: /about
+              - listitem [ref=e134]:
+                - link "Liên hệ" [ref=e135]:
+                  - /url: /contact
+              - listitem [ref=e136]:
+                - link "Điều khoản" [ref=e137]:
+                  - /url: /terms
+          - generic [ref=e138]:
+            - heading "Đối tác" [level=3] [ref=e139]
+            - generic [ref=e140]:
+              - generic [ref=e143]: Binance
+              - generic [ref=e146]: Bybit
+              - generic [ref=e149]: OKX
+        - generic [ref=e150]:
+          - generic [ref=e151]:
+            - generic [ref=e152]:
+              - heading "Liên kết nhanh" [level=4] [ref=e153]
+              - list [ref=e154]:
+                - listitem [ref=e155]:
+                  - link "Trang chủ" [ref=e156]:
+                    - /url: /
+                - listitem [ref=e157]:
+                  - link "Máy tính" [ref=e158]:
+                    - /url: /calculator
+                - listitem [ref=e159]:
+                  - link "Danh vọng" [ref=e160]:
+                    - /url: /wall-of-fame
+            - generic [ref=e161]:
+              - heading "Dịch vụ" [level=4] [ref=e162]
+              - list [ref=e163]:
+                - listitem [ref=e164]:
+                  - link "Hoàn phí Binance" [ref=e165]:
+                    - /url: /services/binance-rebate
+                - listitem [ref=e166]:
+                  - link "Hoàn phí Bybit" [ref=e167]:
+                    - /url: /services/bybit-rebate
+                - listitem [ref=e168]:
+                  - link "Hoàn phí OKX" [ref=e169]:
+                    - /url: /services/okx-rebate
+            - generic [ref=e170]:
+              - heading "Liên hệ" [level=4] [ref=e171]
+              - list [ref=e172]:
+                - listitem [ref=e173]:
+                  - img [ref=e174]
+                  - generic [ref=e177]: support@apexrebate.com
+                - listitem [ref=e178]:
+                  - img [ref=e179]
+                  - generic [ref=e181]: +84 123 456 789
+          - generic [ref=e182]:
+            - generic [ref=e183]: © 2024 ApexRebate. Tất cả quyền được bảo lưu.
+            - generic [ref=e184]:
+              - generic [ref=e185]: Trang web này sử dụng cookie để cải thiện trải nghiệm của bạn.
+              - button "Quay lên trên" [ref=e186]:
+                - img
+                - text: Quay lên trên
+  - alert [ref=e187]
+  - button "Open Next.js Dev Tools" [ref=e193] [cursor=pointer]:
+    - img [ref=e194]
+```

@@ -1,0 +1,36 @@
+{
+  "version": 3,
+  "middleware": {},
+  "functions": {
+    "/api/backup/cleanup/route": {
+      "files": [
+        "server/server-reference-manifest.js",
+        "server/app/api/backup/cleanup/route_client-reference-manifest.js",
+        "server/middleware-build-manifest.js",
+        "server/middleware-react-loadable-manifest.js",
+        "server/next-font-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/edge-runtime-webpack.js",
+        "server/app/api/backup/cleanup/route.js"
+      ],
+      "name": "app/api/backup/cleanup/route",
+      "page": "/api/backup/cleanup/route",
+      "matchers": [
+        {
+          "regexp": "^/api/backup/cleanup$",
+          "originalSource": "/api/backup/cleanup"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "pl9225vesyw0jgQ-O9fB1",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "6pyVVbLfs9zZBn4hBWwOK3UNh1Zu7RsVQRrhNX2zF20=",
+        "__NEXT_PREVIEW_MODE_ID": "3189a6718a433e7b95a0778e6fdc7b4a",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "e7c08568dcce6d464847e3d95482c27e29c26f57997728412bf6ef5f85e42775",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "0a15e9163a8e23af6f83d4b4b688e98b5a2c3931fc93cf4c7c7de653d982d924"
+      }
+    }
+  },
+  "sortedMiddleware": []
+}

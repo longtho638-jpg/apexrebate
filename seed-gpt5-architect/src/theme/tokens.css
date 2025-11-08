@@ -1,0 +1,35 @@
+:root {
+  --color-wolf-50: #F5F8FF;
+  --color-wolf-100: #E8F0FF;
+  --color-wolf-200: #D6E4FF;
+  --color-wolf-300: #ADC8FF;
+  --color-wolf-400: #84A9FF;
+  --color-wolf-500: #6690FF;
+  --color-wolf-600: #5B8CFF;
+  --color-wolf-700: #3B6CEB;
+  --color-wolf-800: #1F49C9;
+  --color-wolf-900: #122E8F;
+  --color-primary: #5B8CFF;
+  --color-accent: #F59E0B;
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-neutral: #111827;
+  --color-surface: #f9fafb;
+  --radius-card: 16px;
+  --radius-xl: 16px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+  --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.25);
+  --shadow-xl: 0 16px 40px -12px rgb(0 0 0 / 0.35);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Inter, system-ui, Segoe UI, Roboto, Noto Sans, sans-serif;
+}

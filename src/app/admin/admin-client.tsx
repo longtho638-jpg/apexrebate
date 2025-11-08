@@ -91,11 +91,14 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push('/auth/signin');
+      // Get current locale from router - default to 'vi'
+      const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'vi' : 'vi';
+      router.push(`/${locale}/auth/signin?callbackUrl=/${locale}/admin`);
     } else if (status === 'authenticated') {
       // Check if user is admin
       if (session?.user?.role !== 'ADMIN' && session?.user?.role !== 'CONCIERGE') {
-        router.push('/dashboard');
+        const locale = typeof window !== 'undefined' ? window.location.pathname.split('/')[1] || 'vi' : 'vi';
+        router.push(`/${locale}/dashboard`);
         return;
       }
       fetchAdminData();

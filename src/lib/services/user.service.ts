@@ -242,12 +242,12 @@ export class UserService {
             orderBy: { createdAt: 'desc' },
             take: 100
           },
-          activities: {
+          user_activities: {
             orderBy: { createdAt: 'desc' },
             take: 50
           },
-          achievements: {
-            include: { achievement: true }
+          user_achievements: {
+            include: { achievements: true }
           }
         }
       });

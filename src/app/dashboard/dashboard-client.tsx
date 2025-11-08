@@ -28,6 +28,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 import AnalyticsCharts from '@/components/dashboard/analytics-charts';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -140,25 +141,27 @@ export default function DashboardClient() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading dashboard...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+        <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
-      </div>
-    );
-  }
+          <Footer />
+          </div>
+  );
+}
 
   if (error) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full">
-          <CardContent className="p-6 text-center">
-            <p className="text-destructive mb-4">{error}</p>
-            <Button onClick={() => fetchDashboardData()}>Try Again</Button>
-          </CardContent>
+        <CardContent className="p-6 text-center">
+        <p className="text-destructive mb-4">{error}</p>
+        <Button onClick={() => fetchDashboardData()}>Try Again</Button>
+        </CardContent>
         </Card>
-      </div>
-    );
-  }
+          <Footer />
+          </div>
+  );
+}
 
   if (loading && !dashboardData) {
     return (
@@ -199,10 +202,11 @@ export default function DashboardClient() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </div>
-    );
-  }
+          </div>
+            <Footer />
+            </div>
+  );
+}
 
   if (!dashboardData || !metrics) return null;
 
@@ -726,6 +730,7 @@ export default function DashboardClient() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 }

@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "functions": {
+    "/api/backup/cleanup": {},
+    "/api/seed-test": {},
+    "/api/test-db": {},
+    "/api/testing/seed-test-data": {},
+    "/api/testing/seed-test-user": {},
+    "/api/seed-production": {}
+  }
+}

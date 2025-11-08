@@ -12,6 +12,7 @@ import {
   RegionStatus, DeploymentStrategy, SyncType, SyncStatus
 } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
 
 async function seedMaster() {
   console.log('🚀 Starting MASTER SEED - All Features\n');
@@ -26,6 +27,7 @@ async function seedMaster() {
       where: { email: 'admin@apexrebate.com' },
       update: {},
       create: {
+        id: uuidv4(),
         email: 'admin@apexrebate.com',
         name: 'Admin User',
         password: await bcrypt.hash('admin123', 10),
@@ -39,7 +41,8 @@ async function seedMaster() {
         badgeCount: 25,
         preferredBroker: 'binance',
         experience: 'expert',
-        referralCode: 'ADMIN2025'
+        referralCode: 'ADMIN2025',
+        updatedAt: new Date()
       }
     });
 
@@ -47,6 +50,7 @@ async function seedMaster() {
       where: { email: 'concierge@apexrebate.com' },
       update: {},
       create: {
+        id: uuidv4(),
         email: 'concierge@apexrebate.com',
         name: 'Concierge Support',
         password: await bcrypt.hash('concierge123', 10),
@@ -60,7 +64,8 @@ async function seedMaster() {
         badgeCount: 15,
         preferredBroker: 'bybit',
         experience: 'advanced',
-        referralCode: 'CONCIERGE2025'
+        referralCode: 'CONCIERGE2025',
+        updatedAt: new Date()
       }
     });
 
@@ -75,6 +80,7 @@ async function seedMaster() {
         where: { email: `trader${i + 1}@example.com` },
         update: {},
         create: {
+          id: uuidv4(),
           email: `trader${i + 1}@example.com`,
           name: `Trader ${i + 1}`,
           password: await bcrypt.hash('password123', 10),
@@ -89,7 +95,8 @@ async function seedMaster() {
           preferredBroker: brokers[i % brokers.length],
           experience: experiences[i % experiences.length],
           referralCode: `TRADER${i + 1}`,
-          referredBy: i > 5 ? users[Math.floor(Math.random() * Math.min(i, users.length))].id : undefined
+          referredBy: i > 5 ? users[Math.floor(Math.random() * Math.min(i, users.length))].id : undefined,
+          updatedAt: new Date()
         }
       });
       users.push(user);

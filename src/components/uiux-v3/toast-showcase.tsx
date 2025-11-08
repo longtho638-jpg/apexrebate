@@ -1,25 +1,26 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-
 import { Button, useToast } from '@/features/uiux-v3/components'
 
 export function ToastShowcase() {
   const { toast } = useToast()
-  const t = useTranslations('uiuxV3.toast')
+  // Hardcoded text thay vì useTranslations
+  const title = 'Developer Guide'
+  const description = 'Use this interactive canvas to validate, plan, and execute the UI/UX roadmap.'
+  const action = 'Show Toast'
 
   return (
     <Button
       variant="secondary"
       onClick={() =>
         toast({
-          title: t('title'),
-          description: t('description'),
+          title,
+          description,
         })
       }
       data-i18n="toast.action"
     >
-      {t('action')}
+      {action}
     </Button>
   )
 }

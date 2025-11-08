@@ -1,15 +1,17 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import { preset } from "catalyst-ui";
 
 const config: Config = {
-  darkMode: ["class"],
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
-  future: {
-    hoverOnlyWhenSupported: true,
+darkMode: ["class"],
+presets: [preset],
+content: [
+"./pages/**/*.{js,ts,jsx,tsx,mdx}",
+"./components/**/*.{js,ts,jsx,tsx,mdx}",
+  "./app/**/*.{js,ts,jsx,tsx,mdx}",
+],
+future: {
+  hoverOnlyWhenSupported: true,
   },
   theme: {
     container: {
@@ -24,12 +26,26 @@ const config: Config = {
     },
     extend: {
       borderRadius: {
-        xl: "calc(var(--radius) + 4px)",
-        lg: "var(--radius)",
+      '2xl': '16px',
+      '3xl': '24px',
+      xl: "calc(var(--radius) + 4px)",
+      lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+      wolf: {
+          50: '#F5F8FF',
+          100: '#E8F0FF',
+          200: '#D6E4FF',
+          300: '#ADC8FF',
+          400: '#84A9FF',
+          500: '#6690FF',
+          600: '#5B8CFF',
+          700: '#3B6CEB',
+          800: '#1F49C9',
+          900: '#122E8F'
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -72,8 +88,13 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+      sans: ['Inter', 'system-ui', 'Segoe UI', 'Roboto', 'Noto Sans', 'sans-serif'],
+      mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
+      boxShadow: {
+        sm: '0 1px 2px 0 rgb(0 0 0 / 0.08)',
+        md: '0 8px 24px -8px rgb(0 0 0 / 0.25)',
+        xl: '0 16px 40px -12px rgb(0 0 0 / 0.35)'
       },
       keyframes: {
         "fade-up": {

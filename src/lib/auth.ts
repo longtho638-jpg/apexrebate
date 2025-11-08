@@ -23,9 +23,17 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // Find user by email
+        // Find user by email with explicit field selection
         const user = await db.users.findUnique({
-          where: { email: credentials.email }
+          where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            password: true,
+            role: true, // ✅ Explicit role selection
+            emailVerified: true
+          }
         })
 
         if (!user || !user.password) {
@@ -39,11 +47,12 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        // ✅ Return with validated role (defaults to USER if missing)
         return {
           id: user.id,
           email: user.email,
-          name: user.name,
-          role: user.role,
+          name: user.name || undefined,
+          role: user.role || 'USER',
         }
       }
     })
@@ -52,16 +61,38 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      // Initial login - set role and id from user object
       if (user) {
-        token.role = user.role
+        token.role = user.role || 'USER'
+        token.id = user.id
+        token.email = user.email
+      } 
+      // Handle session updates during login
+      else if (trigger === 'update' && session?.role) {
+        token.role = session.role || token.role || 'USER'
       }
+      
+      // ✅ Ensure role always exists with valid value
+      const validRoles = ['USER', 'ADMIN', 'CONCIERGE']
+      if (!token.role || !validRoles.includes(token.role as string)) {
+        token.role = 'USER'
+      }
+      
       return token
     },
+    
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
+      // ✅ Enhanced session callback with validation
+      if (token && session.user) {
+        session.user.id = (token.id || token.sub) as string
+        session.user.role = (token.role as string) || 'USER'
+        
+        // Validate role is a valid enum value
+        const validRoles = ['USER', 'ADMIN', 'CONCIERGE']
+        if (!validRoles.includes(session.user.role)) {
+          session.user.role = 'USER'
+        }
       }
       return session
     },

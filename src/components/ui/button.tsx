@@ -1,6 +1,7 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+import { Button as CatalystButton } from "catalyst-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -9,17 +10,21 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-        secondary:
-          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        link: "text-primary underline-offset-4 hover:underline",
+      default:
+      "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
+      destructive:
+      "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+      outline:
+      "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+      secondary:
+      "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
+      ghost:
+      "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
+      link: "text-primary underline-offset-4 hover:underline",
+        // 2025 Modern variants
+        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 dark:bg-zinc-900/50 dark:border-zinc-700/50 dark:text-zinc-100 dark:hover:bg-zinc-800/50",
+        gradient: "bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-lg",
+        neon: "bg-transparent border-2 border-wolf-500 text-wolf-500 hover:bg-wolf-500 hover:text-white shadow-[0_0_10px_theme(colors.wolf.500)] hover:shadow-[0_0_20px_theme(colors.wolf.500)]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

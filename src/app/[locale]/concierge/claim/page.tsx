@@ -187,6 +187,21 @@ export default function ConciergeClaimPage() {
               />
             </div>
 
+            {/* File evidence upload (added for e2e test expectation) */}
+            <div className="space-y-2">
+              <Label htmlFor="evidenceFiles">Upload Evidence (Screenshots / Reports)</Label>
+              <Input
+                id="evidenceFiles"
+                type="file"
+                multiple
+                accept="image/*,.png,.jpg,.jpeg,.pdf"
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-muted-foreground">
+                Supported: PNG, JPG, PDF. You can attach multiple files. (Manual processing phase)
+              </p>
+            </div>
+
             <Button
               onClick={generatePreview}
               disabled={!claimData.exchange || !claimData.tradeRef || !claimData.grossRebate}

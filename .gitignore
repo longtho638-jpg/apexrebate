@@ -57,3 +57,4 @@ functions/node_modules/
 functions/.next
 .next/node_modules
 .next/standalone
+.env*.local

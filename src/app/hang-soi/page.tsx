@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Navbar from '@/components/navbar'
+import Footer from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -146,80 +148,101 @@ export default function HangSoiPage() {
     }
   ]
 
-  const handleSubmitRequest = () => {
-    // Handle join request submission
-    console.log('Join request submitted:', joinRequest)
+  const [submitting, setSubmitting] = useState(false)
+
+  const handleSubmitRequest = async () => {
+    try {
+      setSubmitting(true)
+      const res = await fetch('/api/hang-soi/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(joinRequest)
+      })
+      if (res.ok) {
+        alert('Đơn đăng ký đã được gửi. Vui lòng kiểm tra email.')
+        setJoinRequest({ name: '', email: '', experience: '', monthlyVolume: '', reason: '' })
+      } else {
+        alert('Có lỗi xảy ra. Vui lòng thử lại.')
+      }
+    } catch (error) {
+      console.error('Submit error:', error)
+      alert('Lỗi kết nối. Vui lòng thử lại.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <Badge className="mb-6 bg-slate-700 text-slate-100 border-slate-600">
-              <Crown className="w-4 h-4 mr-2" />
-              Cộng đồng độc quyền
-            </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              "Hang Sói"
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              Nơi hội tụ những "Trader Sói Đơn Độc" ưu tú. 
-              Không tín hiệu, không lùa gà - chỉ có phân tích chuyên sâu, 
-              chia sẻ công cụ và tối ưu hóa hiệu suất.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold">
-                <Users className="w-5 h-5 mr-2" />
-                Đăng ký tham gia
-                <Crown className="w-5 h-5 ml-2" />
-              </Button>
-              <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
-                <BookOpen className="w-5 h-5 mr-2" />
-                Tìm hiểu thêm
-              </Button>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
+          <div className="absolute inset-0 bg-black/30"></div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div className="text-center">
+              <Badge className="mb-6 bg-slate-700 text-slate-100 border-slate-600">
+                <Crown className="w-4 h-4 mr-2" />
+                Cộng đồng độc quyền
+              </Badge>
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">
+                "Hang Sói"
+              </h1>
+              <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed">
+                Nơi hội tụ những "Trader Sói Đơn Độc" ưu tú. 
+                Không tín hiệu, không lùa gà - chỉ có phân tích chuyên sâu, 
+                chia sẻ công cụ và tối ưu hóa hiệu suất.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold">
+                  <Users className="w-5 h-5 mr-2" />
+                  Đăng ký tham gia
+                  <Crown className="w-5 h-5 ml-2" />
+                </Button>
+                <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Tìm hiểu thêm
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Stats Bar */}
-        <div className="absolute bottom-0 left-0 right-0 bg-slate-800/70 backdrop-blur-sm border-t border-slate-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              {communityStats.map((stat, index) => (
-                <div key={index}>
-                  <div className="text-2xl font-bold text-purple-300">{stat.value}</div>
-                  <div className="text-slate-300 text-sm">{stat.label}</div>
-                </div>
-              ))}
+          
+          {/* Stats Bar */}
+          <div className="absolute bottom-0 left-0 right-0 bg-slate-800/70 backdrop-blur-sm border-t border-slate-700">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                {communityStats.map((stat, index) => (
+                  <div key={index}>
+                    <div className="text-2xl font-bold text-purple-300">{stat.value}</div>
+                    <div className="text-slate-300 text-sm">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
       {/* Main Content */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
             <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-6">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Eye className="w-4 h-4" />
-            Tổng quan
-            </TabsTrigger>
-            <TabsTrigger value="network" className="flex items-center gap-2">
-            <Users className="w-4 h-4" />
-            Mạng lưới
-            </TabsTrigger>
-            <TabsTrigger value="gamification" className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" />
-            Thử thách
-            </TabsTrigger>
-            <TabsTrigger value="discussions" className="flex items-center gap-2">
-            <MessageSquare className="w-4 h-4" />
-            Thảo luận
-            </TabsTrigger>
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <Eye className="w-4 h-4" />
+                Tổng quan
+              </TabsTrigger>
+              <TabsTrigger value="network" className="flex items-center gap-2">
+                <Users className="w-4 h-4" />
+                Mạng lưới
+              </TabsTrigger>
+              <TabsTrigger value="gamification" className="flex items-center gap-2">
+                <Trophy className="w-4 h-4" />
+                Thử thách
+              </TabsTrigger>
+              <TabsTrigger value="discussions" className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Thảo luận
+              </TabsTrigger>
               <TabsTrigger value="members" className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
                 Thành viên
@@ -615,10 +638,10 @@ export default function HangSoiPage() {
                     <Button 
                       className="w-full bg-purple-600 hover:bg-purple-700"
                       onClick={handleSubmitRequest}
-                      disabled={!joinRequest.name || !joinRequest.email || !joinRequest.experience || !joinRequest.monthlyVolume || !joinRequest.reason}
+                      disabled={submitting || !joinRequest.name || !joinRequest.email || !joinRequest.experience || !joinRequest.monthlyVolume || !joinRequest.reason}
                     >
                       <Crown className="w-4 h-4 mr-2" />
-                      Nộp đơn đăng ký
+                      {submitting ? 'Đang gửi...' : 'Nộp đơn đăng ký'}
                     </Button>
 
                     <p className="text-xs text-gray-500 text-center">
@@ -631,6 +654,8 @@ export default function HangSoiPage() {
           </Tabs>
         </div>
       </section>
-    </div>
+      </div>
+      <Footer />
+    </>
   )
 }

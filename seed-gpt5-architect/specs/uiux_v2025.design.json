@@ -1,0 +1,39 @@
+{
+  "theme": "NeoMinimalist",
+  "palette": {
+  "wolf": {
+    "50": "#F5F8FF",
+    "100": "#E8F0FF",
+    "200": "#D6E4FF",
+      "300": "#ADC8FF",
+      "400": "#84A9FF",
+      "500": "#6690FF",
+      "600": "#5B8CFF",
+      "700": "#3B6CEB",
+      "800": "#1F49C9",
+      "900": "#122E8F"
+    },
+    "primary": "#5B8CFF",
+    "accent": "#F59E0B",
+    "success": "#22C55E",
+    "error": "#EF4444",
+    "neutral": "#111827",
+    "surface": "#f9fafb"
+  },
+  "typography": {
+    "sans": "Inter",
+    "mono": "JetBrains Mono",
+    "scale": {
+      "base": "16px",
+      "lineHeight": 1.6
+    }
+  },
+  "layout": "dashboard-first",
+  "interactions": ["hover-elevation", "tab-intent", "motion-safe"],
+  "components": [
+    { "id": "NavBar", "variant": "floating", "accessibility": "aria" },
+    { "id": "HeroCard", "variant": "dynamic-data" },
+    { "id": "DashboardCard", "variant": "adaptive-grid" },
+    { "id": "HangSoiFeed", "variant": "realtime-swr" }
+  ]
+}

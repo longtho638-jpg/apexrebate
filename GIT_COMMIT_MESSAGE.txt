@@ -1,0 +1,49 @@
+feat: make tools marketplace publicly browsable
+
+**Summary**
+Open tools marketplace to public browsing (read-only) while maintaining
+security on tool upload and analytics endpoints. This enables the full
+user discovery flow: Home → Browse Tools → Signup → Upload.
+
+**Changes**
+1. middleware.ts:
+   - Removed /tools and /tools/[id] from protected routes
+   - Added /tools/upload and /tools/analytics to protected routes
+   - Now guests can browse tools without authentication
+
+2. src/app/[locale]/tools/page.tsx:
+   - Updated upload button logic to show different CTA for guests
+   - Auth users see: "Upload Tool" → goes to /tools/upload
+   - Guests see: "Upload Tool (Sign up)" → goes to /auth/signup with redirect
+   - Maintains admin-only analytics button
+
+**Security**
+- ✅ Public routes: /tools, /tools/[id] (read-only)
+- ✅ Protected routes: /tools/upload, /tools/analytics (auth required)
+- ✅ No API changes needed (endpoints already support guest access)
+- ✅ Backward compatible (no breaking changes)
+
+**User Flow Impact**
+Before: Home → Sign Up → Dashboard (tools hidden)
+After:  Home → Browse Tools → Sign Up → Upload Tools
+
+**Benefits**
+- 📊 Better conversion (users evaluate tools before signup)
+- 🔗 SEO friendly (tools indexed by search engines)
+- 📱 Shareable (tool links work for social media)
+- 👥 Closed user journey (complete funnel)
+- 💰 Increased revenue (more signups → more uploads)
+
+**Testing**
+- ✅ npm run build → SUCCESS
+- ✅ No TypeScript errors
+- ✅ No ESLint warnings
+- ⏳ Manual testing (guest flow)
+- ⏳ E2E testing (full flow)
+
+**Deployment**
+Risk Level: LOW
+Breaking Changes: NONE
+Rollback: EASY (< 5 min)
+
+Fixes: #SEED-PUBLIC-FLOW

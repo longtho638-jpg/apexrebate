@@ -1,0 +1,12 @@
+{
+  "app/uiux-v3/page.tsx -> @/components/cicd/cicd-page": {
+    "id": 19635,
+    "files": [
+      "static/chunks/3455-dcd013055a0155a5.js",
+      "static/chunks/3942-856504b8aa7ff2ca.js",
+      "static/chunks/704-681cf053cc2cf021.js",
+      "static/chunks/9350-559c8295cbd19c87.js",
+      "static/chunks/9635.19c7dafd176c6979.js"
+    ]
+  }
+}

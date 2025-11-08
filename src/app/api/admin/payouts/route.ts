@@ -44,31 +44,36 @@ export async function GET(request: NextRequest) {
       const mockUsers = await db.users.findMany({ take: 5 });
       const mockPayouts: any[] = [];
       
-      for (let i = 0; i < 20; i++) {
-        const user = mockUsers[i % mockUsers.length];
-        const date = new Date();
-        date.setDate(date.getDate() - (i * 2)); // Every 2 days
-        
-        mockPayouts.push({
-          id: `mock-${i}`,
-          userId: user.id,
-          user: {
-            id: user.id,
-            name: user.name || 'Mock User',
-            email: user.email
-          },
-          amount: 200 + Math.random() * 300,
-          currency: 'USD',
-          period: `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}`,
-          broker: ['Binance', 'Bybit', 'OKX'][Math.floor(Math.random() * 3)],
-          tradingVolume: 500000 + Math.random() * 1500000,
-          feeRate: 0.0002 + Math.random() * 0.0003,
-          status: Math.random() > 0.3 ? 'PROCESSED' : 'PENDING',
-          processedAt: Math.random() > 0.3 ? date : null,
-          notes: Math.random() > 0.8 ? 'Referral bonus included' : null,
-          createdAt: date,
-          updatedAt: date,
-        });
+      if (mockUsers.length > 0) {
+        for (let i = 0; i < 20; i++) {
+          const user = mockUsers[i % mockUsers.length];
+          const date = new Date();
+          date.setDate(date.getDate() - (i * 2)); // Every 2 days
+          
+          // 70% PROCESSED, 30% PENDING
+          const isProcessed = Math.random() > 0.3;
+          
+          mockPayouts.push({
+            id: `mock-${i}`,
+            userId: user.id,
+            user: {
+              id: user.id,
+              name: user.name || 'Mock User',
+              email: user.email
+            },
+            amount: 200 + Math.random() * 300,
+            currency: 'USD',
+            period: `${date.getFullYear()}-W${Math.ceil(date.getDate() / 7)}`,
+            broker: ['Binance', 'Bybit', 'OKX'][Math.floor(Math.random() * 3)],
+            tradingVolume: 500000 + Math.random() * 1500000,
+            feeRate: 0.0002 + Math.random() * 0.0003,
+            status: isProcessed ? 'PROCESSED' : 'PENDING',
+            processedAt: isProcessed ? date : null,
+            notes: Math.random() > 0.8 ? 'Referral bonus included' : null,
+            createdAt: date.toISOString(),
+            updatedAt: date.toISOString(),
+          });
+        }
       }
       
       payoutsData = mockPayouts;
@@ -123,7 +128,16 @@ export async function POST(request: NextRequest) {
 
     const { amount, userId, period, broker, tradingVolume, feeRate, notes } = await request.json();
 
+    // Validate required fields
+    if (!userId || !amount || !period || !broker) {
+      return NextResponse.json(
+        { error: 'Missing required fields: userId, amount, period, broker' },
+        { status: 400 }
+      );
+    }
+
     // Create new payout
+    const now = new Date();
     const payout = await db.payout.create({
       data: {
         userId,
@@ -131,13 +145,10 @@ export async function POST(request: NextRequest) {
         currency: 'USD',
         period,
         broker,
-        tradingVolume: parseFloat(tradingVolume),
-        feeRate: parseFloat(feeRate),
-        status: 'PROCESSED',
-        processedAt: new Date(),
+        tradingVolume: parseFloat(tradingVolume) || 0,
+        feeRate: parseFloat(feeRate) || 0,
+        status: 'PENDING', // Default to PENDING, admin can process
         notes,
-        createdAt: new Date(),
-        updatedAt: new Date(),
       }
     });
 

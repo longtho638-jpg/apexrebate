@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import Navbar from '@/components/navbar'
+import Footer from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -33,6 +34,11 @@ export default function HomePage() {
   const [monthlyVolume, setMonthlyVolume] = useState('100000')
   const [selectedExchange, setSelectedExchange] = useState('binance')
   const [calculatedSavings, setCalculatedSavings] = useState(0)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const exchanges = [
     { id: 'binance', name: 'Binance', rate: 0.04 },
@@ -120,15 +126,19 @@ export default function HomePage() {
               Chúng tôi không hứa hẹn làm giàu nhanh, chúng tôi cung cấp <span className="font-bold text-purple-300">công cụ tối ưu hóa</span> dựa trên dữ liệu.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold">
-                <BarChart3 className="w-5 h-5 mr-2" />
-                Bắt đầu tối ưu hóa
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-              <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
-                <Calculator className="w-5 h-5 mr-2" />
-                Phân tích hiệu suất
-              </Button>
+              <Link href="/auth/signup">
+                <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-4 text-lg font-semibold">
+                  <BarChart3 className="w-5 h-5 mr-2" />
+                  Bắt đầu tối ưu hóa
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+              <Link href="/calculator">
+                <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
+                  <Calculator className="w-5 h-5 mr-2" />
+                  Phân tích hiệu suất
+                </Button>
+              </Link>
             </div>
             <p className="text-sm text-slate-400">
               ✓ Không có chi phí ẩn  ✓ Minh bạch tuyệt đối  ✓ Dành cho trader chuyên nghiệp
@@ -219,7 +229,7 @@ export default function HomePage() {
                   <div className="text-center">
                     <div className="text-sm text-gray-600 mb-2">Tiết kiệm ước tính hàng tháng</div>
                     <div className="text-4xl font-bold text-purple-600">
-                      ${calculatedSavings.toLocaleString()}
+                    ${mounted ? calculatedSavings.toLocaleString('en-US') : calculatedSavings}
                     </div>
                     <div className="text-sm text-gray-500 mt-2">
                       Tăng lợi nhuận ròng {(calculatedSavings * 12 / (parseFloat(monthlyVolume) || 1) * 100).toFixed(1)}%/năm
@@ -227,10 +237,12 @@ export default function HomePage() {
                   </div>
                 </div>
                 
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                  Bắt đầu tối ưu hóa
-                  <ChevronRight className="w-4 h-4 ml-2" />
+                <Link href="/auth/signup">
+                <Button className="w-full bg-purple-600 hover:bg-purple-700" aria-label="Đăng ký tài khoản để bắt đầu tối ưu hóa lợi nhuận giao dịch">
+                Bắt đầu tối ưu hóa
+                <ChevronRight className="w-4 h-4 ml-2" aria-hidden="true" />
                 </Button>
+                </Link>
               </CardContent>
             </Card>
 
@@ -247,22 +259,22 @@ export default function HomePage() {
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm font-medium">Tổng phí giao dịch</span>
-                    <span className="font-bold text-red-600">
-                      ${((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100).toLocaleString()}
-                    </span>
+                  <span className="text-sm font-medium">Tổng phí giao dịch</span>
+                  <span className="font-bold text-red-600">
+                  ${mounted ? ((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100).toLocaleString('en-US') : ((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100)}
+                  </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm font-medium">Hoàn phí từ ApexRebate</span>
-                    <span className="font-bold text-green-600">
-                      ${calculatedSavings.toLocaleString()}
-                    </span>
+                  <span className="text-sm font-medium">Hoàn phí từ ApexRebate</span>
+                  <span className="font-bold text-green-600">
+                  ${mounted ? calculatedSavings.toLocaleString('en-US') : calculatedSavings}
+                  </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                    <span className="text-sm font-medium">Phí ròng sau hoàn</span>
-                    <span className="font-bold text-blue-600">
-                      ${((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100 - calculatedSavings).toLocaleString()}
-                    </span>
+                  <span className="text-sm font-medium">Phí ròng sau hoàn</span>
+                  <span className="font-bold text-blue-600">
+                  ${mounted ? ((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100 - calculatedSavings).toLocaleString('en-US') : ((parseFloat(monthlyVolume) || 0) * (exchanges.find(e => e.id === selectedExchange)?.rate || 0) / 100 - calculatedSavings)}
+                  </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-purple-50 rounded border border-purple-200">
                     <span className="text-sm font-medium text-purple-800">Tỷ lệ tối ưu hóa</span>
@@ -324,8 +336,8 @@ export default function HomePage() {
                       <span className="font-bold text-green-600">{member.savings}</span>
                     </div>
                     <div className="flex justify-between items-center p-2 bg-blue-50 rounded">
-                      <span className="text-sm text-gray-600">Số giao dịch:</span>
-                      <span className="font-semibold text-blue-600">{member.trades.toLocaleString()}</span>
+                    <span className="text-sm text-gray-600">Số giao dịch:</span>
+                    <span className="font-semibold text-blue-600">{mounted ? member.trades.toLocaleString('en-US') : member.trades}</span>
                     </div>
                     <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
                       <span className="text-sm text-gray-600">Độ chính xác:</span>
@@ -344,11 +356,13 @@ export default function HomePage() {
           </div>
           
           <div className="text-center mt-12">
-            <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
-              <Users className="w-4 h-4 mr-2" />
-              Xem thêm thành viên
-              <ChevronRight className="w-4 h-4 ml-2" />
-            </Button>
+          <Link href="/wall-of-fame">
+          <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50" aria-label="Xem danh sách đầy đủ các thành viên xuất sắc">
+          <Users className="w-4 h-4 mr-2" aria-hidden="true" />
+          Xem thêm thành viên
+          <ChevronRight className="w-4 h-4 ml-2" aria-hidden="true" />
+          </Button>
+          </Link>
           </div>
         </div>
       </section>
@@ -536,20 +550,25 @@ export default function HomePage() {
             Tham gia cộng đồng những "Trader Sói Đơn Độc" đang sử dụng dữ liệu để tối ưu hóa hiệu suất giao dịch
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Button size="lg" className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
-              <BarChart3 className="w-5 h-5 mr-2" />
-              Bắt đầu tối ưu hóa miễn phí
-            </Button>
-            <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
-              <Users className="w-5 h-5 mr-2" />
-              Tìm hiểu về "Hang Sói"
-            </Button>
+            <Link href="/auth/signup">
+              <Button size="lg" className="bg-white text-purple-900 hover:bg-gray-100 px-8 py-4 text-lg font-semibold">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                Bắt đầu tối ưu hóa miễn phí
+              </Button>
+            </Link>
+            <Link href="/hang-soi">
+              <Button size="lg" variant="outline" className="border-slate-400 text-slate-200 hover:bg-slate-800 px-8 py-4 text-lg">
+                <Users className="w-5 h-5 mr-2" />
+                Tìm hiểu về "Hang Sói"
+              </Button>
+            </Link>
           </div>
           <p className="text-sm text-slate-400">
             ✓ Không yêu cầu thẻ tín dụng  ✓ Bắt đầu trong 5 phút  ✓ Hủy bất kỳ lúc nào
           </p>
         </div>
-      </section>
-    </div>
+        </section>
+          <Footer />
+          </div>
   )
 }

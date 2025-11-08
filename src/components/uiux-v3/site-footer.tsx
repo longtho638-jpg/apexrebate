@@ -1,54 +1,55 @@
 import Link from 'next/link'
-import { getTranslations } from 'next-intl/server'
 
 const sectionConfig = [
   {
-    titleKey: 'product.title',
+    title: 'Product',
     links: [
-      { href: '#objectives', labelKey: 'product.components' },
-      { href: '#roadmap', labelKey: 'product.tokens' },
-      { href: '#tasks', labelKey: 'product.workflow' },
+      { href: '#objectives', label: 'Components' },
+      { href: '#roadmap', label: 'Tokens' },
+      { href: '#tasks', label: 'Workflow' },
     ],
   },
   {
-    titleKey: 'ops.title',
+    title: 'Operations',
     links: [
-      { href: '#governance', labelKey: 'ops.accessibility' },
-      { href: '#experts', labelKey: 'ops.qa' },
-      { href: '/docs/automation', labelKey: 'ops.monitoring' },
+      { href: '#governance', label: 'Accessibility' },
+      { href: '#experts', label: 'QA' },
+      { href: '/docs/automation', label: 'Monitoring' },
     ],
   },
 ] as const
 
 export async function SiteFooter() {
-  const t = await getTranslations('uiuxV3.footer')
   const year = new Date().getFullYear()
+  // Hardcoded text thay vì getTranslations
+  const tagline = 'ApexRebate UI/UX'
+  const description = 'A cross-platform plan to deliver unified trader experience with modern design system.'
+  const copyright = `© ${year} ApexRebate. All rights reserved.`
 
   return (
     <footer className="border-t border-border/60 bg-background">
       <div className="container grid gap-8 py-12 md:grid-cols-[2fr,1fr,1fr]">
         <div className="space-y-3">
-          <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground" data-i18n="footer.tagline">
-            {t('tagline')}
+          <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            {tagline}
           </p>
-          <p className="max-w-sm text-sm text-muted-foreground" data-i18n="footer.description">
-            {t('description')}
+          <p className="max-w-sm text-sm text-muted-foreground">
+            {description}
           </p>
         </div>
         {sectionConfig.map(section => (
-          <div key={section.titleKey} className="space-y-3">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground" data-i18n={`footer.${section.titleKey}`}>
-              {t(section.titleKey)}
+          <div key={section.title} className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-foreground">
+              {section.title}
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
               {section.links.map(link => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    data-i18n={`footer.${link.labelKey}`}
                     className="transition-colors hover:text-foreground"
                   >
-                    {t(link.labelKey)}
+                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -58,14 +59,10 @@ export async function SiteFooter() {
       </div>
       <div className="border-t border-border/60 bg-background py-4">
         <div className="container flex flex-col gap-2 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <span data-i18n="footer.copyright">{t('copyright', { year })}</span>
+          <span>{copyright}</span>
           <div className="flex gap-4">
-            <Link href="/privacy" data-i18n="footer.legal.privacy">
-              {t('legal.privacy')}
-            </Link>
-            <Link href="/terms" data-i18n="footer.legal.terms">
-              {t('legal.terms')}
-            </Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
           </div>
         </div>
       </div>

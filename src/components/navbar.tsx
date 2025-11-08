@@ -76,7 +76,7 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: `/${locale}` });
+    signOut({ callbackUrl: '/' });
   };
 
   const handleMobileMenuToggle = () => {
@@ -158,14 +158,78 @@ export default function Navbar() {
               </Button>
 
             {/* Dashboard Button */}
-          <Link href={`/${locale}/dashboard`}>
+            <Link href={`/${locale}/dashboard`}>
             <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
             Dashboard
-              <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
-                  <span className="text-white text-xs">M</span>
-                  </div>
-                  </Button>
-                </Link>
+            <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
+            <span className="text-white text-xs">M</span>
+            </div>
+            </Button>
+            </Link>
+
+             {/* User Menu Dropdown */}
+             <DropdownMenu>
+               <DropdownMenuTrigger asChild>
+                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                   <Avatar className="h-8 w-8">
+                     <AvatarImage src={session.user?.image || ''} alt={session.user?.name || ''} />
+                     <AvatarFallback className="bg-blue-600 text-white text-xs">
+                       {session.user?.name?.charAt(0).toUpperCase() || 'U'}
+                     </AvatarFallback>
+                   </Avatar>
+                 </Button>
+               </DropdownMenuTrigger>
+               <DropdownMenuContent className="w-56" align="end" forceMount>
+                 <div className="flex items-center justify-start gap-2 p-2">
+                   <div className="flex flex-col space-y-1 leading-none">
+                     <p className="font-medium text-sm">{session.user?.name}</p>
+                     <p className="w-[200px] truncate text-xs text-muted-foreground">
+                       {session.user?.email}
+                     </p>
+                     {session.user?.role && (
+                       <Badge variant="secondary" className="w-fit text-xs">
+                         {session.user.role}
+                       </Badge>
+                     )}
+                   </div>
+                 </div>
+                 <DropdownMenuSeparator />
+                 <DropdownMenuItem asChild>
+                   <Link href={`/${locale}/profile`}>
+                     <User className="mr-2 h-4 w-4" />
+                     Profile
+                   </Link>
+                 </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                   <Link href={`/${locale}/payouts`}>
+                     <DollarSign className="mr-2 h-4 w-4" />
+                     Payouts
+                   </Link>
+                 </DropdownMenuItem>
+                 <DropdownMenuItem asChild>
+                   <Link href={`/${locale}/referrals`}>
+                     <Users className="mr-2 h-4 w-4" />
+                     Referrals
+                   </Link>
+                 </DropdownMenuItem>
+                 {(session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') && (
+                   <>
+                     <DropdownMenuSeparator />
+                     <DropdownMenuItem asChild>
+                       <Link href="/admin">
+                         <Settings className="mr-2 h-4 w-4" />
+                         Admin Panel
+                       </Link>
+                     </DropdownMenuItem>
+                   </>
+                 )}
+                 <DropdownMenuSeparator />
+                 <DropdownMenuItem onClick={() => signOut()}>
+                   <LogOut className="mr-2 h-4 w-4" />
+                   Log out
+                 </DropdownMenuItem>
+               </DropdownMenuContent>
+             </DropdownMenu>
               </>
             ) : (
               <>
