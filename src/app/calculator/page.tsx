@@ -2,6 +2,8 @@
 
 // Calculator component with data-testid for E2E testing
 import { useState, useEffect } from 'react';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -150,8 +152,10 @@ export default function CalculatorPage() {
   }, [volume, broker, tradeType, tradesPerMonth]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+        <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
@@ -253,7 +257,7 @@ export default function CalculatorPage() {
 
           {/* Results Section */}
           <div className="lg:col-span-2">
-            {result ? (
+            {(!error && result) ? (
               <div className="space-y-6">
                 {/* VIP Level Badge */}
                 <div className="text-center">
@@ -428,7 +432,9 @@ export default function CalculatorPage() {
             )}
           </div>
         </div>
+        </div>
+        <Footer />
       </div>
-    </div>
+    </>
   );
 }
