@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/auth-guard';
-import Navbar from '@/components/navbar';
 
 export default function PayoutsPage() {
   const [payouts, setPayouts] = useState<any[]>([]);
@@ -66,7 +65,7 @@ export default function PayoutsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex-1 bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading payout history...</p>
@@ -77,7 +76,7 @@ export default function PayoutsPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="flex-1 bg-slate-50 flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="p-6 text-center">
             <p className="text-red-600 mb-4">{error}</p>
@@ -90,8 +89,7 @@ export default function PayoutsPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-slate-50">
-        <Navbar />
+      <div className="flex-1 bg-slate-50">
         {/* Header */}
         <div className="bg-white border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

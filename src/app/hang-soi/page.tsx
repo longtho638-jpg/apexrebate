@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Navbar from '@/components/navbar'
-import Footer from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -174,8 +172,7 @@ export default function HangSoiPage() {
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
           <div className="absolute inset-0 bg-black/30"></div>
@@ -655,7 +652,6 @@ export default function HangSoiPage() {
         </div>
       </section>
       </div>
-      <Footer />
     </>
   )
 }

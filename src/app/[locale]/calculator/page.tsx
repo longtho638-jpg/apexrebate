@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -152,8 +150,7 @@ export default function CalculatorPage() {
 
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white flex flex-col">
         <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         {/* Header */}
         <div className="text-center mb-8">
@@ -330,7 +327,6 @@ export default function CalculatorPage() {
           </div>
         </div>
         </div>
-        <Footer />
       </div>
     </>
   );

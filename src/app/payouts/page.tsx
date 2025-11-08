@@ -21,8 +21,6 @@ import {
   RefreshCw
 } from 'lucide-react';
 import AuthGuard from '@/components/auth/auth-guard';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 import { toast } from 'sonner';
 
 interface PayoutData {
@@ -187,12 +185,11 @@ export default function PayoutsPage() {
 
   if (status === 'loading' || isLoading) {
   return (
-  <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+  <div className="flex-1 bg-zinc-950 flex items-center justify-center">
   <div className="text-center">
   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-wolf-600 mx-auto mb-4"></div>
   <p className="text-zinc-400">Loading...</p>
   </div>
-  <Footer />
     </div>
   );
 }
@@ -200,8 +197,7 @@ export default function PayoutsPage() {
   if (!payoutData) {
   return (
   <AuthGuard>
-  <div className="min-h-screen bg-zinc-950">
-  <Navbar />
+  <div className="flex-1 bg-zinc-950">
   <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 64px)' }}>
   <Card className="max-w-md w-full mx-4 bg-zinc-900/50 border-zinc-800">
   <CardContent className="p-8 text-center">
@@ -225,15 +221,13 @@ export default function PayoutsPage() {
   </Card>
   </div>
   </div>
-    <Footer />
     </AuthGuard>
     );
   }
 
   return (
   <AuthGuard>
-  <div className="min-h-screen bg-zinc-950">
-  <Navbar />
+  <div className="flex-1 bg-zinc-950">
 
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   {/* Header */}
@@ -475,7 +469,6 @@ export default function PayoutsPage() {
             </CardContent>
           </Card>
         </div>
-        <Footer />
       </div>
     </AuthGuard>
   );

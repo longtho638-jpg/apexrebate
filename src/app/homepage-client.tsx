@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import Navbar from '@/components/navbar'
-import Footer from '@/components/footer'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -107,9 +105,8 @@ export default function HomePage() {
   }, [monthlyVolume, selectedExchange])
 
   return (
-  <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-  <Navbar />
-      {/* Hero Section */}
+  <div className="bg-gradient-to-b from-slate-50 to-white flex-1">
+       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -568,7 +565,6 @@ export default function HomePage() {
           </p>
         </div>
         </section>
-          <Footer />
-          </div>
+      </div>
   )
 }

@@ -1,11 +1,8 @@
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 
 export default function HowItWorksPage() {
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white flex flex-col">
         <div className="container mx-auto px-4 py-16 max-w-4xl flex-1">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-slate-900 mb-4">Cách ApexRebate hoạt động</h1>
@@ -64,7 +61,6 @@ export default function HowItWorksPage() {
           </div>
         </div>
         </div>
-        <Footer />
       </div>
     </>
   );

@@ -33,7 +33,6 @@ import {
   Send,
   HelpCircle
 } from 'lucide-react';
-import Navbar from '@/components/navbar';
 
 interface Referral {
   id: string;
@@ -169,8 +168,7 @@ Best regards`);
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Navbar />
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -183,8 +181,7 @@ Best regards`);
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <Navbar />
+    <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
       
       {/* Header */}
       <section className="py-8 px-4 sm:px-6 lg:px-8">

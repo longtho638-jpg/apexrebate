@@ -1,7 +1,5 @@
 'use client';
 
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -49,8 +47,7 @@ const categories = [...new Set(faqData.map(item => item.category))];
 
 export default function FAQPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
-      <Navbar />
+    <div className="flex-1 bg-gradient-to-b from-slate-50 to-white flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
         <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white py-20">
@@ -120,7 +117,6 @@ export default function FAQPage() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

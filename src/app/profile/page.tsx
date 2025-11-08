@@ -33,7 +33,6 @@ import {
   HelpCircle,
   Users
 } from 'lucide-react';
-import Navbar from '@/components/navbar';
 
 interface UserProfile {
   id: string;
@@ -191,8 +190,7 @@ export default function ProfilePage() {
 
   if (status === 'loading' || isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Navbar />
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
         <div className="flex items-center justify-center min-h-screen">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -202,8 +200,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Navbar />
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
         <div className="flex items-center justify-center min-h-screen">
           <Card className="max-w-md w-full">
             <CardContent className="p-6 text-center">
@@ -225,8 +222,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <Navbar />
+    <div className="flex-1 bg-gradient-to-b from-slate-50 to-white">
       
       {/* Header */}
       <section className="py-8 px-4 sm:px-6 lg:px-8">

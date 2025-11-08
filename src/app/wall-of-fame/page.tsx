@@ -1,5 +1,3 @@
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Crown, Medal, Star } from 'lucide-react';
@@ -110,8 +108,7 @@ function getBrokerColor(broker: string) {
 export default function WallOfFamePage() {
   return (
     <>
-      <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex flex-col">
+      <div className="flex-1 bg-gradient-to-b from-slate-50 to-white flex flex-col">
         <div className="container mx-auto px-4 py-8 max-w-7xl flex-1">
         {/* Header */}
         <div className="text-center mb-8">
@@ -230,7 +227,6 @@ export default function WallOfFamePage() {
           ))}
         </div>
         </div>
-        <Footer />
       </div>
     </>
   );

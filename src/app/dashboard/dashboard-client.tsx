@@ -27,8 +27,6 @@ import {
   Award,
   RefreshCw
 } from 'lucide-react';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 import AnalyticsCharts from '@/components/dashboard/analytics-charts';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -139,34 +137,31 @@ export default function DashboardClient() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex-1 bg-background flex items-center justify-center">
         <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
         <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
-          <Footer />
           </div>
   );
 }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex-1 bg-background flex items-center justify-center">
         <Card className="max-w-md w-full">
         <CardContent className="p-6 text-center">
         <p className="text-destructive mb-4">{error}</p>
         <Button onClick={() => fetchDashboardData()}>Try Again</Button>
         </CardContent>
         </Card>
-          <Footer />
           </div>
   );
 }
 
   if (loading && !dashboardData) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
+      <div className="flex-1 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
@@ -203,7 +198,6 @@ export default function DashboardClient() {
             </Card>
           </div>
           </div>
-            <Footer />
             </div>
   );
 }
@@ -213,8 +207,7 @@ export default function DashboardClient() {
   const { user, overview, payoutHistory, monthlyPerformance, metrics: rawMetrics, brokerDistribution, savingsAnalysis } = dashboardData;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
+    <div className="flex-1 bg-background">
       {/* Enhanced Header */}
       <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -730,7 +723,6 @@ export default function DashboardClient() {
           </CardContent>
         </Card>
       </div>
-      <Footer />
     </div>
   );
 }

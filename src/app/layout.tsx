@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import ErrorBoundary from '@/components/error-boundary';
 import type { Metadata } from 'next';
+import RootLayoutClient from './layout-client';
 
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -26,7 +27,9 @@ export default async function RootLayout({
         <ErrorBoundary>
           <NextIntlClientProvider messages={messages}>
             <Providers>
-              {children}
+              <RootLayoutClient>
+                {children}
+              </RootLayoutClient>
             </Providers>
           </NextIntlClientProvider>
         </ErrorBoundary>

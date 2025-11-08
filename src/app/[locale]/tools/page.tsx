@@ -12,8 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Filter, Grid, List, Star, Users, DollarSign, TrendingUp, Plus, Upload, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/footer';
 
 interface Tool {
   id: string;
@@ -170,8 +168,7 @@ export default function ToolsMarketplace() {
 
   if (loading) {
   return (
-  <div className="min-h-screen bg-background">
-  <Navbar />
+  <div className="bg-background flex-1">
   <div className="container mx-auto px-4 py-8">
   <div className="animate-pulse">
   <div className="h-8 bg-muted rounded w-1/4 mb-4"></div>
@@ -183,13 +180,12 @@ export default function ToolsMarketplace() {
     </div>
     </div>
     </div>
-      <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background flex-1">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
         <div className="container mx-auto px-4 py-12">
@@ -229,7 +225,7 @@ export default function ToolsMarketplace() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 flex-1">
         {/* Filters */}
         <div className="bg-card rounded-lg border p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -463,7 +459,6 @@ export default function ToolsMarketplace() {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
