@@ -11,8 +11,15 @@
     "referrals": "Referrals",
     "admin": "Admin",
     "signIn": "Sign In",
+    "signUp": "Sign Up",
     "signOut": "Sign Out",
-    "language": "Language"
+    "language": "Language",
+    "calculator": "Calculator",
+    "wallOfFame": "Wall of Fame",
+    "hangSoi": "Hang Sói",
+    "toolsMarket": "Tools Market",
+    "faq": "FAQ",
+    "howItWorks": "How It Works"
   },
   "buttons": {
     "submit": "Submit",

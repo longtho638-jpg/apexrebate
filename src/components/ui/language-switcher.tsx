@@ -22,9 +22,12 @@ export default function LanguageSwitcher() {
   const t = useTranslations('navigation')
 
   const switchLocale = (newLocale: string) => {
-    // For client-side navigation, we need to handle locale switching
+    // Handle locale switching correctly
     const currentPath = window.location.pathname
-    const newPath = currentPath.replace(`/${locale}`, newLocale === 'vi' ? '' : `/${newLocale}`)
+    // Remove current locale prefix if present
+    const pathWithoutLocale = currentPath.replace(/^\/(vi|en)/, '')
+    // Add new locale prefix (vi is default, so no prefix for vi)
+    const newPath = newLocale === 'vi' ? pathWithoutLocale || '/' : `/en${pathWithoutLocale || '/'}`
     router.push(newPath)
   }
 

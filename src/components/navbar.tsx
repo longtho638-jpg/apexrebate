@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-// import { useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,7 +18,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Navbar() {
   const { data: session, status } = useSession();
-  // const t = useTranslations();
+  const t = useTranslations();
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
@@ -127,24 +127,24 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <div className="hidden sm:flex items-center space-x-8">
             <Link href="/calculator" className="text-muted-foreground hover:text-foreground transition-colors">
-              Tính toán
+              {t('calculator')}
             </Link>
             <Link href="/wall-of-fame" className="text-muted-foreground hover:text-foreground transition-colors">
-              Danh vọng
+              {t('wallOfFame')}
             </Link>
             <Link href="/hang-soi" className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
               <Users className="w-4 h-4 inline mr-1" />
-              Hang Sói
+              {t('hangSoi')}
             </Link>
             <Link href={`/${locale}/tools`} className="text-green-600 hover:text-green-700 font-semibold transition-colors">
               <ShoppingBag className="w-4 h-4 inline mr-1" />
-              Chợ Công Cụ
+              {t('toolsMarket')}
             </Link>
             <Link href={`/${locale}/faq`} className="text-muted-foreground hover:text-foreground transition-colors">
-              FAQ
+              {t('faq')}
             </Link>
             <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              Cách hoạt động
+              {t('howItWorks')}
             </Link>
           </div>
 
@@ -250,14 +250,14 @@ export default function Navbar() {
               <>
                 {/* Auth Buttons for Guests */}
                 <Link href="/auth/signin">
-                  <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                    Đăng nhập
-                  </Button>
+                <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                {t('signIn')}
+                </Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                    Đăng ký
-                  </Button>
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+                {t('signUp')}
+                </Button>
                 </Link>
               </>
             )}
@@ -309,63 +309,63 @@ export default function Navbar() {
             : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {/* Navigation Links */}
-            <Link 
-              href="/calculator" 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              Tính toán
-            </Link>
-            <Link 
-              href="/wall-of-fame" 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              Bức tường danh vọng
-            </Link>
-            <Link 
-              href="/hang-soi" 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              <Users className="inline w-4 h-4 mr-2" />
-              Hang Sói
-            </Link>
-            <Link 
-              href={`/${locale}/tools`} 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              <ShoppingBag className="inline w-4 h-4 mr-2" />
-              Chợ Công Cụ
-            </Link>
-            <Link 
-              href={`/${locale}/faq`} 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              FAQ
-            </Link>
-            <Link 
-              href="/how-it-works" 
-              onClick={handleMobileMenuClose}
-              className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
-              role="menuitem"
-              tabIndex={isMobileMenuOpen ? 0 : -1}
-            >
-              Cách hoạt động
-            </Link>
+          {/* Navigation Links */}
+          <Link 
+          href="/calculator" 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          {t('calculator')}
+          </Link>
+          <Link 
+          href="/wall-of-fame" 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          {t('wallOfFame')}
+          </Link>
+          <Link 
+          href="/hang-soi" 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          <Users className="inline w-4 h-4 mr-2" />
+          {t('hangSoi')}
+          </Link>
+          <Link 
+          href={`/${locale}/tools`} 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          <ShoppingBag className="inline w-4 h-4 mr-2" />
+          {t('toolsMarket')}
+          </Link>
+          <Link 
+          href={`/${locale}/faq`} 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          {t('faq')}
+          </Link>
+          <Link 
+          href="/how-it-works" 
+          onClick={handleMobileMenuClose}
+          className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
+          role="menuitem"
+          tabIndex={isMobileMenuOpen ? 0 : -1}
+          >
+          {t('howItWorks')}
+          </Link>
             
             {/* Mobile Auth Section */}
             <div className="border-t border-border mt-3 pt-3">
@@ -467,7 +467,7 @@ export default function Navbar() {
                   role="menuitem"
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                  Đăng nhập
+                  {t('signIn')}
                   </Link>
                   <Link
                   href="/auth/signup"
@@ -477,7 +477,7 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <Shield className="inline w-4 h-4 mr-2" />
-                  Đăng ký
+                  {t('signUp')}
                   </Link>
                 </>
               )}

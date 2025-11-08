@@ -11,8 +11,15 @@
     "referrals": "Giới thiệu",
     "admin": "Quản trị",
     "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
     "signOut": "Đăng xuất",
-    "language": "Ngôn ngữ"
+    "language": "Ngôn ngữ",
+    "calculator": "Tính toán",
+    "wallOfFame": "Danh vọng",
+    "hangSoi": "Hang Sói",
+    "toolsMarket": "Chợ Công Cụ",
+    "faq": "FAQ",
+    "howItWorks": "Cách hoạt động"
   },
   "buttons": {
     "submit": "Gửi",
