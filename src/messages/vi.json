@@ -19,7 +19,9 @@
     "hangSoi": "Hang Sói",
     "toolsMarket": "Chợ Công Cụ",
     "faq": "FAQ",
-    "howItWorks": "Cách hoạt động"
+    "howItWorks": "Cách hoạt động",
+    "payouts": "Thanh toán",
+    "adminPanel": "Bảng điều khiển quản trị"
   },
   "buttons": {
     "submit": "Gửi",

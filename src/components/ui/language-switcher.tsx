@@ -1,7 +1,7 @@
 'use client'
 
 import { useLocale, useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -19,16 +19,26 @@ const locales = [
 export default function LanguageSwitcher() {
   const locale = useLocale()
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const t = useTranslations('navigation')
 
   const switchLocale = (newLocale: string) => {
-    // Handle locale switching correctly
-    const currentPath = window.location.pathname
-    // Remove current locale prefix if present
-    const pathWithoutLocale = currentPath.replace(/^\/(vi|en)/, '')
-    // Add new locale prefix (vi is default, so no prefix for vi)
-    const newPath = newLocale === 'vi' ? pathWithoutLocale || '/' : `/en${pathWithoutLocale || '/'}`
-    router.push(newPath)
+    // Remove current locale prefix from pathname
+    // e.g., /en/dashboard → /dashboard or /dashboard → /dashboard
+    const pathWithoutLocale = pathname.replace(/^\/(en|vi)(\/|$)/, '$2') || '/'
+    
+    // Build new path with new locale prefix
+    // vi is default (no prefix), en requires /en prefix
+    const newPath = newLocale === 'vi' 
+      ? pathWithoutLocale 
+      : `/en${pathWithoutLocale}`
+    
+    // Preserve query parameters
+    const queryString = searchParams.toString()
+    const finalPath = queryString ? `${newPath}?${queryString}` : newPath
+    
+    router.push(finalPath)
   }
 
   return (

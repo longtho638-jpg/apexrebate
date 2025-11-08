@@ -12,14 +12,16 @@
     "admin": "Admin",
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signOut": "Sign Out",
+    "signOut": "Log out",
     "language": "Language",
     "calculator": "Calculator",
     "wallOfFame": "Wall of Fame",
     "hangSoi": "Hang Sói",
     "toolsMarket": "Tools Market",
     "faq": "FAQ",
-    "howItWorks": "How It Works"
+    "howItWorks": "How It Works",
+    "payouts": "Payouts",
+    "adminPanel": "Admin Panel"
   },
   "buttons": {
     "submit": "Submit",

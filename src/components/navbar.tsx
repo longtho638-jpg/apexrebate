@@ -126,25 +126,25 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden sm:flex items-center space-x-8">
-            <Link href="/calculator" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('calculator')}
+            <Link href={`/${locale}/calculator`} className="text-muted-foreground hover:text-foreground transition-colors">
+              {t('navigation.calculator')}
             </Link>
-            <Link href="/wall-of-fame" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('wallOfFame')}
+            <Link href={`/${locale}/wall-of-fame`} className="text-muted-foreground hover:text-foreground transition-colors">
+              {t('navigation.wallOfFame')}
             </Link>
-            <Link href="/hang-soi" className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
+            <Link href={`/${locale}/hang-soi`} className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
               <Users className="w-4 h-4 inline mr-1" />
-              {t('hangSoi')}
+              {t('navigation.hangSoi')}
             </Link>
             <Link href={`/${locale}/tools`} className="text-green-600 hover:text-green-700 font-semibold transition-colors">
               <ShoppingBag className="w-4 h-4 inline mr-1" />
-              {t('toolsMarket')}
+              {t('navigation.toolsMarket')}
             </Link>
             <Link href={`/${locale}/faq`} className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('faq')}
+              {t('navigation.faq')}
             </Link>
-            <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground transition-colors">
-              {t('howItWorks')}
+            <Link href={`/${locale}/how-it-works`} className="text-muted-foreground hover:text-foreground transition-colors">
+              {t('navigation.howItWorks')}
             </Link>
           </div>
 
@@ -175,7 +175,7 @@ export default function Navbar() {
             {/* Dashboard Button */}
             <Link href={`/${locale}/dashboard`}>
             <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
-            Dashboard
+            {t('navigation.dashboard')}
             <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
             <span className="text-white text-xs">M</span>
             </div>
@@ -210,57 +210,57 @@ export default function Navbar() {
                  </div>
                  <DropdownMenuSeparator />
                  <DropdownMenuItem asChild>
-                   <Link href={`/${locale}/profile`}>
-                     <User className="mr-2 h-4 w-4" />
-                     Profile
-                   </Link>
+                 <Link href={`/${locale}/profile`}>
+                 <User className="mr-2 h-4 w-4" />
+                 {t('navigation.profile')}
+                 </Link>
                  </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                   <Link href={`/${locale}/payouts`}>
-                     <DollarSign className="mr-2 h-4 w-4" />
-                     Payouts
-                   </Link>
+                 <Link href={`/${locale}/payouts`}>
+                 <DollarSign className="mr-2 h-4 w-4" />
+                 {t('navigation.payouts')}
+                 </Link>
                  </DropdownMenuItem>
                  <DropdownMenuItem asChild>
-                   <Link href={`/${locale}/referrals`}>
-                     <Users className="mr-2 h-4 w-4" />
-                     Referrals
-                   </Link>
+                 <Link href={`/${locale}/referrals`}>
+                 <Users className="mr-2 h-4 w-4" />
+                 {t('navigation.referrals')}
+                 </Link>
                  </DropdownMenuItem>
                  {(session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') && (
-                   <>
-                     <DropdownMenuSeparator />
-                     <DropdownMenuItem asChild>
-                       <Link href="/admin">
-                         <Settings className="mr-2 h-4 w-4" />
-                         Admin Panel
-                       </Link>
-                     </DropdownMenuItem>
-                   </>
+                 <>
+                 <DropdownMenuSeparator />
+                 <DropdownMenuItem asChild>
+                 <Link href={`/${locale}/admin`}>
+                 <Settings className="mr-2 h-4 w-4" />
+                 {t('navigation.adminPanel')}
+                 </Link>
+                 </DropdownMenuItem>
+                 </>
                  )}
                  <DropdownMenuSeparator />
                  <DropdownMenuItem onClick={() => signOut()}>
-                   <LogOut className="mr-2 h-4 w-4" />
-                   Log out
+                 <LogOut className="mr-2 h-4 w-4" />
+                 {t('navigation.signOut')}
                  </DropdownMenuItem>
                </DropdownMenuContent>
              </DropdownMenu>
               </>
             ) : (
               <>
-                {/* Auth Buttons for Guests */}
-                <Link href="/auth/signin">
-                <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
-                {t('signIn')}
-                </Button>
-                </Link>
-                <Link href="/auth/signup">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white">
-                {t('signUp')}
-                </Button>
-                </Link>
+              {/* Auth Buttons for Guests */}
+              <Link href="/auth/signin">
+              <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+              {t('navigation.signIn')}
+              </Button>
+              </Link>
+              <Link href="/auth/signup">
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white">
+              {t('navigation.signUp')}
+              </Button>
+              </Link>
               </>
-            )}
+              )}
           </div>
 
           {/* Mobile menu button */}
@@ -311,32 +311,32 @@ export default function Navbar() {
           <div className="px-2 pt-2 pb-3 space-y-1">
           {/* Navigation Links */}
           <Link 
-          href="/calculator" 
+          href={`/${locale}/calculator`} 
           onClick={handleMobileMenuClose}
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
-          {t('calculator')}
+          {t('navigation.calculator')}
           </Link>
           <Link 
-          href="/wall-of-fame" 
+          href={`/${locale}/wall-of-fame`} 
           onClick={handleMobileMenuClose}
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
-          {t('wallOfFame')}
+          {t('navigation.wallOfFame')}
           </Link>
           <Link 
-          href="/hang-soi" 
+          href={`/${locale}/hang-soi`} 
           onClick={handleMobileMenuClose}
           className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
           <Users className="inline w-4 h-4 mr-2" />
-          {t('hangSoi')}
+          {t('navigation.hangSoi')}
           </Link>
           <Link 
           href={`/${locale}/tools`} 
@@ -346,7 +346,7 @@ export default function Navbar() {
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
           <ShoppingBag className="inline w-4 h-4 mr-2" />
-          {t('toolsMarket')}
+          {t('navigation.toolsMarket')}
           </Link>
           <Link 
           href={`/${locale}/faq`} 
@@ -355,16 +355,16 @@ export default function Navbar() {
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
-          {t('faq')}
+          {t('navigation.faq')}
           </Link>
           <Link 
-          href="/how-it-works" 
+          href={`/${locale}/how-it-works`} 
           onClick={handleMobileMenuClose}
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
           >
-          {t('howItWorks')}
+          {t('navigation.howItWorks')}
           </Link>
             
             {/* Mobile Auth Section */}
@@ -401,7 +401,7 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <TrendingUp className="inline w-4 h-4 mr-2" />
-                  Dashboard
+                  {t('navigation.dashboard')}
                   </Link>
                   <Link
                   href={`/${locale}/profile`}
@@ -411,7 +411,7 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <User className="inline w-4 h-4 mr-2" />
-                  Profile
+                  {t('navigation.profile')}
                   </Link>
                   <Link
                   href={`/${locale}/payouts`}
@@ -421,7 +421,7 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <DollarSign className="inline w-4 h-4 mr-2" />
-                  Payouts
+                  {t('navigation.payouts')}
                   </Link>
                   <Link
                   href={`/${locale}/referrals`}
@@ -431,18 +431,18 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <Users className="inline w-4 h-4 mr-2" />
-                  Referrals
+                  {t('navigation.referrals')}
                   </Link>
                   {(session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') && (
                   <Link
-                  href="/admin"
+                  href={`/${locale}/admin`}
                   onClick={handleMobileMenuClose}
                   className="block px-4 py-3 rounded-lg text-base font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
                   role="menuitem"
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <Settings className="inline w-4 h-4 mr-2" />
-                  Admin
+                  {t('navigation.adminPanel')}
                   </Link>
                   )}
                   <button
