@@ -56,5 +56,129 @@
     "environmentManagement": "Quản lý Môi trường",
     "monitoringLogs": "Giám sát Nhật ký",
     "settingsConfiguration": "Cài đặt Cấu hình"
+  },
+  "tools": {
+    "marketplace": "Chợ Công Cụ",
+    "title": "Chợ Công Cụ",
+    "description": "Duyệt và tải lên các công cụ giao dịch mạnh mẽ",
+    "upload": "Tải Công Cụ",
+    "analytics": "Phân Tích",
+    "browse": "Duyệt Công Cụ",
+    "featured": "Công Cụ Nổi Bật",
+    "popular": "Phổ Biến",
+    "latest": "Mới Nhất",
+    "myTools": "Công Cụ Của Tôi",
+    "seller": "Người Bán",
+    "rating": "Đánh Giá",
+    "downloads": "Tải Về",
+    "price": "Giá",
+    "free": "Miễn Phí",
+    "noTools": "Không tìm thấy công cụ nào"
+  },
+  "dashboard": {
+    "title": "Bảng Điều Khiển",
+    "overview": "Tổng Quan",
+    "analytics": "Phân Tích",
+    "earnings": "Tổng Thu Nhập",
+    "trades": "Tổng Giao Dịch",
+    "volume": "Khối Lượng Giao Dịch",
+    "rank": "Xếp Hạng Của Bạn",
+    "savings": "Tổng Tiết Kiệm",
+    "monthly": "Tiết Kiệm Hàng Tháng",
+    "statistics": "Thống Kê",
+    "recentActivity": "Hoạt Động Gần Đây"
+  },
+  "calculator": {
+    "title": "Máy Tính Phí",
+    "description": "Tính toán hoàn phí tiềm năng của bạn",
+    "volume": "Khối Lượng Giao Dịch",
+    "exchange": "Sàn Giao Dịch",
+    "calculate": "Tính Toán",
+    "result": "Hoàn Phí Dự Kiến",
+    "binance": "Binance",
+    "bybit": "Bybit",
+    "okx": "OKX"
+  },
+  "wallOfFame": {
+    "title": "Bức Tường Danh Vọng",
+    "description": "Top traders và những người đóng góp",
+    "rank": "Xếp Hạng",
+    "trader": "Nhà Giao Dịch",
+    "earnings": "Tổng Thu Nhập",
+    "trades": "Giao Dịch",
+    "referrals": "Giới Thiệu"
+  },
+  "howItWorks": {
+    "title": "Cách Hoạt Động",
+    "step1": "Đăng Ký",
+    "step2": "Kết Nối Sàn",
+    "step3": "Bắt Đầu Giao Dịch",
+    "step4": "Kiếm Hoàn Phí",
+    "description": "Quy trình 4 bước đơn giản để bắt đầu kiếm hoàn phí"
+  },
+  "hangSoi": {
+    "title": "Hang Sói",
+    "description": "Tham gia cộng đồng giao dịch cao cấp của chúng tôi",
+    "members": "Thành Viên Hoạt Động",
+    "signals": "Tín Hiệu Giao Dịch",
+    "analytics": "Phân Tích Nâng Cao",
+    "join": "Tham Gia Hang Sói"
+  },
+  "payouts": {
+    "title": "Thanh Toán",
+    "balance": "Số Dư Có Sẵn",
+    "pending": "Thanh Toán Đang Chờ",
+    "history": "Lịch Sử Thanh Toán",
+    "requestPayout": "Yêu Cầu Thanh Toán",
+    "method": "Phương Thức Thanh Toán",
+    "status": "Trạng Thái",
+    "date": "Ngày",
+    "amount": "Số Tiền"
+  },
+  "admin": {
+    "title": "Bảng Điều Khiển Quản Trị",
+    "users": "Người Dùng",
+    "tools": "Công Cụ",
+    "analytics": "Phân Tích",
+    "settings": "Cài Đặt",
+    "reports": "Báo Cáo",
+    "statistics": "Thống Kê",
+    "manageUsers": "Quản Lý Người Dùng",
+    "manageTools": "Quản Lý Công Cụ",
+    "viewReports": "Xem Báo Cáo"
+  },
+  "referrals": {
+    "title": "Giới Thiệu",
+    "myLink": "Liên Kết Giới Thiệu Của Tôi",
+    "earnings": "Thu Nhập Giới Thiệu",
+    "clicks": "Tổng Lần Click",
+    "conversions": "Chuyển Đổi",
+    "copy": "Sao Chép Liên Kết",
+    "copied": "Đã Sao Chép!",
+    "share": "Chia Sẻ Với Bạn Bè"
+  },
+  "profile": {
+    "title": "Hồ Sơ",
+    "editProfile": "Chỉnh Sửa Hồ Sơ",
+    "accountSettings": "Cài Đặt Tài Khoản",
+    "changePassword": "Thay Đổi Mật Khẩu",
+    "twoFactor": "Xác Thực Hai Yếu Tố",
+    "notification": "Cài Đặt Thông Báo"
+  },
+  "apex-pro": {
+    "title": "Apex Pro",
+    "description": "Tư Cách Thành Viên Premium cho các trader nghiêm túc",
+    "features": "Tính Năng",
+    "pricing": "Giá Cả",
+    "subscribe": "Đăng Ký Ngay",
+    "premium": "Tính Năng Premium",
+    "exclusive": "Truy Cập Độc Quyền"
+  },
+  "concierge": {
+    "title": "Dịch Vụ Concierge",
+    "description": "Hỗ trợ cao cấp và huấn luyện cá nhân hóa",
+    "book": "Đặt Lịch Họp",
+    "sessions": "Phiên Họp Của Tôi",
+    "experts": "Các Chuyên Gia"
   }
 }

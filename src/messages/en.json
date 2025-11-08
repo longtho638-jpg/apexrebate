@@ -56,5 +56,129 @@
     "environmentManagement": "Environment Management",
     "monitoringLogs": "Monitoring Logs",
     "settingsConfiguration": "Settings Configuration"
+  },
+  "tools": {
+    "marketplace": "Tools Marketplace",
+    "title": "Marketplace",
+    "description": "Browse and upload powerful trading tools",
+    "upload": "Upload Tool",
+    "analytics": "Analytics",
+    "browse": "Browse Tools",
+    "featured": "Featured Tools",
+    "popular": "Popular",
+    "latest": "Latest",
+    "myTools": "My Tools",
+    "seller": "Seller",
+    "rating": "Rating",
+    "downloads": "Downloads",
+    "price": "Price",
+    "free": "Free",
+    "noTools": "No tools found"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "analytics": "Analytics",
+    "earnings": "Total Earnings",
+    "trades": "Total Trades",
+    "volume": "Trading Volume",
+    "rank": "Your Rank",
+    "savings": "Total Savings",
+    "monthly": "Monthly Savings",
+    "statistics": "Statistics",
+    "recentActivity": "Recent Activity"
+  },
+  "calculator": {
+    "title": "Fee Calculator",
+    "description": "Calculate your potential rebates",
+    "volume": "Trading Volume",
+    "exchange": "Exchange",
+    "calculate": "Calculate",
+    "result": "Estimated Rebate",
+    "binance": "Binance",
+    "bybit": "Bybit",
+    "okx": "OKX"
+  },
+  "wallOfFame": {
+    "title": "Wall of Fame",
+    "description": "Top traders and contributors",
+    "rank": "Rank",
+    "trader": "Trader",
+    "earnings": "Total Earnings",
+    "trades": "Trades",
+    "referrals": "Referrals"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": "Sign Up",
+    "step2": "Connect Exchange",
+    "step3": "Start Trading",
+    "step4": "Earn Rebates",
+    "description": "Simple 4-step process to start earning rebates"
+  },
+  "hangSoi": {
+    "title": "Hang Sói (Wolf's Den)",
+    "description": "Join our premium trading community",
+    "members": "Active Members",
+    "signals": "Trading Signals",
+    "analytics": "Advanced Analytics",
+    "join": "Join Hang Sói"
+  },
+  "payouts": {
+    "title": "Payouts",
+    "balance": "Available Balance",
+    "pending": "Pending Payouts",
+    "history": "Payout History",
+    "requestPayout": "Request Payout",
+    "method": "Payout Method",
+    "status": "Status",
+    "date": "Date",
+    "amount": "Amount"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "tools": "Tools",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "reports": "Reports",
+    "statistics": "Statistics",
+    "manageUsers": "Manage Users",
+    "manageTools": "Manage Tools",
+    "viewReports": "View Reports"
+  },
+  "referrals": {
+    "title": "Referrals",
+    "myLink": "My Referral Link",
+    "earnings": "Referral Earnings",
+    "clicks": "Total Clicks",
+    "conversions": "Conversions",
+    "copy": "Copy Link",
+    "copied": "Copied!",
+    "share": "Share with Friends"
+  },
+  "profile": {
+    "title": "Profile",
+    "editProfile": "Edit Profile",
+    "accountSettings": "Account Settings",
+    "changePassword": "Change Password",
+    "twoFactor": "Two-Factor Authentication",
+    "notification": "Notification Settings"
+  },
+  "apex-pro": {
+    "title": "Apex Pro",
+    "description": "Premium membership for serious traders",
+    "features": "Features",
+    "pricing": "Pricing",
+    "subscribe": "Subscribe Now",
+    "premium": "Premium Features",
+    "exclusive": "Exclusive Access"
+  },
+  "concierge": {
+    "title": "Concierge Service",
+    "description": "Premium support and personalized coaching",
+    "book": "Book a Session",
+    "sessions": "My Sessions",
+    "experts": "Expert Coaches"
   }
 }

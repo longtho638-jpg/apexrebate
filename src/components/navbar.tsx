@@ -150,6 +150,21 @@ export default function Navbar() {
 
           {/* Desktop Right side */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Desktop Language Switcher */}
+            <Select value={locale} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-24 h-9">
+                <Globe className="w-4 h-4 mr-1" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="vi">🇻🇳 Việt Nam</SelectItem>
+                <SelectItem value="en">🇺🇸 English</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Theme Toggle for desktop */}
+            <ThemeToggle />
+            
           {session ? (
             <>
             {/* Notification Bell */}
