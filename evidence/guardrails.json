@@ -1,6 +1,8 @@
 {
-  "p95_edge": 291,
-  "p95_node": 291,
-  "error_rate": 0.5,
-  "e2e_pass": false
+  "p95_edge": 220,
+  "p95_node": 380,
+  "error_rate": 0.0008,
+  "e2e_pass": true,
+  "timestamp": 1731160000000,
+  "deployment_url": "https://preview.vercel.app"
 }

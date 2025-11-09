@@ -2,7 +2,7 @@ package apex.payouts
 
 default allow_payout := false
 
-allow_payout {
+allow_payout if {
   not input.flags.kill_switch_payout
   input.user.kyc == true
   input.rules.wash_trading_prohibited == true
@@ -13,7 +13,7 @@ allow_payout {
 }
 
 # Clawback allowed when conditions met
-allow_clawback {
+allow_clawback if {
   input.user.kyc == true
   input.clawback_reason != ""
 }

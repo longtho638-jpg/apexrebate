@@ -58,3 +58,7 @@ functions/.next
 .next/node_modules
 .next/standalone
 .env*.local
+
+# JWKS deployment package (exclude node_modules)
+apexrebate-jwks/functions/node_modules/
+apexrebate-jwks/functions/package-lock.json

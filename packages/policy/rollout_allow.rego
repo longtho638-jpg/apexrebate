@@ -2,7 +2,7 @@ package apex.rollout
 
 default allow := false
 
-allow {
+allow if {
   input.environment == "prod"
   input.guardrails.p95_edge <= 250
   input.guardrails.p95_node <= 450

@@ -1,0 +1,9 @@
+{
+  "commit": "mock-commit-sha",
+  "timestamp": 1731160000000,
+  "jwt": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFwZXhSZWJhdGUgQ0kvQ0QiLCJpYXQiOjE3MzExNjAwMDB9.mock-signature",
+  "build": {
+    "status": "success",
+    "duration_sec": 240
+  }
+}

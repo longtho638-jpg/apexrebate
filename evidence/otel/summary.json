@@ -1,19 +1,19 @@
 {
-  "ts": 1762676373961,
+  "ts": 1762676599978,
   "data": [
     {
       "route": "/",
-      "count": 510,
-      "errors": 1,
-      "p95_ms": 399,
-      "p99_ms": 285
+      "count": 770,
+      "errors": 4,
+      "p95_ms": 222,
+      "p99_ms": 500
     },
     {
       "route": "/api/health",
-      "count": 1609,
-      "errors": 3,
-      "p95_ms": 205,
-      "p99_ms": 536
+      "count": 1760,
+      "errors": 1,
+      "p95_ms": 358,
+      "p99_ms": 418
     }
   ]
 }
