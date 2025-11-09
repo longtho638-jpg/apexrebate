@@ -11,7 +11,16 @@ const COUNTRY_TO_LOCALE: Record<string, string> = {
   'VN': 'vi',
   'KH': 'vi', // Cambodia often uses Vietnamese
   
-  // English speakers (default)
+  // Thai speakers
+  'TH': 'th',
+  'LA': 'th', // Laos shares similar language
+  
+  // Indonesian speakers
+  'ID': 'id',
+  'BN': 'id', // Brunei uses Indonesian
+  'TL': 'id', // East Timor related language
+  
+  // English speakers (default for rest of world)
   'US': 'en',
   'GB': 'en',
   'AU': 'en',
@@ -23,8 +32,6 @@ const COUNTRY_TO_LOCALE: Record<string, string> = {
   'PH': 'en',
   'IN': 'en',
   'MY': 'en',
-  'TH': 'en',
-  'ID': 'en',
   'JP': 'en',
   'KR': 'en',
   'CN': 'en',
@@ -41,7 +48,7 @@ interface GeoLocation {
  * Parse Accept-Language header to determine preferred locale
  */
 export function parseAcceptLanguage(acceptLanguage: string | null): string {
-  if (!acceptLanguage) return 'vi'; // Default fallback
+  if (!acceptLanguage) return 'en'; // Default fallback to English
   
   const languages = acceptLanguage
     .split(',')
@@ -55,11 +62,17 @@ export function parseAcceptLanguage(acceptLanguage: string | null): string {
   // Check for Vietnamese
   if (languages.some((l) => l.code === 'vi')) return 'vi';
   
+  // Check for Thai
+  if (languages.some((l) => l.code === 'th')) return 'th';
+  
+  // Check for Indonesian
+  if (languages.some((l) => l.code === 'id')) return 'id';
+  
   // Check for English
   if (languages.some((l) => l.code === 'en')) return 'en';
   
-  // Default to Vietnamese for Vietnam, English for others
-  return 'vi';
+  // Default to English for rest of world
+  return 'en';
 }
 
 /**
@@ -72,7 +85,7 @@ export async function detectLocaleFromIP(ip: string): Promise<string> {
     const cfCountry = headersList.get('cf-ipcountry');
     
     if (cfCountry) {
-      const detectedLocale = COUNTRY_TO_LOCALE[cfCountry.toUpperCase()] || 'vi';
+      const detectedLocale = COUNTRY_TO_LOCALE[cfCountry.toUpperCase()] || 'en';
       console.log(`[i18n] Detected locale from Cloudflare: ${cfCountry} → ${detectedLocale}`);
       return detectedLocale;
     }
@@ -84,7 +97,7 @@ export async function detectLocaleFromIP(ip: string): Promise<string> {
     return locale;
   } catch (error) {
     console.warn('[i18n] Error detecting locale from IP, using default:', error);
-    return 'vi';
+    return 'en';
   }
 }
 
@@ -122,6 +135,6 @@ export async function smartLocaleDetection(ip: string): Promise<string> {
     return locale;
   } catch (error) {
     console.warn('[i18n] Smart detection failed:', error);
-    return 'vi'; // Fallback to Vietnamese
+    return 'en'; // Fallback to English
   }
 }

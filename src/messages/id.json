@@ -1,0 +1,193 @@
+{
+  "common": {
+    "welcome": "Selamat datang di ApexRebate!",
+    "subtitle": "Optimalkan keuntungan perdagangan bersih Anda secara global 🌍",
+    "cta": "Mulai Sekarang"
+  },
+  "navigation": {
+    "home": "Beranda",
+    "dashboard": "Dasbor",
+    "profile": "Profil",
+    "referrals": "Referral",
+    "admin": "Admin",
+    "signIn": "Masuk",
+    "signUp": "Daftar",
+    "signOut": "Keluar",
+    "language": "Bahasa",
+    "calculator": "Kalkulator",
+    "wallOfFame": "Dinding Ketenaran",
+    "hangSoi": "Gantungan Soi",
+    "toolsMarket": "Pasar Alat",
+    "faq": "FAQ",
+    "howItWorks": "Cara Kerjanya",
+    "payouts": "Pembayaran",
+    "adminPanel": "Panel Admin"
+  },
+  "buttons": {
+    "submit": "Kirim",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "refresh": "Segarkan",
+    "loadMore": "Muat Lebih Banyak",
+    "close": "Tutup"
+  },
+  "forms": {
+    "email": "Email",
+    "password": "Kata Sandi",
+    "confirmPassword": "Konfirmasi Kata Sandi",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "phone": "Nomor Telepon",
+    "required": "Diperlukan",
+    "optional": "Opsional"
+  },
+  "errors": {
+    "general": "Terjadi kesalahan",
+    "network": "Kesalahan jaringan",
+    "validation": "Data tidak valid",
+    "unauthorized": "Akses tidak sah"
+  },
+  "loading": {
+    "text": "Memuat...",
+    "processing": "Memproses..."
+  },
+  "cicd": {
+    "title": "Pusat Pipa CI/CD",
+    "subtitle": "Kelola proses integrasi berkelanjutan dan penerapan",
+    "activePipelines": "Pipa Aktif",
+    "todayDeployments": "Penerapan Hari Ini",
+    "averageDeployTime": "Waktu Penerapan Rata-rata",
+    "successRate": "Tingkat Keberhasilan",
+    "pipelineDashboard": "Dasbor Pipa",
+    "deploymentManagement": "Manajemen Penerapan",
+    "environmentManagement": "Manajemen Lingkungan",
+    "monitoringLogs": "Log Pemantauan",
+    "settingsConfiguration": "Konfigurasi Pengaturan"
+  },
+  "tools": {
+    "marketplace": "Pasar Alat",
+    "title": "Pasar",
+    "description": "Jelajahi dan unggah alat perdagangan yang canggih",
+    "upload": "Unggah Alat",
+    "analytics": "Analitik",
+    "browse": "Jelajahi Alat",
+    "featured": "Alat Unggulan",
+    "popular": "Populer",
+    "latest": "Terbaru",
+    "myTools": "Alat Saya",
+    "seller": "Penjual",
+    "rating": "Penilaian",
+    "downloads": "Unduhan",
+    "price": "Harga",
+    "free": "Gratis",
+    "noTools": "Tidak ada alat yang ditemukan"
+  },
+  "dashboard": {
+    "title": "Dasbor",
+    "overview": "Ringkasan",
+    "analytics": "Analitik",
+    "earnings": "Total Penghasilan",
+    "trades": "Total Perdagangan",
+    "volume": "Volume Perdagangan",
+    "rank": "Peringkat Anda",
+    "savings": "Total Penghematan",
+    "monthly": "Penghematan Bulanan",
+    "statistics": "Statistik",
+    "recentActivity": "Aktivitas Terbaru"
+  },
+  "calculator": {
+    "title": "Kalkulator Biaya",
+    "description": "Hitung potensi rabat Anda",
+    "volume": "Volume Perdagangan",
+    "exchange": "Pertukaran",
+    "calculate": "Hitung",
+    "result": "Rabat Perkiraan",
+    "binance": "Binance",
+    "bybit": "Bybit",
+    "okx": "OKX"
+  },
+  "wallOfFame": {
+    "title": "Dinding Ketenaran",
+    "description": "Pedagang dan kontributor terbaik",
+    "rank": "Peringkat",
+    "trader": "Pedagang",
+    "earnings": "Total Penghasilan",
+    "trades": "Perdagangan",
+    "referrals": "Referral"
+  },
+  "howItWorks": {
+    "title": "Cara Kerjanya",
+    "step1": "Daftar",
+    "step2": "Hubungkan Pertukaran",
+    "step3": "Mulai Berdagang",
+    "step4": "Dapatkan Rabat",
+    "description": "Proses 4 langkah sederhana untuk mulai mendapatkan rabat"
+  },
+  "hangSoi": {
+    "title": "Gantungan Soi (Wolf's Den)",
+    "description": "Bergabunglah dengan komunitas perdagangan premium kami",
+    "members": "Anggota Aktif",
+    "signals": "Sinyal Perdagangan",
+    "analytics": "Analitik Tingkat Lanjut",
+    "join": "Bergabung dengan Gantungan Soi"
+  },
+  "payouts": {
+    "title": "Pembayaran",
+    "balance": "Saldo Tersedia",
+    "pending": "Pembayaran Tertunda",
+    "history": "Riwayat Pembayaran",
+    "requestPayout": "Minta Pembayaran",
+    "method": "Metode Pembayaran",
+    "status": "Status",
+    "date": "Tanggal",
+    "amount": "Jumlah"
+  },
+  "admin": {
+    "title": "Panel Admin",
+    "users": "Pengguna",
+    "tools": "Alat",
+    "analytics": "Analitik",
+    "settings": "Pengaturan",
+    "reports": "Laporan",
+    "statistics": "Statistik",
+    "manageUsers": "Kelola Pengguna",
+    "manageTools": "Kelola Alat",
+    "viewReports": "Lihat Laporan"
+  },
+  "referrals": {
+    "title": "Referral",
+    "myLink": "Tautan Referral Saya",
+    "earnings": "Penghasilan Referral",
+    "clicks": "Total Klik",
+    "conversions": "Konversi",
+    "copy": "Salin Tautan",
+    "copied": "Tersalin!",
+    "share": "Bagikan dengan Teman"
+  },
+  "profile": {
+    "title": "Profil",
+    "editProfile": "Edit Profil",
+    "accountSettings": "Pengaturan Akun",
+    "changePassword": "Ubah Kata Sandi",
+    "twoFactor": "Autentikasi Dua Faktor",
+    "notification": "Pengaturan Pemberitahuan"
+  },
+  "apex-pro": {
+    "title": "Apex Pro",
+    "description": "Keanggotaan premium untuk pedagang serius",
+    "features": "Fitur",
+    "pricing": "Harga",
+    "subscribe": "Berlangganan Sekarang",
+    "premium": "Fitur Premium",
+    "exclusive": "Akses Eksklusif"
+  },
+  "concierge": {
+    "title": "Layanan Concierge",
+    "description": "Dukungan premium dan pelatihan personal",
+    "book": "Pesan Sesi",
+    "sessions": "Sesi Saya",
+    "experts": "Pelatih Ahli"
+  }
+}

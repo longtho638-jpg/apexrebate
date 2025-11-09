@@ -8,10 +8,19 @@ const COUNTRY_TO_LOCALE: Record<string, string> = {
   'VN': 'vi',
   'KH': 'vi',
   
-  // English speakers (default)
+  // Thai speakers
+  'TH': 'th',
+  'LA': 'th', // Laos
+  
+  // Indonesian speakers
+  'ID': 'id',
+  'BN': 'id', // Brunei
+  'TL': 'id', // East Timor
+  
+  // English speakers (default for rest of world)
   'US': 'en', 'GB': 'en', 'AU': 'en', 'CA': 'en', 'IE': 'en', 'NZ': 'en',
-  'SG': 'en', 'HK': 'en', 'PH': 'en', 'IN': 'en', 'MY': 'en', 'TH': 'en',
-  'ID': 'en', 'JP': 'en', 'KR': 'en', 'CN': 'en', 'TW': 'en', 'ZA': 'en',
+  'SG': 'en', 'HK': 'en', 'PH': 'en', 'IN': 'en', 'MY': 'en',
+  'JP': 'en', 'KR': 'en', 'CN': 'en', 'TW': 'en', 'ZA': 'en',
 };
 
 // Simple in-memory rate limiter (for production, use Redis/Upstash)
@@ -56,15 +65,27 @@ function detectLocaleFromIP(request: NextRequest): string {
     console.log(`[middleware] Locale detected from Accept-Language: vi`);
     return 'vi';
   }
+  if (acceptLanguage.includes('th')) {
+    console.log(`[middleware] Locale detected from Accept-Language: th`);
+    return 'th';
+  }
+  if (acceptLanguage.includes('id')) {
+    console.log(`[middleware] Locale detected from Accept-Language: id`);
+    return 'id';
+  }
+  if (acceptLanguage.includes('en')) {
+    console.log(`[middleware] Locale detected from Accept-Language: en`);
+    return 'en';
+  }
 
-  console.log(`[middleware] Using default locale: vi`);
-  return 'vi';
+  console.log(`[middleware] Using default locale: en`);
+  return 'en';
 }
 
 // Create i18n middleware with custom locale detection
 const intlMiddleware = createMiddleware({
-  locales: ['en', 'vi'],
-  defaultLocale: 'vi',
+  locales: ['en', 'vi', 'th', 'id'],
+  defaultLocale: 'en',
   localePrefix: 'as-needed'
 });
 
@@ -85,7 +106,10 @@ export default async function middleware(request: NextRequest) {
   // Auto-detect and redirect to appropriate locale for root path
   if (pathname === '/' || pathname === '') {
     const detectedLocale = detectLocaleFromIP(request);
-    const redirectPath = detectedLocale === 'vi' ? '/' : '/en';
+    let redirectPath = '/'; // English is default (no prefix)
+    if (detectedLocale === 'vi') redirectPath = '/vi';
+    else if (detectedLocale === 'th') redirectPath = '/th';
+    else if (detectedLocale === 'id') redirectPath = '/id';
     console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
     return NextResponse.redirect(new URL(redirectPath, request.url));
   }
@@ -97,7 +121,7 @@ export default async function middleware(request: NextRequest) {
   const protectedRoutes = ['/dashboard', '/profile', '/referrals', '/admin', '/tools/upload', '/tools/analytics'];
   
   // Extract locale from pathname if present (e.g., /vi/dashboard → vi)
-  const localeMatch = pathname.match(/^\/(en|vi)(\/.*)?$/);
+  const localeMatch = pathname.match(/^\/(en|vi|th|id)(\/.*)?$/);
   const locale = localeMatch ? localeMatch[1] : null;
   const pathWithoutLocale = locale ? (localeMatch[2] || '/') : pathname;
   

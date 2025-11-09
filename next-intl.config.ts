@@ -1,5 +1,5 @@
 export default {
-  locales: ['en', 'vi'],
-  defaultLocale: 'vi',
+  locales: ['en', 'vi', 'th', 'id'],
+  defaultLocale: 'en',
   localeDetection: false
 };
