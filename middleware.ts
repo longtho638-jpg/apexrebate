@@ -2,6 +2,18 @@ import createMiddleware from 'next-intl/middleware';
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
+// Mapping of country codes to locales (same as geo-detection.ts)
+const COUNTRY_TO_LOCALE: Record<string, string> = {
+  // Vietnamese speakers
+  'VN': 'vi',
+  'KH': 'vi',
+  
+  // English speakers (default)
+  'US': 'en', 'GB': 'en', 'AU': 'en', 'CA': 'en', 'IE': 'en', 'NZ': 'en',
+  'SG': 'en', 'HK': 'en', 'PH': 'en', 'IN': 'en', 'MY': 'en', 'TH': 'en',
+  'ID': 'en', 'JP': 'en', 'KR': 'en', 'CN': 'en', 'TW': 'en', 'ZA': 'en',
+};
+
 // Simple in-memory rate limiter (for production, use Redis/Upstash)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 100; // requests per window
@@ -24,7 +36,32 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-// Create i18n middleware
+/**
+ * Detect locale from IP geolocation (Cloudflare or Accept-Language)
+ */
+function detectLocaleFromIP(request: NextRequest): string {
+  // Try Cloudflare IP geolocation first
+  const cfCountry = request.headers.get('cf-ipcountry');
+  if (cfCountry) {
+    const locale = COUNTRY_TO_LOCALE[cfCountry.toUpperCase()];
+    if (locale) {
+      console.log(`[middleware] Locale detected from IP (CF): ${cfCountry} → ${locale}`);
+      return locale;
+    }
+  }
+
+  // Fallback to Accept-Language header
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  if (acceptLanguage.includes('vi')) {
+    console.log(`[middleware] Locale detected from Accept-Language: vi`);
+    return 'vi';
+  }
+
+  console.log(`[middleware] Using default locale: vi`);
+  return 'vi';
+}
+
+// Create i18n middleware with custom locale detection
 const intlMiddleware = createMiddleware({
   locales: ['en', 'vi'],
   defaultLocale: 'vi',
@@ -43,6 +80,14 @@ export default async function middleware(request: NextRequest) {
         { status: 429 }
       );
     }
+  }
+
+  // Auto-detect and redirect to appropriate locale for root path
+  if (pathname === '/' || pathname === '') {
+    const detectedLocale = detectLocaleFromIP(request);
+    const redirectPath = detectedLocale === 'vi' ? '/' : '/en';
+    console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
+    return NextResponse.redirect(new URL(redirectPath, request.url));
   }
 
   // Removed redirects for /uiux-v3 as we now have client-only pages

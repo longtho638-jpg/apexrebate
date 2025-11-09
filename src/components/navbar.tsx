@@ -103,11 +103,37 @@ export default function Navbar() {
     }
   };
 
-  const handleLanguageChange = (newLocale: string) => {
-    const currentPath = pathname.replace(`/${locale}`, '');
-    const params = searchParams.toString();
-    const newPath = `/${newLocale}${currentPath}${params ? `?${params}` : ''}`;
-    router.push(newPath);
+  const handleLanguageChange = async (newLocale: string) => {
+    if (newLocale === locale) return; // No-op if same locale
+    
+    try {
+      // Save preference to localStorage
+      localStorage.setItem('locale-preference', JSON.stringify({
+        autoDetect: false,
+        savedLocale: newLocale,
+      }));
+
+      // Build new path - proper locale prefix handling
+      const pathWithoutLocale = pathname.replace(/^\/(en|vi)(\/|$)/, '$2') || '/';
+      const newPath = newLocale === 'vi' ? pathWithoutLocale : `/en${pathWithoutLocale}`;
+
+      // Preserve query parameters
+      const params = searchParams.toString();
+      const finalPath = `${newPath}${params ? `?${params}` : ''}`;
+
+      // Add delay to ensure context updates, then push route
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      
+      // Use window.location for hard refresh to ensure translations reload
+      window.location.href = finalPath;
+    } catch (error) {
+      console.error('Failed to change language:', error);
+      // Fallback: try router.push
+      const currentPath = pathname.replace(`/${locale}`, '');
+      const params = searchParams.toString();
+      const newPath = `/${newLocale}${currentPath}${params ? `?${params}` : ''}`;
+      router.push(newPath);
+    }
   };
 
   return (
