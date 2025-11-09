@@ -450,6 +450,96 @@ npm run rollback:last
 
 ---
 
+## 🔟 JWKS + HMAC Deployment Package (November 2025)
+
+**Status**: ✅ Complete Deployment Package Ready
+
+### Quick Deploy Package
+Full Firebase Functions + Vercel deployment in one ZIP file for easy team reproduction.
+
+**Package Contents:**
+```
+apexrebate-jwks.zip (all-in-one deployment)
+├── .env.local                      # All secrets (JWKS + HMAC)
+├── functions/
+│   ├── index.js                    # /api/sign + /api/verify
+│   └── package.json                # Dependencies
+├── public/.well-known/
+│   └── jwks.json                   # Public key distribution
+├── tests/
+│   └── postman_collection.json     # Auto-test suite
+├── README.md                       # Setup instructions
+├── DEPLOYMENT_CHECKLIST.md         # Verification steps
+└── AGENT_SETUP.sh                  # One-command deployment
+```
+
+### Create Package
+```bash
+# Generate complete deployment package
+./scripts/setup-jwks-package.sh
+
+# Output: apexrebate-jwks.zip
+```
+
+### VS Code Agent Prompt
+```text
+Agent ơi, giải nén apexrebate-jwks.zip vào workspace, sau đó:
+
+1️⃣ cd apexrebate-jwks/functions
+2️⃣ npm install
+3️⃣ firebase deploy --only functions:sign,functions:verify
+4️⃣ Run Postman collection tests/apexrebate-jwks-auto.postman_collection.json
+
+Mục tiêu: Verify 3 tests pass (Sign JWT, Verify JWT, Verify JWT+HMAC)
+Khi xong, confirm "JWKS + HMAC Verified ✅"
+```
+
+### Quick Start (Manual)
+```bash
+# Extract package
+unzip apexrebate-jwks.zip
+cd apexrebate-jwks
+
+# Run automated setup
+bash AGENT_SETUP.sh
+
+# Or manual steps:
+cd functions && npm install
+firebase deploy --only functions:sign,functions:verify
+```
+
+### Testing
+```bash
+# Import Postman collection
+tests/apexrebate-jwks-auto.postman_collection.json
+
+# Expected results:
+✅ Test 1: Sign JWT (returns token)
+✅ Test 2: Verify JWT (validates signature)
+✅ Test 3: Verify JWT + HMAC (double validation)
+```
+
+### Security Features
+- 🔐 **Ed25519 JWKS**: Modern cryptographic signing
+- 🔒 **HMAC-SHA256**: Webhook signature validation
+- ⏱️ **15min JWT expiry**: Short-lived tokens
+- 🌐 **Public key distribution**: Standard `.well-known/jwks.json`
+- 🛡️ **No secrets in git**: All in `.env.local` (gitignored)
+
+### Production Deployment
+```bash
+# Set Firebase environment config (not .env.local)
+firebase functions:config:set \
+  jwks.private="$(cat key.pem)" \
+  jwks.kid="c5e8a1d913b27a1b" \
+  broker.hmac="$(openssl rand -hex 32)"
+
+# Deploy
+firebase deploy --only functions
+```
+
+---
+
 ## 🌟 Closing Notes
 
 > ApexRebate 2025 – Hybrid MAX v2 is where humans and AI build together.
