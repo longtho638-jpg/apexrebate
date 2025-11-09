@@ -276,26 +276,27 @@ git push origin main
 
 ## 🤖 9️⃣ Agentic CI/CD Pipeline (November 2025)
 
-**Status**: ✅ Infrastructure Complete (Nov 9, 2025)
+**Status**: ✅ Guardrails Extension Complete (Nov 9, 2025)
 - 13 production files deployed
 - 7 devDependencies added
 - All scripts executable (chmod +x)
 - Webhook HMAC security enabled
 - CSP headers enforced
 - RS256 JWT evidence signing ready
+- ✨ **NEW**: Guardrails + Playwright real metrics (p95 latency, error rate, E2E pass)
 
 ### What is Agentic CI/CD?
-Automated pipeline với deny-by-default policy, evidence signing, và auto-rollback. Built for Next.js 15 + Vercel + Neon.
+Automated pipeline với deny-by-default policy, evidence signing, auto-rollback, và **real-time guardrails measurement**. Built for Next.js 15 + Vercel + Neon.
 
 ### The 10-Step Pipeline
 ```
-A1: Lint + Typecheck     → Hard gate ❌
+A1: Lint + Typecheck     → Hard gate ❌ (+ pre-commit hook)
 A2: Unit Tests           → Hard gate ❌
 A3: Build                → Hard gate ❌
 A7: Deploy Preview       → Hard gate ❌
 A4: E2E Tests            → Soft gate ⚠️
 A5: Evidence Sign        → RS256 JWT
-A8: Shadow Verify        → Collect metrics
+A8: Guardrails Check     → ✨ Real metrics (p95, error_rate, e2e_pass)
 A6: Policy Gate          → Deny-by-default (hard gate) ❌
 A9: Deploy Production    → If all pass
 A10: Rollback            → Auto on failure 🔄
@@ -303,8 +304,14 @@ A10: Rollback            → Auto on failure 🔄
 
 **Pattern**: Explorer → Verifier → Corrector
 - 🔍 **Explorer**: lint, test, build, deploy preview
-- ✅ **Verifier**: sign evidence + collect metrics + policy gate
+- ✅ **Verifier**: sign evidence + **real guardrails measurement** + policy gate
 - 🔄 **Corrector**: promote or auto-rollback
+
+**✨ Guardrails Measurement (A8):**
+- **p95 Latency**: Samples endpoints from `targets.json` (10 requests/endpoint)
+- **Error Rate**: Measures % of failed requests vs SLO threshold
+- **E2E Pass**: Smoke test validation (error_rate ≤ 1%)
+- **Output**: `evidence/guardrails.json` for policy evaluation
 
 ### Quick Start (10 minutes)
 ```bash
@@ -329,12 +336,14 @@ gh workflow run agentic.yml
 gh run list --workflow=agentic.yml
 ```
 
-### Core Files (13 Production + 8 Documentation)
+### Core Files (16 Production + 8 Documentation)
 
-**Production Infrastructure (13 files):**
+**Production Infrastructure (16 files):**
 ```
 .vscode/tasks.json                    # 10 VS Code tasks
 .github/workflows/agentic.yml         # GitHub Actions orchestration
+.husky/pre-commit                     # ✨ NEW: Auto-lint on commit
+.lintstagedrc.json                    # ✨ NEW: Lint-staged config
 scripts/
 ├── evidence/sign.mjs                 # RS256 JWT evidence signing
 ├── policy/
@@ -345,6 +354,8 @@ scripts/
 │   ├── vercel-prod.mjs               # Production deployment
 │   └── rollback.mjs                  # Auto-rollback logic
 ├── rollout/
+│   ├── guardrails-playwright.mjs     # ✨ NEW: Real metrics (p95, error_rate, e2e)
+│   ├── targets.json                  # ✨ NEW: Endpoint sampling config
 │   ├── shadow-verify.mjs             # Shadow verification
 │   └── save-url.mjs                  # Deployment URL tracking
 └── security/                         # Security headers + HMAC
@@ -373,8 +384,10 @@ scripts/
 ### Key Features
 - ✅ **Deny-by-Default** — Every step is a gate. Fail = no deploy
 - ✅ **Evidence-Driven** — All code hashed + signed (RS256 JWT)
-- ✅ **Metric-Gated** — Collect p95 latency + error rate vs SLOs
+- ✅ **Real Guardrails** — ✨ Measures actual p95 latency + error rate from preview deploy
+- ✅ **Metric-Gated** — Compare against SLO thresholds in `gate.json`
 - ✅ **Auto-Rollback** — Policy fails → git revert → CI redeploys (~2 min)
+- ✅ **Pre-commit Hooks** — ✨ Auto-lint before every commit (Husky + lint-staged)
 - ✅ **VS Code Native** — No external tools. Works offline
 
 ### Usage Options
@@ -414,8 +427,9 @@ gh workflow run agentic.yml
 | 🎓 Learning | `AGENTIC_SUMMARY.md` | Full overview |
 
 ### SLO Configuration
+
+**Policy Gate (`scripts/policy/gate.json`):**
 ```json
-// scripts/policy/gate.json
 {
   "latency_p95_ms": 500,
   "error_rate": 0.01,
@@ -423,6 +437,26 @@ gh workflow run agentic.yml
   "build_time_sec": 300
 }
 ```
+
+**✨ Guardrails Targets (`scripts/rollout/targets.json`):**
+```json
+{
+  "paths": [
+    "/",
+    "/api/health",
+    "/tools",
+    "/api/payout/quote"
+  ],
+  "samples_per_path": 10,
+  "timeout_ms": 5000
+}
+```
+
+**How it works:**
+1. `guardrails-playwright.mjs` reads preview URL from `.vercel-url`
+2. Samples each endpoint in `paths[]` × 10 requests
+3. Measures p95 latency, error rate, smoke test pass/fail
+4. Outputs `evidence/guardrails.json` for policy gate evaluation
 
 ### Security Implementation
 - ✅ **RS256 JWT**: Evidence signing with private key rotation
@@ -440,6 +474,21 @@ gh workflow run agentic.yml
 5. `JWKS_KID` - Key ID for JWT header
 6. `BROKER_HMAC` - HMAC secret for webhooks
 
+### Testing Locally
+```bash
+# Option 1: VS Code (recommended)
+Cmd+Shift+P → "Tasks: Run Task" → "Agentic: Full Pipeline"
+
+# Option 2: Individual steps
+node scripts/rollout/guardrails-playwright.mjs https://preview-url.vercel.app
+node scripts/policy/eval.mjs
+node scripts/deploy/rollback.mjs
+
+# Option 3: Test guardrails only
+node scripts/rollout/guardrails-playwright.mjs
+cat evidence/guardrails.json
+```
+
 ### Rollback Plan
 ```bash
 # Auto-triggered on policy failure
@@ -447,6 +496,13 @@ gh workflow run agentic.yml
 npm run rollback:last
 # Or via VS Code task: A10-Rollback
 ```
+
+### Next Steps (Future Extensions)
+- **OTel Integration**: Replace fetch sampling with OpenTelemetry metrics
+- **Sentry Integration**: Read real error rates from Sentry API
+- **Custom Metrics**: Add business KPIs (signup rate, conversion, etc.)
+- **Multi-region**: Test across multiple Vercel regions
+- **Load Testing**: Add k6/Artillery for stress testing
 
 ---
 
