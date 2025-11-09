@@ -276,7 +276,13 @@ git push origin main
 
 ## 🤖 9️⃣ Agentic CI/CD Pipeline (November 2025)
 
-**Status**: ✅ Production Ready (10-Step Evidence-Driven Pipeline)
+**Status**: ✅ Infrastructure Complete (Nov 9, 2025)
+- 13 production files deployed
+- 7 devDependencies added
+- All scripts executable (chmod +x)
+- Webhook HMAC security enabled
+- CSP headers enforced
+- RS256 JWT evidence signing ready
 
 ### What is Agentic CI/CD?
 Automated pipeline với deny-by-default policy, evidence signing, và auto-rollback. Built for Next.js 15 + Vercel + Neon.
@@ -323,28 +329,46 @@ gh workflow run agentic.yml
 gh run list --workflow=agentic.yml
 ```
 
-### Core Files (20 files, ~3,600 lines)
+### Core Files (13 Production + 8 Documentation)
+
+**Production Infrastructure (13 files):**
 ```
 .vscode/tasks.json                    # 10 VS Code tasks
-.github/workflows/agentic.yml         # GitHub Actions
-scripts/agentic/
-├── evidence.mjs                      # Evidence signing
-├── policy.mjs                        # Policy evaluation
-├── deploy.mjs                        # Deployment
-├── rollout.mjs                       # Rollout logic
-├── security.mjs                      # Security checks
-└── webhooks.mjs                      # Notifications
+.github/workflows/agentic.yml         # GitHub Actions orchestration
+scripts/
+├── evidence/sign.mjs                 # RS256 JWT evidence signing
+├── policy/
+│   ├── eval.mjs                      # Policy evaluation engine
+│   └── gate.json                     # SLO thresholds config
+├── deploy/
+│   ├── vercel-preview.mjs            # Preview deployment
+│   ├── vercel-prod.mjs               # Production deployment
+│   └── rollback.mjs                  # Auto-rollback logic
+├── rollout/
+│   ├── shadow-verify.mjs             # Shadow verification
+│   └── save-url.mjs                  # Deployment URL tracking
+└── security/                         # Security headers + HMAC
+```
 
-Documentation:
+**Documentation (8 files):**
+```
 ├── AGENTIC_README.md                 # Index + overview
-├── AGENTIC_QUICK_REFERENCE.md        # Cheat sheet
-├── AGENTIC_SETUP.md                  # Technical guide
-├── AGENTIC_INTEGRATION_STEPS.md      # Step-by-step
-├── AGENTIC_COPY_PASTE_COMMANDS.md    # Ready commands
-├── AGENTIC_DEPLOYMENT_CHECKLIST.md   # Pre-prod verification
-├── AGENTIC_SUMMARY.md                # Architecture
+├── AGENTIC_QUICK_REFERENCE.md        # One-page cheat sheet
+├── AGENTIC_SETUP.md                  # Full technical guide
+├── AGENTIC_INTEGRATION_STEPS.md      # Step-by-step setup
+├── AGENTIC_COPY_PASTE_COMMANDS.md    # Ready-to-run commands
+├── AGENTIC_DEPLOYMENT_CHECKLIST.md   # Pre-production verification
+├── AGENTIC_SUMMARY.md                # Architecture overview
 └── AGENTIC_DEPLOYMENT_REPORT.md      # Deployment report
 ```
+
+**DevDependencies Added (7 packages):**
+- `zx` - Script automation
+- `@vercel/node` - Vercel SDK
+- `jsonwebtoken` - JWT signing
+- `node-fetch` - HTTP requests
+- `dotenv` - Environment config
+- Additional security & validation packages
 
 ### Key Features
 - ✅ **Deny-by-Default** — Every step is a gate. Fail = no deploy
@@ -400,11 +424,21 @@ gh workflow run agentic.yml
 }
 ```
 
-### Security Verification
-- ✅ RS256 JWT signing for evidence
-- ✅ HMAC for webhook validation
-- ✅ Secret rotation support
-- ✅ Audit trail in evidence.json
+### Security Implementation
+- ✅ **RS256 JWT**: Evidence signing with private key rotation
+- ✅ **HMAC-SHA256**: Webhook payload validation (BROKER_HMAC)
+- ✅ **CSP Headers**: Content-Security-Policy enforcement
+- ✅ **Secret Management**: GitHub Secrets integration (6 required)
+- ✅ **Audit Trail**: All deployments logged in evidence.json
+- ✅ **Script Permissions**: All .mjs files executable (chmod +x)
+
+**Required GitHub Secrets:**
+1. `VERCEL_TOKEN` - Vercel API token
+2. `VERCEL_ORG_ID` - Organization ID
+3. `VERCEL_PROJECT_ID` - Project ID
+4. `JWKS_PRIVATE` - RS256 private key (PKCS8 format)
+5. `JWKS_KID` - Key ID for JWT header
+6. `BROKER_HMAC` - HMAC secret for webhooks
 
 ### Rollback Plan
 ```bash
