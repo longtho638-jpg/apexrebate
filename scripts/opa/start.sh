@@ -19,7 +19,14 @@ else
 fi
 
 echo "✔ Using OPA: $OPA_BIN"
-echo "✔ Loading policies from packages/policy/*.rego"
+
+# Kéo bundle runtime (nếu có)
+echo "📦 Pulling runtime bundle..."
+node scripts/opa/pull-bundle.mjs || echo "⚠️  No runtime bundle available (continuing with static policies)"
+
+echo "✔ Loading policies from packages/policy/*.rego + _runtime/*.rego"
 echo "✔ Server starting on http://0.0.0.0:${PORT}"
 
-exec "$OPA_BIN" run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego
+# Load cả file rego tĩnh và runtime (nếu có)
+exec "$OPA_BIN" run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego packages/policy/_runtime/*.rego 2>/dev/null || \
+  exec "$OPA_BIN" run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego

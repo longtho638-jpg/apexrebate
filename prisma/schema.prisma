@@ -567,6 +567,19 @@ model verification_tokens {
   @@unique([identifier, token])
 }
 
+model PolicyBundle {
+  id         String   @id @default(cuid())
+  version    String
+  algo       String   // e.g., HMAC-SHA256
+  sigHex     String   // signature hex
+  entries    Json     // { "file.rego": "package ...", ... }
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([active])
+}
+
 enum AchievementCategory {
   SAVINGS
   REFERRALS

@@ -3,19 +3,5 @@
 [33m[nodemon] watching path(s): server.ts src/**/*[39m
 [33m[nodemon] watching extensions: ts,tsx,js,jsx[39m
 [32m[nodemon] starting `npx tsx server.ts`[39m
- ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
-  code: 'EADDRINUSE',
-  errno: -48,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 3000
-}
- ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
-  code: 'EADDRINUSE',
-  errno: -48,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 3000
-}
+> Ready on http://0.0.0.0:3000
+> Socket.IO server running at ws://0.0.0.0:3000/api/socketio

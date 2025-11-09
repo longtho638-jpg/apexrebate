@@ -10,6 +10,7 @@
     "lint:fix": "eslint ./src ./tests --ext ts,tsx --fix",
     "policy:bundle": "node scripts/policy/build-bundle.mjs",
     "opa:start": "bash scripts/opa/start.sh",
+    "opa:pull": "node scripts/opa/pull-bundle.mjs",
     "policy:gate:opa": "node scripts/policy/eval-opa.mjs",
     "slo:mock": "node scripts/slo/mock-slo.mjs",
     "test": "jest",
