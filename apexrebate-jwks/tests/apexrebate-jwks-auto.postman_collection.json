@@ -1,0 +1,100 @@
+{
+  "info": {
+    "name": "ApexRebate JWKS + HMAC Auto Test",
+    "description": "Automated test suite for JWT signing and verification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1️⃣ Sign JWT",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Sign returns token', function() {",
+              "  const res = pm.response.json();",
+              "  pm.expect(res.ok).to.be.true;",
+              "  pm.expect(res.token).to.exist;",
+              "  pm.environment.set('jwt_token', res.token);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"claims\":{\"sub\":\"user123\",\"role\":\"admin\"}}"
+        },
+        "url": "{{FIREBASE_URL}}/sign"
+      }
+    },
+    {
+      "name": "2️⃣ Verify JWT",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Verify returns payload', function() {",
+              "  const res = pm.response.json();",
+              "  pm.expect(res.ok).to.be.true;",
+              "  pm.expect(res.jwt.sub).to.equal('user123');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": "{{FIREBASE_URL}}/verify"
+      }
+    },
+    {
+      "name": "3️⃣ Verify JWT + HMAC",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "const body = JSON.stringify({test: 'hmac'});",
+              "const signature = CryptoJS.HmacSHA256(body, pm.environment.get('BROKER_HMAC')).toString();",
+              "pm.environment.set('hmac_signature', signature);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('HMAC validation passes', function() {",
+              "  const res = pm.response.json();",
+              "  pm.expect(res.ok).to.be.true;",
+              "  pm.expect(res.hmac).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" },
+          { "key": "x-broker-signature", "value": "{{hmac_signature}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"test\":\"hmac\"}"
+        },
+        "url": "{{FIREBASE_URL}}/verify"
+      }
+    }
+  ]
+}

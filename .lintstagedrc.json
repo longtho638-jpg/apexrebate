@@ -1,0 +1,11 @@
+{
+  "src/**/*.{ts,tsx}": [
+    "eslint --fix"
+  ],
+  "scripts/**/*.{js,mjs}": [
+    "eslint --fix"
+  ],
+  "**/*.{json,md,mdx}": [
+    "node -e \"process.exit(0)\""
+  ]
+}

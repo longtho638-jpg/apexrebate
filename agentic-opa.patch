@@ -1,0 +1,107 @@
+diff --git a/packages/policy/README.md b/packages/policy/README.md
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/packages/policy/README.md
+@@ -0,0 +1,12 @@
++# ApexRebate Policy Bundles (OPA/Rego)
++
++Thư mục này chứa policy tối thiểu:
++- `rollout_allow.rego`: gate deploy (p95, error_rate, e2e pass, evidence signature).
++- `payouts.rego`: nguyên tắc chi trả và clawback cơ bản.
++
++## Build Bundle
++
++```bash
++npm run policy:bundle
++```
++
++`build-bundle.mjs` đóng gói về `dist/policy-bundle.json` (định dạng nhẹ để app đọc nhanh).
+diff --git a/packages/policy/rollout_allow.rego b/packages/policy/rollout_allow.rego
+new file mode 100644
+index 0000000..abcd123
+--- /dev/null
++++ b/packages/policy/rollout_allow.rego
+@@ -0,0 +1,14 @@
++package apex.rollout
++
++default allow := false
++
++allow {
++  input.environment == "prod"
++  input.guardrails.p95_edge <= 250
++  input.guardrails.p95_node <= 450
++  input.guardrails.error_rate <= 0.001
++  input.tests.e2e_pass == true
++  input.evidence.sig_valid == true
++}
++
++# Test mode: allow deploy to preview branches
+diff --git a/packages/policy/payouts.rego b/packages/policy/payouts.rego
+new file mode 100644
+index 0000000..9876543
+--- /dev/null
++++ b/packages/policy/payouts.rego
+@@ -0,0 +1,18 @@
++package apex.payouts
++
++default allow_payout := false
++
++allow_payout {
++  not input.flags.kill_switch_payout
++  input.user.kyc == true
++  input.rules.wash_trading_prohibited == true
++  input.rules.self_referral_prohibited == true
++  input.txn.value > 0
++  input.txn.age_days >= 0
++  input.txn.age_days <= input.rules.clawback_window_days
++}
++
++# Clawback allowed when conditions met
++allow_clawback {
++  input.user.kyc == true
++  input.clawback_reason != ""
+diff --git a/scripts/policy/build-bundle.mjs b/scripts/policy/build-bundle.mjs
+new file mode 100755
+index 0000000..5678901
+--- /dev/null
++++ b/scripts/policy/build-bundle.mjs
+@@ -0,0 +1,25 @@
++#!/usr/bin/env node
++/**
++ * Pack Rego → JSON bundle nhẹ (để app đọc và forward tới OPA sidecar nếu có).
++ * Ở mức tối thiểu, ta chỉ gom file nội dung txt.
++ */
++import fs from "fs";
++import path from "path";
++import { fileURLToPath } from "url";
++
++const __dirname = path.dirname(fileURLToPath(import.meta.url));
++const root = path.join(__dirname, "../../packages/policy");
++const files = [
++  "rollout_allow.rego", 
++  "payouts.rego"
++].map(f => path.join(root, f));
++
++const bundle = { version: 1, entries: {} as Record<string,string> };
++
++for (const f of files) {
++  if (fs.existsSync(f)) {
++    bundle.entries[path.basename(f)] = fs.readFileSync(f, "utf8");
++  }
++}
++fs.mkdirSync("dist", { recursive: true });
++fs.writeFileSync("dist/policy-bundle.json", JSON.stringify(bundle, null, 2));
++console.log("✔ policy bundle → dist/policy-bundle.json");
+diff --git a/package.json b/package.json
+index 1111111..2222222 100644
+--- a/package.json
++++ b/package.json
+@@ -45,6 +45,7 @@
+     "test:e2e:ui": "playwright test --ui",
+     "lint": "eslint .",
+     "lint:fix": "eslint . --fix",
++    "policy:bundle": "node scripts/policy/build-bundle.mjs",
+     "db:push": "prisma db push",
+     "db:generate": "prisma generate",
+     "seed:handoff": "tsx scripts/seed.mjs",

@@ -1,0 +1,258 @@
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+index 1111111..2222222 100644
+--- a/prisma/schema.prisma
++++ b/prisma/schema.prisma
+@@ -37,3 +37,15 @@ model IdempotencyKey {
+   scope      String   // e.g., "dlq.replay"
+   createdAt  DateTime @default(now())
+   // optional TTL cleanup by job, or via DB retention policy
+ }
++
++model PolicyBundle {
++  id         String   @id @default(cuid())
++  version    String
++  algo       String   // e.g., HMAC-SHA256
++  sigHex     String   // signature hex
++  entries    Json     // { "file.rego": "package ...", ... }
++  active     Boolean  @default(true)
++  createdAt  DateTime @default(now())
++
++  @@index([createdAt])
++  @@index([active])
++}
+diff --git a/src/app/api/policy/payout/check/route.ts b/src/app/api/policy/payout/check/route.ts
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/app/api/policy/payout/check/route.ts
+@@ -0,0 +1,37 @@
++import { NextRequest, NextResponse } from "next/server";
++
++const OPA_URL =
++  process.env.OPA_URL_PAYOUT ||
++  process.env.OPA_URL ||
++  "http://127.0.0.1:8181/v1/data/apex/payouts/allow_payout";
++
++export async function POST(req: NextRequest) {
++  const body = await req.json().catch(() => ({}));
++  // Input tối thiểu; client gửi đè để chi tiết hơn
++  const input = {
++    user: {
++      kyc: !!body?.user?.kyc,
++    },
++    rules: {
++      wash_trading_prohibited: true,
++      self_referral_prohibited: true,
++      clawback_window_days: Number(body?.rules?.clawback_window_days ?? 30),
++    },
++    flags: {
++      kill_switch_payout: !!body?.flags?.kill_switch_payout,
++    },
++    txn: {
++      value: Number(body?.txn?.value ?? 0),
++      age_days: Number(body?.txn?.age_days ?? 0),
++    },
++  };
++
++  const res = await fetch(OPA_URL, {
++    method: "POST",
++    headers: { "content-type": "application/json" },
++    body: JSON.stringify({ input }),
++  }).catch(() => null);
++
++  if (!res || !res.ok) {
++    return NextResponse.json(
++      { allow: false, reason: "opa_unreachable", input },
++      { status: 502 }
++    );
++  }
++  const json = await res.json().catch(() => ({} as any));
++  const allow =
++    json?.result === true || json?.result?.allow_payout === true;
++  return NextResponse.json({ allow, input, opa: json });
++}
+diff --git a/src/app/api/policy/bundle/active/route.ts b/src/app/api/policy/bundle/active/route.ts
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/src/app/api/policy/bundle/active/route.ts
+@@ -0,0 +1,11 @@
++import { NextResponse } from "next/server";
++import { prisma } from "@/src/lib/db";
++
++export async function GET() {
++  const b = await prisma.policyBundle.findFirst({
++    where: { active: true },
++    orderBy: { createdAt: "desc" },
++  });
++  return NextResponse.json({
++    version: b?.version || "none",
++    algo: b?.algo || null,
++    sigHex: b?.sigHex || null,
++    entries: (b?.entries as any) || {},
++  });
++}
+diff --git a/src/app/api/policy/bundle/update/route.ts b/src/app/api/policy/bundle/update/route.ts
+new file mode 100644
+index 0000000..5555555
+--- /dev/null
++++ b/src/app/api/policy/bundle/update/route.ts
+@@ -0,0 +1,48 @@
++import { NextRequest, NextResponse } from "next/server";
++import crypto from "crypto";
++import { prisma } from "@/src/lib/db";
++
++export async function POST(req: NextRequest) {
++  // Bảo vệ bằng HMAC bí mật 1 chiều truyền qua header
++  const key = process.env.POLICY_BUNDLE_HMAC || "";
++  const hdr = req.headers.get("x-bundle-key") || "";
++  if (!key || hdr !== key) {
++    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
++  }
++
++  const body = await req.json().catch(() => ({}));
++  const version = String(body?.version || "");
++  const entries = body?.entries || {};
++  const algo = String(body?.algo || "HMAC-SHA256");
++  const sigHex = String(body?.sigHex || "");
++  if (!version || !entries || !sigHex) {
++    return NextResponse.json({ error: "invalid_payload" }, { status: 422 });
++  }
++
++  // Verify signature: HMAC-SHA256(JSON.stringify({version, entries}))
++  if (algo !== "HMAC-SHA256") {
++    return NextResponse.json({ error: "unsupported_algo" }, { status: 422 });
++  }
++  const payload = JSON.stringify({ version, entries });
++  const mac = crypto
++    .createHmac("sha256", key)
++    .update(payload)
++    .digest("hex");
++  if (
++    !crypto.timingSafeEqual(
++      Buffer.from(sigHex, "hex"),
++      Buffer.from(mac, "hex")
++    )
++  ) {
++    return NextResponse.json({ error: "bad_signature" }, { status: 401 });
++  }
++
++  // Lưu bundle, deactivate cũ
++  await prisma.$transaction([
++    prisma.policyBundle.updateMany({
++      data: { active: false },
++      where: { active: true },
++    }),
++    prisma.policyBundle.create({
++      data: { version, algo, sigHex, entries, active: true },
++    }),
++  ]);
++  return NextResponse.json({ ok: true, version });
++}
+diff --git a/scripts/opa/pull-bundle.mjs b/scripts/opa/pull-bundle.mjs
+new file mode 100644
+index 0000000..6666666
+--- /dev/null
++++ b/scripts/opa/pull-bundle.mjs
+@@ -0,0 +1,22 @@
++#!/usr/bin/env node
++/**
++ * Kéo bundle active từ API → render ra các file .rego trong packages/policy/_runtime
++ * để OPA sidecar load cùng với policy cứng.
++ */
++import fs from "fs";
++import path from "path";
++
++const BASE = process.env.BUNDLE_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || "";
++const URL = process.env.BUNDLE_URL || `${BASE}/api/policy/bundle/active`;
++const DIR = "packages/policy/_runtime";
++
++const res = await fetch(URL).catch(() => null);
++if (!res || !res.ok) {
++  console.error("❌ pull-bundle: cannot fetch", URL);
++  process.exit(1);
++}
++const json = await res.json();
++const entries = json?.entries || {};
++fs.rmSync(DIR, { recursive: true, force: true });
++fs.mkdirSync(DIR, { recursive: true });
++for (const [name, content] of Object.entries(entries)) {
++  const file = path.join(DIR, String(name));
++  fs.writeFileSync(file, String(content));
++  console.log("∙ wrote", file);
++}
++console.log("✔ runtime bundle rendered:", Object.keys(entries).length, "files");
+diff --git a/scripts/opa/start.sh b/scripts/opa/start.sh
+index 1111111..7777777 100644
+--- a/scripts/opa/start.sh
++++ b/scripts/opa/start.sh
+@@ -1,7 +1,10 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+ # Start OPA HTTP server with policy files in packages/policy/*.rego
+ # Requires OPA binary available in PATH.
+ PORT="${OPA_PORT:-8181}"
+ DIR="$(cd "$(dirname "$0")/../.."; pwd)"
+ cd "$DIR"
+-exec opa run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego
++# Kéo bundle runtime (nếu có)
++node scripts/opa/pull-bundle.mjs || true
++# Load cả file rego tĩnh và runtime
++exec opa run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego packages/policy/_runtime/*.rego
+diff --git a/packages/policy/README.md b/packages/policy/README.md
+index 8888888..9999999 100644
+--- a/packages/policy/README.md
++++ b/packages/policy/README.md
+@@ -1,8 +1,16 @@
+ # OPA Policy Bundle
+ 
+ Thư mục này chứa policy tối thiểu:
+ - `rollout_allow.rego`: gate deploy (p95, error_rate, e2e pass, evidence signature).
+ - `payouts.rego`: nguyên tắc chi trả và clawback cơ bản.
+ 
+ `build-bundle.mjs` đóng gói về `dist/policy-bundle.json` (định dạng nhẹ để app đọc nhanh).
++
++## Runtime Bundle
++
++Server có thể cấp **active bundle** (đã ký HMAC) qua `/api/policy/bundle/active`.
++Script `scripts/opa/pull-bundle.mjs` sẽ kéo và render vào `packages/policy/_runtime/*.rego`,
++OPA sidecar load cùng lúc khi start.
++
++Cơ chế này cho phép **update policy trên production mà không cần restart OPA worker**.
+diff --git a/.github/workflows/agentic.yml b/.github/workflows/agentic.yml
+index 4444444..aaaaaaa 100644
+--- a/.github/workflows/agentic.yml
++++ b/.github/workflows/agentic.yml
+@@ -55,6 +55,7 @@ jobs:
+       - name: Start OPA (background)
++        env:
++          BUNDLE_BASE_URL: ${{ vars.BASE_URL || '' }}
+         run: nohup bash scripts/opa/start.sh > /tmp/opa.log 2>&1 &
+         env:
+           OPA_PORT: "8181"
+diff --git a/package.json b/package.json
+index 7777777..8888888 100644
+--- a/package.json
++++ b/package.json
+@@ -49,6 +49,7 @@
+     "db:push": "prisma db push",
+     "db:seed:dlq": "ts-node --transpile-only prisma/seed-dlq.ts",
+     "opa:start": "bash scripts/opa/start.sh",
++    "opa:pull": "node scripts/opa/pull-bundle.mjs",
+     "policy:gate:opa": "node scripts/policy/eval-opa.mjs",
+     "slo:mock": "node scripts/slo/mock-slo.mjs"
+   }
+diff --git a/.env.example b/.env.example
+index eeeeee..ffffff 100644
+--- a/.env.example
++++ b/.env.example
+@@ -3,6 +3,8 @@ DATABASE_URL="postgresql://user:pass@ep-xxxxx.ap-southeast-1.aws.neon.tech/dbn
+ TWO_EYES_TOKEN="change-me-in-prod"
+ NEXT_PUBLIC_TWO_EYES_HINT=""
+ BROKER_HMAC="change-me"
+ REPLAY_TARGET=""
++POLICY_BUNDLE_HMAC="change-me"
++OPA_URL_PAYOUT=""
+ 
+ # Firebase
+ NEXT_PUBLIC_FIREBASE_API_KEY=

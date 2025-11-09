@@ -1,0 +1,14 @@
+{
+  "name": "jwks-verify-functions",
+  "version": "1.0.0",
+  "description": "Firebase Functions for JWKS signing and verification",
+  "type": "module",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "firebase-functions": "^4.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^3.3.2"
+  }
+}

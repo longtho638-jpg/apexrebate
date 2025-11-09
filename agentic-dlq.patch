@@ -1,0 +1,264 @@
+diff --git a/src/lib/twoEyes.ts b/src/lib/twoEyes.ts
+new file mode 100644
+index 0000000..1234567
+--- /dev/null
++++ b/src/lib/twoEyes.ts
+@@ -0,0 +1,15 @@
++export function checkTwoEyes(req: Request) {
++  const token = req.headers.get("x-two-eyes") || "";
++  const expected = process.env.TWO_EYES_TOKEN || "";
++  return expected && token === expected;
++}
++
++export function getIdem(req: Request) {
++  return req.headers.get("x-idempotency-key") || "";
++}
++
++export function validateTwoEyesHeader(req: Request): { valid: boolean; error?: string } {
++  if (!checkTwoEyes(req)) {
++    return { valid: false, error: "two_eyes_required" };
++  }
++  return { valid: true };
++}
+diff --git a/src/app/api/admin/dlq/list/route.ts b/src/app/api/admin/dlq/list/route.ts
+new file mode 100644
+index 0000000..abcdef0
+--- /dev/null
++++ b/src/app/api/admin/dlq/list/route.ts
+@@ -0,0 +1,18 @@
++import { NextResponse } from "next/server";
++
++// NOTE: dev in-memory; PRODUCTION: thay bằng Neon table (append-only)
++const globalAny = global as unknown as { __DLQ__?: any[] };
++globalAny.__DLQ__ ||= [
++  { 
++    id: "e1", 
++    kind: "webhook", 
++    source: "brokerA", 
++    payload: { demo: true }, 
++    attempts: 3, 
++    createdAt: Date.now() - 86400000 
++  },
++];
++
++export async function GET() {
++  const items = (globalAny.__DLQ__ || []).slice(0, 200);
++  return NextResponse.json({ items });
++}
+diff --git a/src/app/api/admin/dlq/replay/route.ts b/src/app/api/admin/dlq/replay/route.ts
+new file mode 100644
+index 0000000..9876543
+--- /dev/null
++++ b/src/app/api/admin/dlq/replay/route.ts
+@@ -0,0 +1,47 @@
++import { NextResponse } from "next/server";
++import crypto from "crypto";
++import { checkTwoEyes, getIdem } from "@/src/lib/twoEyes";
++
++const globalAny = global as unknown as { __DLQ__?: any[], __IDEM__?: Set<string> };
++globalAny.__DLQ__ ||= [];
++globalAny.__IDEM__ ||= new Set<string>();
++
++function ok(body: any, status = 200) { 
++  return NextResponse.json(body, { status }); 
++}
++
++function bad(body: any, status = 400) { 
++  return NextResponse.json(body, { status }); 
++}
++
++export async function POST(req: Request) {
++  if (!checkTwoEyes(req)) return bad({ error: "two_eyes_required" }, 401);
++  
++  const idem = getIdem(req);
++  if (!idem) return bad({ error: "idempotency_required" }, 409);
++  if (globalAny.__IDEM__!.has(idem)) return ok({ ok: true, dedup: true });
++  globalAny.__IDEM__!.add(idem);
++
++  const body = await req.json().catch(() => ({}));
++  const { id } = body as { id?: string };
++  if (!id) return bad({ error: "missing_id" }, 422);
++
++  const itemIdx = globalAny.__DLQ__!.findIndex((x: any) => x.id === id);
++  if (itemIdx < 0) return bad({ error: "not_found" }, 404);
++  const item = globalAny.__DLQ__![itemIdx];
++
++  // HMAC demo cho replay payload (nối với broker/webhook thật ở prod)
++  const payload = JSON.stringify(item.payload ?? {});
++  const secret = process.env.BROKER_HMAC || "demo";
++  const mac = crypto.createHmac("sha256", secret).update(payload).digest("hex");
++
++  // TODO: gửi lại tới endpoint thật (fetch) kèm header HMAC + timestamp
++  // await fetch(process.env.REPLAY_TARGET!, { method:"POST", headers:{ "x-signature": mac, "x-timestamp": Date.now().toString() }, body: payload })
++
++  // Giả lập: xóa khỏi DLQ khi "thành công"
++  globalAny.__DLQ__!.splice(itemIdx, 1);
++  return ok({ ok: true, replayed: id, hmac: mac });
++}
++
++export const dynamic = "force-dynamic";
+diff --git a/src/app/api/admin/dlq/delete/route.ts b/src/app/api/admin/dlq/delete/route.ts
+new file mode 100644
+index 0000000..5678901
+--- /dev/null
++++ b/src/app/api/admin/dlq/delete/route.ts
+@@ -0,0 +1,18 @@
++import { NextResponse } from "next/server";
++import { checkTwoEyes } from "@/src/lib/twoEyes";
++
++const globalAny = global as unknown as { __DLQ__?: any[] };
++globalAny.__DLQ__ ||= [];
++
++export async function POST(req: Request) {
++  if (!checkTwoEyes(req)) return NextResponse.json({ error: "two_eyes_required" }, { status: 401 });
++  
++  const { id } = await req.json().catch(() => ({}));
++  const idx = globalAny.__DLQ__!.findIndex((x: any) => x.id === id);
++  if (idx < 0) return NextResponse.json({ error: "not_found" }, { status: 404 });
++  
++  globalAny.__DLQ__!.splice(idx, 1);
++  return NextResponse.json({ ok: true, deleted: id });
++}
++
++export const dynamic = "force-dynamic";
+diff --git a/src/components/ConfirmButton.tsx b/src/components/ConfirmButton.tsx
+new file mode 100644
+index 0000000..abcd123
+--- /dev/null
++++ b/src/components/ConfirmButton.tsx
+@@ -0,0 +1,31 @@
++"use client";
++import { useState } from "react";
++
++export default function ConfirmButton({
++  onConfirm, 
++  label = "Thực thi", 
++  confirm = "Xác nhận?",
++}: { 
++  onConfirm: () => Promise<void> | void; 
++  label?: string; 
++  confirm?: string; 
++}) {
++  const [ask, setAsk] = useState(false);
++  const [busy, setBusy] = useState(false);
++
++  return (
++    <button
++      className={`px-3 py-2 rounded-xl border ${ask ? "border-red-500 text-red-600" : "border-neutral-300"} disabled:opacity-60`}
++      onClick={async () => {
++        if (!ask) { 
++          setAsk(true); 
++          setTimeout(() => setAsk(false), 2500); 
++          return; 
++        }
++        setBusy(true);
++        try { 
++          await onConfirm(); 
++        } finally { 
++          setBusy(false); 
++          setAsk(false); 
++        }
++      }}
++      disabled={busy}
++      title={ask ? confirm : label}
++    >
++      {busy ? "Đang xử lý…" : ask ? confirm : label}
++    </button>
++  );
++}
+diff --git a/src/app/admin/dlq/page.tsx b/src/app/admin/dlq/page.tsx
+new file mode 100644
+index 0000000..xyz1234
+--- /dev/null
++++ b/src/app/admin/dlq/page.tsx
+@@ -0,0 +1,69 @@
++import ConfirmButton from "@/src/components/ConfirmButton";
++
++async function fetchDLQ() {
++  const r = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/admin/dlq/list`, { cache: "no-store" });
++  const j = await r.json();
++  return j.items as any[];
++}
++
++export default async function DLQPage() {
++  const items = await fetchDLQ();
++  
++  return (
++    <div className="p-6 max-w-5xl mx-auto">
++      <h1 className="text-2xl font-bold mb-4">DLQ Replay Center</h1>
++      <p className="text-sm text-neutral-600 mb-6">2-eyes + Idempotency. Dùng cho webhook/tasks lỗi.</p>
++      
++      <div className="space-y-3">
++        {items.length === 0 && (
++          <div className="p-4 border rounded-xl">Không có mục DLQ.</div>
++        )}
++        
++        {items.map((it) => (
++          <div key={it.id} className="p-4 border rounded-xl flex items-center justify-between">
++            <div className="text-sm">
++              <div className="font-medium">
++                {it.id} — <span className="uppercase">{it.kind}</span> / {it.source}
++              </div>
++              <div className="text-neutral-600">
++                attempts: {it.attempts} · {new Date(it.createdAt).toLocaleString()}
++              </div>
++            </div>
++            
++            <div className="flex gap-2">
++              <ConfirmButton
++                label="Replay"
++                onConfirm={async () => {
++                  await fetch("/api/admin/dlq/replay", {
++                    method: "POST",
++                    headers: {
++                      "content-type": "application/json",
++                      "x-two-eyes": (process.env.NEXT_PUBLIC_TWO_EYES_HINT || ""),
++                      "x-idempotency-key": crypto.randomUUID(),
++                    },
++                    body: JSON.stringify({ id: it.id }),
++                  });
++                  location.reload();
++                }}
++              />
++              
++              <ConfirmButton
++                label="Delete"
++                onConfirm={async () => {
++                  await fetch("/api/admin/dlq/delete", {
++                    method: "POST",
++                    headers: {
++                      "content-type": "application/json",
++                      "x-two-eyes": (process.env.NEXT_PUBLIC_TWO_EYES_HINT || ""),
++                    },
++                    body: JSON.stringify({ id: it.id }),
++                  });
++                  location.reload();
++                }}
++              />
++            </div>
++          </div>
++        ))}
++      </div>
++    </div>
++  );
++}
+diff --git a/src/middleware.ts b/src/middleware.ts
+index 1234567..abcdef0 100644
+--- a/src/middleware.ts
++++ b/src/middleware.ts
+@@ -1,5 +1,15 @@
+ import { NextResponse } from "next/server";
+ 
+ export function middleware(req: any) {
++  // CSP + Security Headers
+   res.headers.set("Permissions-Policy","geolocation=(), microphone=()");
++  
++  // Chặn /admin với client công khai (đã có auth layer riêng). Ở mức tối thiểu: deny nếu thiếu header dev.
++  // Production: thay bằng NextAuth/role check.
++  // const url = new URL(req.url);
++  // if (url.pathname.startsWith("/admin") && !req.headers.get("x-two-eyes")) {
++  //   return NextResponse.redirect(new URL("/api/auth/signin", req.url));
++  // }
++  
+   return res;
+ }

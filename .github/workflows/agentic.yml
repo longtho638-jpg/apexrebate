@@ -1,0 +1,51 @@
+name: Agentic CI
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      JWKS_PRIVATE: ${{ secrets.JWKS_PRIVATE }}
+      JWKS_KID: ${{ secrets.JWKS_KID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+
+      - name: Lint + Unit
+        run: npm run lint && npm run test -- --coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy Preview
+        run: node scripts/deploy/vercel-preview.mjs
+
+      - name: E2E on Preview
+        run: npm run test:e2e
+
+      - name: Evidence Sign
+        run: node scripts/evidence/sign.mjs
+
+      - name: Guardrails (preview)
+        run: node scripts/rollout/guardrails-playwright.mjs
+
+      - name: Policy Gate
+        run: node scripts/policy/eval.mjs evidence/evidence.json
+
+      - name: Promote to Production
+        if: ${{ success() }}
+        run: node scripts/deploy/vercel-prod.mjs
+
+      - name: Rollback on Failure
+        if: ${{ failure() }}
+        run: node scripts/deploy/rollback.mjs

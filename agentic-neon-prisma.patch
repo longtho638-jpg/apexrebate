@@ -1,0 +1,295 @@
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+index 1234567..abcdefg 100644
+--- a/prisma/schema.prisma
++++ b/prisma/schema.prisma
+@@ -1,6 +1,60 @@
+ // Prisma schema for Neon (PostgreSQL)
+ datasource db {
+   provider = "postgresql"
+   url      = env("DATABASE_URL")
+ }
+ 
+ generator client {
+   provider = "prisma-client-js"
+ }
++
++model DLQItem {
++  id         String   @id
++  kind       String
++  source     String
++  payload    Json
++  attempts   Int       @default(0)
++  createdAt  DateTime  @default(now())
++
++  @@index([createdAt, kind, source])
++}
++
++model AuditLog {
++  id         String   @id @default(cuid())
++  at         DateTime @default(now())
++  who        String   // actor or system
++  action     String   // e.g., "dlq.replay", "dlq.delete"
++  targetId   String?
++  meta       Json
++  sha256     String
++
++  @@index([at, action])
++}
++
++model IdempotencyKey {
++  key        String   @id
++  // store short-lived status of a processed action
++  scope      String   // e.g., "dlq.replay"
++  createdAt  DateTime @default(now())
++  // optional TTL cleanup by job, or via DB retention policy
++}
+diff --git a/src/lib/db.ts b/src/lib/db.ts
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/src/lib/db.ts
+@@ -0,0 +1,13 @@
++import { PrismaClient } from "@prisma/client";
++
++// Prevent multiple instances in dev/hot-reload
++const globalForPrisma = global as unknown as { prisma?: PrismaClient };
++
++export const prisma =
++  globalForPrisma.prisma ??
++  new PrismaClient({
++    log: process.env.NODE_ENV === "production" ? ["error"] : ["query", "error", "warn"],
++  });
++
++if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+diff --git a/src/lib/audit.ts b/src/lib/audit.ts
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/lib/audit.ts
+@@ -0,0 +1,25 @@
++import crypto from "crypto";
++import { prisma } from "./db";
++
++export async function appendAudit({
++  who,
++  action,
++  targetId,
++  meta,
++}: {
++  who: string;
++  action: string;
++  targetId?: string;
++  meta: any;
++}) {
++  const body = JSON.stringify({ who, action, targetId, meta });
++  const sha256 = crypto.createHash("sha256").update(body).digest("hex");
++  await prisma.auditLog.create({
++    data: {
++      who,
++      action,
++      targetId: targetId || null,
++      meta,
++      sha256,
++    },
++  });
++  return sha256;
++}
+diff --git a/src/lib/idem.ts b/src/lib/idem.ts
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/lib/idem.ts
+@@ -0,0 +1,10 @@
++import { prisma } from "./db";
++
++export async function claimIdempotency(key: string, scope: string) {
++  try {
++    await prisma.idempotencyKey.create({ data: { key, scope } });
++    return true;
++  } catch {
++    return false; // duplicate
++  }
++}
+diff --git a/src/app/api/admin/dlq/list/route.ts b/src/app/api/admin/dlq/list/route.ts
+index 4444444..5555555 100644
+--- a/src/app/api/admin/dlq/list/route.ts
++++ b/src/app/api/admin/dlq/list/route.ts
+@@ -1,13 +1,9 @@
+ import { NextResponse } from "next/server";
+-
+-// NOTE: dev in-memory; PRODUCTION: thay bằng Neon table (append-only)
+-const globalAny = global as unknown as { __DLQ__?: any[] };
+-globalAny.__DLQ__ ||= [
+-  { id: "e1", kind: "webhook", source: "brokerA", payload: { demo: true }, attempts: 3, createdAt: Date.now() - 86400000 },
+-];
++import { prisma } from "@/src/lib/db";
+ 
+ export async function GET() {
+-  const items = (globalAny.__DLQ__ || []).slice(0, 200);
++  const items = await prisma.dLQItem.findMany({
++    orderBy: { createdAt: "desc" },
++    take: 200,
++  });
+   return NextResponse.json({ items });
+ }
+diff --git a/src/app/api/admin/dlq/replay/route.ts b/src/app/api/admin/dlq/replay/route.ts
+index 6666666..7777777 100644
+--- a/src/app/api/admin/dlq/replay/route.ts
++++ b/src/app/api/admin/dlq/replay/route.ts
+@@ -1,40 +1,58 @@
+ import { NextResponse } from "next/server";
+ import crypto from "crypto";
+ import { checkTwoEyes, getIdem } from "@/src/lib/twoEyes";
+-
+-const globalAny = global as unknown as { __DLQ__?: any[], __IDEM__?: Set<string> };
+-globalAny.__DLQ__ ||= [];
+-globalAny.__IDEM__ ||= new Set<string>();
++import { prisma } from "@/src/lib/db";
++import { appendAudit } from "@/src/lib/audit";
++import { claimIdempotency } from "@/src/lib/idem";
+ 
+ function ok(body: any, status = 200) { return NextResponse.json(body, { status }); }
+ function bad(body: any, status = 400) { return NextResponse.json(body, { status }); }
+ 
+ export async function POST(req: Request) {
+   if (!checkTwoEyes(req)) return bad({ error: "two_eyes_required" }, 401);
+   const idem = getIdem(req);
+   if (!idem) return bad({ error: "idempotency_required" }, 409);
+-  if (globalAny.__IDEM__!.has(idem)) return ok({ ok: true, dedup: true });
+-  globalAny.__IDEM__!.add(idem);
++  const claimed = await claimIdempotency(idem, "dlq.replay");
++  if (!claimed) return ok({ ok: true, dedup: true });
+ 
+   const body = await req.json().catch(() => ({}));
+   const { id } = body as { id?: string };
+   if (!id) return bad({ error: "missing_id" }, 422);
+ 
+-  const itemIdx = globalAny.__DLQ__!.findIndex((x: any) => x.id === id);
+-  if (itemIdx < 0) return bad({ error: "not_found" }, 404);
+-  const item = globalAny.__DLQ__![itemIdx];
++  const item = await prisma.dLQItem.findUnique({ where: { id } });
++  if (!item) return bad({ error: "not_found" }, 404);
+ 
+-  // HMAC demo cho replay payload (nối với broker/webhook thật ở prod)
+   const payload = JSON.stringify(item.payload ?? {});
+   const secret = process.env.BROKER_HMAC || "demo";
+   const mac = crypto.createHmac("sha256", secret).update(payload).digest("hex");
++  const ts = Date.now().toString();
+ 
+-  // TODO: gửi lại tới endpoint thật (fetch) kèm header HMAC + timestamp
+-  // await fetch(process.env.REPLAY_TARGET!, { method:"POST", headers:{ "x-signature": mac, "x-timestamp": Date.now().toString() }, body: payload })
++  // TODO: gửi tới endpoint thật qua env REPLAY_TARGET
++  if (process.env.REPLAY_TARGET) {
++    const r = await fetch(process.env.REPLAY_TARGET, {
++      method: "POST",
++      headers: {
++        "content-type": "application/json",
++        "x-signature": mac,
++        "x-timestamp": ts,
++      },
++      body: payload,
++    });
++    if (!r.ok) {
++      // tăng attempts
++      await prisma.dLQItem.update({
++        where: { id },
++        data: { attempts: { increment: 1 } },
++      });
++      await appendAudit({
++        who: "admin/two-eyes",
++        action: "dlq.replay.fail",
++        targetId: id,
++        meta: { status: r.status },
++      });
++      return bad({ error: "replay_failed", status: r.status }, 502);
++    }
++  }
+ 
+-  // Giả lập: xóa khỏi DLQ khi "thành công"
+-  globalAny.__DLQ__!.splice(itemIdx, 1);
+-  return ok({ ok: true, replayed: id, hmac: mac });
++  await prisma.dLQItem.delete({ where: { id } });
++  const sha = await appendAudit({
++    who: "admin/two-eyes",
++    action: "dlq.replay.ok",
++    targetId: id,
++    meta: { hmac: mac },
++  });
++  return ok({ ok: true, replayed: id, audit: sha });
+ }
+diff --git a/src/app/api/admin/dlq/delete/route.ts b/src/app/api/admin/dlq/delete/route.ts
+index 8888888..9999999 100644
+--- a/src/app/api/admin/dlq/delete/route.ts
++++ b/src/app/api/admin/dlq/delete/route.ts
+@@ -1,11 +1,15 @@
+ import { NextResponse } from "next/server";
+ import { checkTwoEyes } from "@/src/lib/twoEyes";
+-const globalAny = global as unknown as { __DLQ__?: any[] };
+-globalAny.__DLQ__ ||= [];
++import { prisma } from "@/src/lib/db";
++import { appendAudit } from "@/src/lib/audit";
+ 
+ export async function POST(req: Request) {
+   if (!checkTwoEyes(req)) return NextResponse.json({ error: "two_eyes_required" }, { status: 401 });
+   const { id } = await req.json().catch(() => ({}));
+-  const idx = globalAny.__DLQ__!.findIndex((x: any) => x.id === id);
+-  if (idx < 0) return NextResponse.json({ error: "not_found" }, { status: 404 });
+-  globalAny.__DLQ__!.splice(idx, 1);
+-  return NextResponse.json({ ok: true, deleted: id });
++  const found = await prisma.dLQItem.findUnique({ where: { id } });
++  if (!found) return NextResponse.json({ error: "not_found" }, { status: 404 });
++  await prisma.dLQItem.delete({ where: { id } });
++  const sha = await appendAudit({ who: "admin/two-eyes", action: "dlq.delete", targetId: id, meta: {} });
++  return NextResponse.json({ ok: true, deleted: id, audit: sha });
+ }
+diff --git a/prisma/seed-dlq.ts b/prisma/seed-dlq.ts
+new file mode 100644
+index 0000000..aaaaaaa
+--- /dev/null
++++ b/prisma/seed-dlq.ts
+@@ -0,0 +1,15 @@
++import { prisma } from "../src/lib/db";
++
++async function main() {
++  await prisma.dLQItem.upsert({
++    where: { id: "e1" },
++    update: {},
++    create: {
++      id: "e1",
++      kind: "webhook",
++      source: "brokerA",
++      payload: { demo: true },
++      attempts: 3,
++    },
++  });
++  console.log("Seeded DLQ item e1");
++}
++
++main().then(() => process.exit(0)).catch((e) => {
++  console.error(e);
++  process.exit(1);
++});
+diff --git a/package.json b/package.json
+index bbbbbb..cccccc 100644
+--- a/package.json
++++ b/package.json
+@@ -45,7 +45,9 @@
+     "test:e2e:ui": "playwright test --ui",
+     "policy:bundle": "node scripts/policy/build-bundle.mjs",
++    "db:push": "prisma db push",
++    "db:seed:dlq": "ts-node --transpile-only prisma/seed-dlq.ts"
+   },
+   "devDependencies": {
+diff --git a/.env.example b/.env.example
+index dddddd..eeeeee 100644
+--- a/.env.example
++++ b/.env.example
+@@ -1,3 +1,8 @@
++DATABASE_URL="postgresql://user:pass@ep-xxxxx.ap-southeast-1.aws.neon.tech/dbname?sslmode=require&pgbouncer=true&connect_timeout=10"
++TWO_EYES_TOKEN="change-me-in-prod"
++NEXT_PUBLIC_TWO_EYES_HINT=""
++BROKER_HMAC="change-me"
++REPLAY_TARGET=""
+ 
+ # Firebase
+ NEXT_PUBLIC_FIREBASE_API_KEY=

@@ -1,0 +1,25 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "A1: Lint+Typecheck", "type": "shell", "command": "npm run lint && tsc -p tsconfig.json" },
+    { "label": "A2: Unit", "type": "shell", "command": "npm run test -- --coverage" },
+    { "label": "A3: Build", "type": "shell", "command": "npm run build" },
+    { "label": "A4: E2E (Preview)", "type": "shell", "command": "npm run test:e2e" },
+    { "label": "A5: Evidence.sign", "type": "shell", "command": "node scripts/evidence/sign.mjs" },
+    { "label": "A6: Policy.check", "type": "shell", "command": "node scripts/policy/eval.mjs evidence/evidence.json" },
+    { "label": "A6b: Policy.check (OPA)", "type": "shell", "command": "node scripts/policy/eval-opa.mjs" },
+    { "label": "A7: Deploy.preview", "type": "shell", "command": "node scripts/deploy/vercel-preview.mjs" },
+    { "label": "A8: Guardrails (preview)", "type": "shell", "command": "node scripts/rollout/guardrails-playwright.mjs" },
+    { "label": "A9: Deploy.prod", "type": "shell", "command": "node scripts/deploy/vercel-prod.mjs" },
+    { "label": "A10: Rollback", "type": "shell", "command": "node scripts/deploy/rollback.mjs" },
+    { "label": "SLO: mock summary", "type": "shell", "command": "node scripts/slo/mock-slo.mjs" },
+    {
+      "label": "Agentic: Full Pipeline",
+      "dependsOn": [
+        "A1: Lint+Typecheck","A2: Unit","A3: Build","A7: Deploy.preview",
+        "A4: E2E (Preview)","A5: Evidence.sign","A8: Guardrails (preview)",
+        "A6: Policy.check","A9: Deploy.prod"
+      ]
+    }
+  ]
+}

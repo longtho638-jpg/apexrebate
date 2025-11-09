@@ -1,0 +1,9 @@
+{
+  "//": "Danh sách endpoint quan trọng để đo guardrails. Có thể bổ sung.",
+  "paths": [
+    "/",
+    "/api/health"
+  ],
+  "samples_per_path": 10,
+  "timeout_ms": 5000
+}

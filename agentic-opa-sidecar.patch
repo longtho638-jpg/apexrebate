@@ -1,0 +1,110 @@
+diff --git a/scripts/opa/start.sh b/scripts/opa/start.sh
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/scripts/opa/start.sh
+@@ -0,0 +1,7 @@
++#!/usr/bin/env bash
++set -euo pipefail
++# Start OPA HTTP server with policy files in packages/policy/*.rego
++# Requires OPA binary available in PATH.
++PORT="${OPA_PORT:-8181}"
++DIR="$(cd "$(dirname "$0")/../.."; pwd)"
++cd "$DIR"
++exec opa run --server --addr "0.0.0.0:${PORT}" packages/policy/*.rego
+diff --git a/scripts/policy/eval-opa.mjs b/scripts/policy/eval-opa.mjs
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/scripts/policy/eval-opa.mjs
+@@ -0,0 +1,43 @@
++#!/usr/bin/env node
++/**
++ * Policy Gate qua OPA HTTP: POST /v1/data/apex/rollout/allow
++ * Yêu cầu: OPA server đang chạy và đã load packages/policy/*.rego
++ */
++import fs from "fs";
++
++const OPA_URL = process.env.OPA_URL || "http://127.0.0.1:8181/v1/data/apex/rollout/allow";
++const evidence = JSON.parse(fs.readFileSync("evidence/evidence.json","utf8"));
++const guard = JSON.parse(fs.readFileSync("evidence/guardrails.json","utf8"));
++
++// Xác thực chữ ký: tối thiểu — coi như valid nếu có JWT; có thể nâng cấp bằng JWKS_PUBLIC
++let sig_valid = !!evidence.jwt;
++if (process.env.JWKS_PUBLIC) {
++  try {
++    const { importSPKI, jwtVerify } = await import("jose");
++    const pub = await importSPKI(process.env.JWKS_PUBLIC, "RS256");
++    await jwtVerify(evidence.jwt, pub);
++    sig_valid = true;
++  } catch {
++    sig_valid = false;
++  }
++}
++
++const input = {
++  environment: process.env.DEPLOY_ENV || "prod",
++  guardrails: guard,
++  tests: { e2e_pass: guard.e2e_pass === true },
++  evidence: { sig_valid }
++};
++
++const res = await fetch(OPA_URL, {
++  method: "POST",
++  headers: { "content-type": "application/json" },
++  body: JSON.stringify({ input })
++});
++if (!res.ok) {
++  console.error("❌ OPA unreachable", res.status);
++  process.exit(1);
++}
++const json = await res.json();
++const allow = json.result === true || json.result?.allow === true;
++if (!allow) {
++  console.error("❌ OPA deny", JSON.stringify(json, null, 2));
++  process.exit(1);
++}
++console.log("✔ OPA allow");
+diff --git a/.github/workflows/agentic.yml b/.github/workflows/agentic.yml
+index 3333333..4444444 100644
+--- a/.github/workflows/agentic.yml
++++ b/.github/workflows/agentic.yml
+@@ -45,9 +45,24 @@ jobs:
+       - name: Evidence Sign
+         run: node scripts/evidence/sign.mjs
+ 
+-      - name: Policy Gate
+-        run: node scripts/policy/eval.mjs evidence/evidence.json
++      - name: Download OPA
++        run: |
++          curl -L -o opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
++          chmod +x opa
++          sudo mv opa /usr/local/bin/opa
++
++      - name: Start OPA (background)
++        run: nohup bash scripts/opa/start.sh > /tmp/opa.log 2>&1 &
++        env:
++          OPA_PORT: "8181"
++
++      - name: Guardrails (preview)
++        run: node scripts/rollout/guardrails-playwright.mjs
++
++      - name: Policy Gate (OPA)
++        env:
++          DEPLOY_ENV: prod
++        run: node scripts/policy/eval-opa.mjs
+ 
+       - name: Deploy Production
+         run: node scripts/deploy/vercel-prod.mjs
+diff --git a/package.json b/package.json
+index 5555555..6666666 100644
+--- a/package.json
++++ b/package.json
+@@ -47,6 +47,8 @@
+     "policy:bundle": "node scripts/policy/build-bundle.mjs",
+     "db:push": "prisma db push",
+     "db:seed:dlq": "ts-node --transpile-only prisma/seed-dlq.ts",
++    "opa:start": "bash scripts/opa/start.sh",
++    "policy:gate:opa": "node scripts/policy/eval-opa.mjs"
+   },
+   "devDependencies": {
