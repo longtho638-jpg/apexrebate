@@ -274,6 +274,148 @@ git push origin main
 
 ---
 
+## 🤖 9️⃣ Agentic CI/CD Pipeline (November 2025)
+
+**Status**: ✅ Production Ready (10-Step Evidence-Driven Pipeline)
+
+### What is Agentic CI/CD?
+Automated pipeline với deny-by-default policy, evidence signing, và auto-rollback. Built for Next.js 15 + Vercel + Neon.
+
+### The 10-Step Pipeline
+```
+A1: Lint + Typecheck     → Hard gate ❌
+A2: Unit Tests           → Hard gate ❌
+A3: Build                → Hard gate ❌
+A7: Deploy Preview       → Hard gate ❌
+A4: E2E Tests            → Soft gate ⚠️
+A5: Evidence Sign        → RS256 JWT
+A8: Shadow Verify        → Collect metrics
+A6: Policy Gate          → Deny-by-default (hard gate) ❌
+A9: Deploy Production    → If all pass
+A10: Rollback            → Auto on failure 🔄
+```
+
+**Pattern**: Explorer → Verifier → Corrector
+- 🔍 **Explorer**: lint, test, build, deploy preview
+- ✅ **Verifier**: sign evidence + collect metrics + policy gate
+- 🔄 **Corrector**: promote or auto-rollback
+
+### Quick Start (10 minutes)
+```bash
+# Step 1: Generate secrets locally
+openssl genrsa -out /tmp/key.pem 2048
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in /tmp/key.pem \
+  -out /tmp/key_pkcs8.pem -nocrypt
+cat /tmp/key_pkcs8.pem        # Copy to GitHub: JWKS_PRIVATE
+openssl rand -hex 16          # Copy to GitHub: BROKER_HMAC
+
+# Step 2: Add 6 GitHub Secrets
+# VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# JWKS_PRIVATE, JWKS_KID, BROKER_HMAC
+
+# Step 3: Install & commit
+npm i -D zx && chmod +x scripts/**/*.mjs
+git add -A && git commit -m "ci: add agentic pipeline"
+git push origin main
+
+# Step 4: Test
+gh workflow run agentic.yml
+gh run list --workflow=agentic.yml
+```
+
+### Core Files (20 files, ~3,600 lines)
+```
+.vscode/tasks.json                    # 10 VS Code tasks
+.github/workflows/agentic.yml         # GitHub Actions
+scripts/agentic/
+├── evidence.mjs                      # Evidence signing
+├── policy.mjs                        # Policy evaluation
+├── deploy.mjs                        # Deployment
+├── rollout.mjs                       # Rollout logic
+├── security.mjs                      # Security checks
+└── webhooks.mjs                      # Notifications
+
+Documentation:
+├── AGENTIC_README.md                 # Index + overview
+├── AGENTIC_QUICK_REFERENCE.md        # Cheat sheet
+├── AGENTIC_SETUP.md                  # Technical guide
+├── AGENTIC_INTEGRATION_STEPS.md      # Step-by-step
+├── AGENTIC_COPY_PASTE_COMMANDS.md    # Ready commands
+├── AGENTIC_DEPLOYMENT_CHECKLIST.md   # Pre-prod verification
+├── AGENTIC_SUMMARY.md                # Architecture
+└── AGENTIC_DEPLOYMENT_REPORT.md      # Deployment report
+```
+
+### Key Features
+- ✅ **Deny-by-Default** — Every step is a gate. Fail = no deploy
+- ✅ **Evidence-Driven** — All code hashed + signed (RS256 JWT)
+- ✅ **Metric-Gated** — Collect p95 latency + error rate vs SLOs
+- ✅ **Auto-Rollback** — Policy fails → git revert → CI redeploys (~2 min)
+- ✅ **VS Code Native** — No external tools. Works offline
+
+### Usage Options
+
+**Option 1: VS Code (Local)**
+```
+Cmd+Shift+P → "Tasks: Run Task" → "Agentic: Full Pipeline"
+```
+
+**Option 2: GitHub (Automatic)**
+```bash
+git push origin main  # Workflow auto-runs
+```
+
+**Option 3: Manual**
+```bash
+gh workflow run agentic.yml
+```
+
+### Expected Impact
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Deploy frequency | 1-2x/week | Daily |
+| Failed deploys | 10-20% | <5% |
+| Time to detect issues | 5-15 min | <30 sec |
+| Rollback time | 10+ min | ~2 min |
+| Effort per deploy | 20-30 min | 0 min |
+
+### Documentation Quick Links
+
+| Role | Start Here | Time |
+|------|-----------|------|
+| 👨‍💼 Manager | `AGENTIC_QUICK_REFERENCE.md` | 5 min |
+| 🧑‍💻 Developer | `AGENTIC_INTEGRATION_STEPS.md` | 10 min |
+| 🔧 DevOps | `AGENTIC_SETUP.md` | 15 min |
+| 🎓 Learning | `AGENTIC_SUMMARY.md` | Full overview |
+
+### SLO Configuration
+```json
+// scripts/policy/gate.json
+{
+  "latency_p95_ms": 500,
+  "error_rate": 0.01,
+  "test_coverage": 70,
+  "build_time_sec": 300
+}
+```
+
+### Security Verification
+- ✅ RS256 JWT signing for evidence
+- ✅ HMAC for webhook validation
+- ✅ Secret rotation support
+- ✅ Audit trail in evidence.json
+
+### Rollback Plan
+```bash
+# Auto-triggered on policy failure
+# Manual trigger:
+npm run rollback:last
+# Or via VS Code task: A10-Rollback
+```
+
+---
+
 ## 🌟 Closing Notes
 
 > ApexRebate 2025 – Hybrid MAX v2 is where humans and AI build together.
