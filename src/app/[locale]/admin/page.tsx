@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
-import AdminDashboardClient from '../../../app/admin/admin-client';
+import AdminDashboardClient from '@/components/admin/admin-client';
 
 /**
  * Admin Dashboard Page - Locale-aware variant
@@ -17,7 +17,7 @@ export default async function AdminPage({
 }: {
   params: { locale: string };
 }) {
-  const locale = params.locale || 'vi';
+  const locale = params.locale || 'en';
 
   // 🔒 Server-side authentication check
   const session = await getServerSession(authOptions);

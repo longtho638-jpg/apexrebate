@@ -12,7 +12,7 @@ export default async function DashboardPage({
   
   if (!session) {
     // Redirect to locale-aware signin
-    const locale = params.locale || 'vi';
+    const locale = params.locale || 'en';
     redirect(`/${locale}/auth/signin?callbackUrl=/${locale}/dashboard`);
   }
 

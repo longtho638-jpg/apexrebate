@@ -63,10 +63,10 @@ const config: import('next').NextConfig = {
         destination: '/:locale',
         permanent: true,
       },
-      // Fix /tools redirect to use default locale
+      // Fix /tools redirect to use default locale (English)
       {
         source: '/tools',
-        destination: '/vi/tools',
+        destination: '/en/tools',
         permanent: false, // Use 307 temporary redirect để có thể thay đổi sau
       },
     ];

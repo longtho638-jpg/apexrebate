@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import FAQClient from '../../faq/faq-client';
+import FAQClient from '@/components/faq/faq-client';
 
 export const metadata: Metadata = {
   title: {

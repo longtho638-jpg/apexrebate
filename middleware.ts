@@ -131,6 +131,10 @@ export default async function middleware(request: NextRequest) {
     pathWithoutLocale.startsWith(`${route}/`)
   );
 
+  // Apply i18n routing FIRST for all requests
+  // This must happen before auth checks so locale context is available
+  const intlResponse = intlMiddleware(request);
+
   if (isProtectedRoute) {
     const token = await getToken({ 
       req: request, 
@@ -157,8 +161,7 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Apply i18n routing for all other requests
-  return intlMiddleware(request);
+  return intlResponse;
 }
 
 export const config = {

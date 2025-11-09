@@ -1,4 +1,4 @@
-import SignInClient from '../../../auth/signin/SignInClient';
+import SignInClient from '@/components/auth/signin/SignInClient';
 
 export default function Page({
   params,
