@@ -510,6 +510,9 @@ streak               Int                    @default(0)
 badgeCount           Int                    @default(0)
 hangSoiMember        Boolean                @default(false)
 hangSoiJoinedAt      DateTime?
+isSuspicious         Boolean                @default(false)
+kyc                  Boolean                @default(false)
+status               String                 @default("ACTIVE")
 accounts             accounts[]
 email_notifications  email_notifications[]
 exchange_accounts    exchange_accounts[]

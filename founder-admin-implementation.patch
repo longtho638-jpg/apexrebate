@@ -1,0 +1,161 @@
+diff --git a/prisma/schema.prisma b/prisma/schema.prisma
+index abc123..def456 100644
+--- a/prisma/schema.prisma
++++ b/prisma/schema.prisma
+@@ -1,6 +1,156 @@
+ generator client {
+   provider = "prisma-client-js"
+ }
+
++// ============================================
++// FOUNDER ADMIN EXTENSIONS
++// ============================================
++
++model AdminUser {
++  id          String    @id @default(cuid())
++  email       String    @unique
++  role        AdminRole @default(MANAGER)
++  permissions Permission[]
++  twoeyes     Boolean   @default(false)
++  lastLogin   DateTime?
++  createdAt   DateTime  @default(now())
++  updatedAt   DateTime  @updatedAt
++
++  @@map("admin_users")
++}
++
++enum AdminRole {
++  FOUNDER
++  MANAGER
++  ANALYST
++  MODERATOR
++  AUDITOR
++}
++
++model Permission {
++  id       String    @id @default(cuid())
++  name     String    @unique  // e.g., "user:read", "seed:update"
++  admin    AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
++  adminId  String
++
++  @@map("permissions")
++}
++
++model KYCVerification {
++  id                String    @id @default(cuid())
++  userId            String    @unique
++  documentType      String    // PASSPORT | ID | DRIVER_LICENSE
++  documentNumber    String
++  documentUrl       String
++  documentHash      String    // SHA256
++  status            String    @default("PENDING")  // PENDING | VERIFIED | REJECTED
++  rejectionReason   String?
++  verificationScore Float?    // 0-100
++  verifiedBy        String?   // Admin user ID
++  verifiedAt        DateTime?
++  createdAt         DateTime  @default(now())
++  updatedAt         DateTime  @updatedAt
++
++  @@map("kyc_verifications")
++}
++
++model AuditLog {
++  id            String    @id @default(cuid())
++  action        String    // USER_UPDATE | SEED_DELETE | PAYOUT_PROCESS | etc.
++  targetUserId  String?   // User affected by action
++  actorId       String?   // Admin who performed action
++  changes       Json?     // What changed
++  ipAddress     String?
++  userAgent     String?
++  status        String    @default("SUCCESS")  // SUCCESS | FAILED | PENDING
++  createdAt     DateTime  @default(now())
++
++  @@index([targetUserId])
++  @@index([actorId])
++  @@index([action])
++  @@map("audit_logs")
++}
++
++model Clawback {
++  id          String    @id @default(cuid())
++  payoutId    String
++  userId      String
++  amount      Float
++  reason      String
++  percentage  Float     // % of payout amount
++  status      String    @default("PENDING")  // PENDING | APPROVED | REJECTED
++  requestedBy String    // Admin user ID
++  approvedBy  String?   // Another admin ID
++  approvedAt  DateTime?
++  createdAt   DateTime  @default(now())
++  updatedAt   DateTime  @updatedAt
++
++  @@index([payoutId])
++  @@index([userId])
++  @@map("clawbacks")
++}
++
++model AutomationWorkflow {
++  id        String    @id @default(cuid())
++  name      String    @unique
++  trigger   String    // JSON: { type, filter? }
++  actions   WorkflowAction[]
++  enabled   Boolean   @default(false)
++  createdAt DateTime  @default(now())
++  updatedAt DateTime  @updatedAt
++
++  @@map("automation_workflows")
++}
++
++model WorkflowAction {
++  id         String    @id @default(cuid())
++  workflow   AutomationWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
++  workflowId String
++  action     String    // JSON: { type, params... }
++  order      Int
++
++  @@map("workflow_actions")
++}
++
++model AutomationExecution {
++  id         String    @id @default(cuid())
++  workflow   AutomationWorkflow @relation(fields: [workflowId], references: [id], onDelete: SetNull)
++  workflowId String?
++  input      Json?
++  output     Json?
++  success    Boolean   @default(false)
++  error      String?
++  createdAt  DateTime  @default(now())
++
++  @@index([workflowId])
++  @@map("automation_executions")
++}
++
++model PolicyBundle {
++  id      String    @id @default(cuid())
++  version String    @unique
++  entries Json      // { "file.rego": "package..." }
++  algo    String    @default("HMAC-SHA256")
++  sigHex  String    // HMAC signature
++  active  Boolean   @default(false)
++  createdAt DateTime @default(now())
++  updatedAt DateTime @updatedAt
++
++  @@map("policy_bundles")
++}
++
++// Extend existing User model
++model User {
++  // ... existing fields ...
++
++  // Admin-extended fields
++  kyc               String    @default("PENDING")  // PENDING | APPROVED | REJECTED
++  kycDocument       String?
++  kycVerifiedAt     DateTime?
++  kycVerifiedBy     String?
++  isSuspicious      Boolean   @default(false)
++  flagReason        String?
++  flaggedAt         DateTime?
++  flaggedBy         String?
++  status            String    @default("ACTIVE")  // ACTIVE | SUSPENDED | DELETED
++}

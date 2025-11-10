@@ -1,0 +1,129 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Founder Admin: Full Deploy",
+      "type": "shell",
+      "command": "bash",
+      "args": ["founder-admin-deploy.sh"],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+      },
+      "runOptions": {
+        "runOn": "folderOpen": false
+      }
+    },
+    {
+      "label": "Admin: Apply Schema Patch",
+      "type": "shell",
+      "command": "git",
+      "args": ["apply", "founder-admin-implementation.patch"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Admin: Push Database",
+      "type": "shell",
+      "command": "npm",
+      "args": ["run", "db:push"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Admin: Create User",
+      "type": "shell",
+      "command": "node",
+      "args": ["scripts/create-admin.js", "--email", "admin@apexrebate.com", "--role", "FOUNDER"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Admin: Test Routes",
+      "type": "shell",
+      "command": "curl",
+      "args": ["-v", "http://localhost:3000/api/admin/auth/check", "-X", "POST"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Admin: View Audit Logs",
+      "type": "shell",
+      "command": "curl",
+      "args": ["http://localhost:3000/api/admin/security/audit-logs?limit=10"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Admin: Sync Metrics",
+      "type": "shell",
+      "command": "curl",
+      "args": ["http://localhost:3000/api/admin/sync/metrics"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Admin: Create Workflow (Example)",
+      "type": "shell",
+      "command": "curl",
+      "args": [
+        "-X", "POST",
+        "http://localhost:3000/api/admin/automation/workflows",
+        "-H", "content-type: application/json",
+        "-H", "x-admin-id: your-id",
+        "-d", "@admin-workflow-example.json"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "Admin: Start OPA Sidecar",
+      "type": "shell",
+      "command": "bash",
+      "args": ["scripts/opa/start.sh"],
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$",
+          "line": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*starting OPA.*",
+          "endsPattern": ".*ready.*"
+        }
+      }
+    },
+    {
+      "label": "Admin: Check All Routes",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "for route in 'dashboard' 'users' 'seeds' 'payouts' 'policies' 'dlq' 'security'; do echo \"Testing /admin/$route\"; curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/admin/$route; echo \"\"; done"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always"
+      }
+    }
+  ]
+}
