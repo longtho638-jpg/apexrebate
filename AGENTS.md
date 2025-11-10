@@ -1910,7 +1910,8 @@ jobs:
 | Component | Files | Status | Notes |
 |-----------|-------|--------|-------|
 | **Agentic CI/CD** | 16 files | ✅ Complete | Guardrails + pre-commit hooks |
-| **DLQ Replay** | 8 files | ✅ Neon Ready | Patch: agentic-neon-prisma.patch |
+| **Admin DLQ** | 8 files | ✅ **DEPLOYED** | **/admin/dlq live (2-eyes auth)** |
+| **SEED Marketplace** | 19 files | ✅ **DEPLOYED** | **/tools live (public)** |
 | **OPA Policy** | 4 files | ✅ Complete | Rollout + payout rules |
 | **OPA Sidecar** | 3 files | ✅ Ready | HTTP gate via A6b task |
 | **OPA Payouts** | 7 files | ✅ Complete | Auto-bundle + HMAC signing |
@@ -1921,6 +1922,29 @@ jobs:
 
 **Total Production Files:** 50 files across 9 major components
 
+### 🚀 Latest Deployment (Nov 10, 2025)
+
+**Status:** ✅ **DEPLOYMENT COMPLETE**
+
+| Component | Status | URL | Details |
+|-----------|--------|-----|---------|
+| **Admin DLQ** | ✅ Live | `/admin/dlq` | Protected route, 2-eyes auth |
+| **SEED Marketplace** | ✅ Live | `/tools` | Public browsing enabled |
+| **Build** | ✅ Pass | 79 routes | 0 warnings |
+| **Tests** | ✅ Pass | 7/7 tests | Unit + E2E passing |
+| **Production** | ✅ Live | [vercel.app](https://apexrebate-1-alq7hkck8-minh-longs-projects-f5c82c9b.vercel.app) | Latest deploy |
+
+**Key Files Deployed:**
+- ✅ DLQ replay center (list/replay/delete APIs)
+- ✅ ConfirmButton component (2-eyes validation)
+- ✅ twoEyes.ts utilities (HMAC verification)
+- ✅ PolicyBundle routes (bundle management)
+- ✅ Payout policy check endpoint
+- ✅ SLO summary dashboard
+
+**Documentation:**
+- 📄 Full deployment details: `DEPLOYMENT_ADMIN_SEED_NOV10.md`
+
 ### Week 1 Milestones (Updated Nov 10)
 
 **Completed:**
@@ -1930,6 +1954,9 @@ jobs:
 - [x] ✅ HMAC-signed bundle updates
 - [x] ✅ VS Code tasks (A6b, SLO mock)
 - [x] ✅ Package.json scripts (opa:start, opa:pull, slo:mock)
+- [x] ✅ **Admin DLQ deployed to production**
+- [x] ✅ **SEED Marketplace deployed to production**
+- [x] ✅ **Build: 0 warnings, 7/7 tests passing**
 
 **Pending (Nov 11-16):**
 - [ ] Neon migration execution (patch ready)
