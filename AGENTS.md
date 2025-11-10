@@ -147,6 +147,51 @@ This complements the earlier **Signin Locale Preservation Fix** (commit `7baffb9
 # Authentication flow already correct, only password hash needed fixing
 ```
 
+### Additional Fix: Next.js 15 searchParams Deprecation
+
+**Issue:** `searchParams` accessed synchronously in signin page, causing Next.js 15 errors.
+
+**Error Message:**
+```
+Error: Route "/[locale]/auth/signin" used `searchParams.error`. 
+`searchParams` should be awaited before using its properties.
+```
+
+**Solution:** Updated signin page to async function and await both `params` and `searchParams`.
+
+**File Modified:** `src/app/[locale]/auth/signin/page.tsx`
+
+```typescript
+// ❌ Before (Next.js 14 style):
+export default function Page({
+  params,
+  searchParams
+}: {
+  params: { locale: string };
+  searchParams: { error?: string; callbackUrl?: string };
+}) {
+  const initialError = searchParams?.error;
+  const callbackUrl = searchParams?.callbackUrl;
+  // ...
+}
+
+// ✅ After (Next.js 15 style):
+export default async function Page({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string; callbackUrl?: string }>;
+}) {
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const initialError = resolvedSearchParams?.error;
+  const callbackUrl = resolvedSearchParams?.callbackUrl;
+  // ...
+}
+```
+
 ### Impact
 
 | Metric | Before | After |
