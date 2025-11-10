@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -31,7 +31,15 @@ export default function SignInClient({
   initialCallbackUrl?: string
 }) {
   const router = useRouter()
-  const callbackUrl = initialCallbackUrl || '/dashboard'
+  const pathname = usePathname()
+  
+  // ✅ Detect locale from current pathname (e.g., /vi/auth/signin → vi)
+  const localeMatch = pathname?.match(/^\/(en|vi|th|id)\//)
+  const currentLocale = localeMatch ? localeMatch[1] : null
+  
+  // ✅ Set default callbackUrl with locale preserved
+  const defaultCallback = currentLocale ? `/${currentLocale}/dashboard` : '/dashboard'
+  const callbackUrl = initialCallbackUrl || defaultCallback
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(mapQueryErrorToMessage(initialError))
@@ -82,15 +90,20 @@ export default function SignInClient({
           const sessionResponse = await fetch('/api/auth/session')
           const session = await sessionResponse.json()
           
+          // Extract locale from callback URL (e.g., /vi/dashboard → vi)
+          const localeMatch = callbackUrl.match(/^\/(en|vi|th|id)(\/.*)?$/)
+          const locale = localeMatch ? localeMatch[1] : null
+          
           // Redirect based on user role and callback URL
           if (session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') {
-            // Use callback URL if provided and is admin page, otherwise redirect to /admin
+            // Use callback URL if provided and is admin page, otherwise redirect to /admin with locale
             if (callbackUrl?.includes('/admin')) {
               router.push(callbackUrl)
             } else {
-              router.push('/admin')
+              router.push(locale ? `/${locale}/admin` : '/admin')
             }
           } else {
+            // ✅ Fix: Always use callbackUrl which already has locale
             router.push(callbackUrl)
           }
         } catch (error) {
