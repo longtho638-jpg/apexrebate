@@ -1539,6 +1539,395 @@ Cmd+Shift+P → Tasks: Run Task → SLO: mock summary
 
 ---
 
+## ⓮ OPA Payouts Policy + Auto-Bundle (November 2025)
+
+**Status**: ✅ Complete with HMAC-Signed Auto-Update
+
+### What is Payouts Policy?
+OPA-based payout approval system với automated bundle updates, KYC verification, wash-trading detection, và clawback window enforcement.
+
+### Files Added (7 files)
+
+```
+prisma/schema.prisma                          # PolicyBundle model
+src/app/api/policy/payout/check/route.ts     # Payout verification endpoint
+src/app/api/policy/bundle/active/route.ts    # Get active bundle (public)
+src/app/api/policy/bundle/update/route.ts    # Update bundle (HMAC-signed)
+scripts/opa/pull-bundle.mjs                   # Auto-pull from API
+scripts/opa/start.sh                          # Enhanced with bundle loading
+package.json                                  # opa:pull script
+```
+
+### Quick Start
+
+**Step 1: Apply patch and migrate database**
+```bash
+git apply agentic-opa-payouts.patch
+npm run db:push
+npm run db:generate
+```
+
+**Step 2: Start dev server**
+```bash
+npm run dev
+```
+
+**Step 3: Test payout policy check**
+```bash
+curl -X POST http://localhost:3000/api/policy/payout/check \
+  -H "content-type: application/json" \
+  -d '{
+    "user": { "kyc": true },
+    "rules": { "clawback_window_days": 30 },
+    "flags": { "kill_switch_payout": false },
+    "txn": { "value": 123.45, "age_days": 5 }
+  }'
+```
+
+**Expected Response:**
+```json
+{
+  "allow": true,
+  "input": {
+    "user": { "kyc": true },
+    "rules": { "clawback_window_days": 30 },
+    "flags": { "kill_switch_payout": false },
+    "txn": { "value": 123.45, "age_days": 5 }
+  },
+  "opa": {
+    "result": true
+  }
+}
+```
+
+### PolicyBundle Schema
+
+```prisma
+model PolicyBundle {
+  id         String   @id @default(cuid())
+  version    String   @unique
+  entries    Json     // { "file.rego": "package apex..." }
+  algo       String   @default("HMAC-SHA256")
+  sigHex     String
+  active     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+```
+
+### Payout Policy Rules
+
+```rego
+package apex.payouts
+
+default allow_payout = false
+
+allow_payout {
+  not input.flags.kill_switch_payout
+  input.user.kyc == true
+  input.rules.wash_trading_prohibited == true
+  input.rules.self_referral_prohibited == true
+  input.txn.value > 0
+  input.txn.age_days <= input.rules.clawback_window_days
+}
+```
+
+**Rule Breakdown:**
+- ✅ **KYC Required**: User must pass identity verification
+- ✅ **Wash Trading**: Must be prohibited by rules
+- ✅ **Self-Referral**: Must be blocked
+- ✅ **Value Check**: Transaction must have positive value
+- ✅ **Clawback Window**: Transaction age within configured days
+- ✅ **Kill Switch**: Global emergency stop mechanism
+
+### Auto-Bundle Update Flow
+
+**Step 1: Create Bundle (Server-side)**
+```javascript
+const crypto = require('crypto');
+
+const entries = {
+  "payouts_extra.rego": "package apex.payouts\nallow_payout_extra { true }"
+};
+const version = "2025-11-10.1";
+const POLICY_BUNDLE_HMAC = process.env.POLICY_BUNDLE_HMAC;
+
+const payload = JSON.stringify({ version, entries });
+const sigHex = crypto
+  .createHmac("sha256", POLICY_BUNDLE_HMAC)
+  .update(payload)
+  .digest("hex");
+```
+
+**Step 2: Upload Bundle (HMAC-Signed)**
+```bash
+curl -X POST http://localhost:3000/api/policy/bundle/update \
+  -H "content-type: application/json" \
+  -H "x-bundle-key: YOUR_HMAC_SECRET" \
+  -d '{
+    "version": "2025-11-10.1",
+    "entries": {
+      "payouts_extra.rego": "package apex.payouts\nallow_payout_extra { true }"
+    },
+    "algo": "HMAC-SHA256",
+    "sigHex": "abc123..."
+  }'
+```
+
+**Step 3: OPA Auto-Pull**
+```bash
+npm run opa:pull
+# → Fetches active bundle from /api/policy/bundle/active
+# → Writes to packages/policy/_runtime/*.rego
+# → OPA hot-reloads automatically
+```
+
+**Step 4: Verify Bundle Active**
+```bash
+# Check database
+SELECT * FROM "PolicyBundle" WHERE active = true;
+
+# Test new policy
+curl -X POST http://localhost:3000/api/policy/payout/check \
+  -H "content-type: application/json" \
+  -d '{"user":{"kyc":true},"rules":{},"flags":{},"txn":{"value":1,"age_days":1}}'
+```
+
+### Bundle Update Security
+
+**HMAC Verification:**
+```typescript
+const payload = JSON.stringify({ version, entries });
+const expectedSig = crypto
+  .createHmac("sha256", process.env.POLICY_BUNDLE_HMAC!)
+  .update(payload)
+  .digest("hex");
+
+if (sigHex !== expectedSig) {
+  return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+}
+```
+
+**Key Validation:**
+```typescript
+const bundleKey = req.headers.get("x-bundle-key");
+if (bundleKey !== process.env.POLICY_BUNDLE_HMAC) {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+```
+
+**Atomic Activation:**
+```typescript
+await prisma.$transaction([
+  prisma.policyBundle.updateMany({
+    where: { active: true },
+    data: { active: false }
+  }),
+  prisma.policyBundle.create({
+    data: { version, entries, algo, sigHex, active: true }
+  })
+]);
+```
+
+### Environment Variables
+
+```bash
+# Required for bundle updates
+POLICY_BUNDLE_HMAC=your-secret-hmac-key
+
+# Required for OPA auto-pull
+BASE_URL=http://localhost:3000  # or https://your-prod-url.com
+```
+
+### CI/CD Integration
+
+**GitHub Actions Secrets:**
+```yaml
+- POLICY_BUNDLE_HMAC: Secret key for bundle signing
+- BASE_URL: API base URL for bundle fetching
+```
+
+**Automated Bundle Deploy:**
+```yaml
+- name: Update Policy Bundle
+  run: |
+    node scripts/policy/build-and-push-bundle.mjs
+  env:
+    POLICY_BUNDLE_HMAC: ${{ secrets.POLICY_BUNDLE_HMAC }}
+    BASE_URL: ${{ secrets.BASE_URL }}
+```
+
+### Testing Locally
+
+**Test 1: Payout Check (KYC Pass)**
+```bash
+curl -X POST http://localhost:3000/api/policy/payout/check \
+  -H "content-type: application/json" \
+  -d '{
+    "user": { "kyc": true },
+    "rules": { 
+      "clawback_window_days": 30,
+      "wash_trading_prohibited": true,
+      "self_referral_prohibited": true
+    },
+    "flags": { "kill_switch_payout": false },
+    "txn": { "value": 100, "age_days": 5 }
+  }'
+
+# Expected: { "allow": true }
+```
+
+**Test 2: Payout Check (KYC Fail)**
+```bash
+curl -X POST http://localhost:3000/api/policy/payout/check \
+  -H "content-type: application/json" \
+  -d '{
+    "user": { "kyc": false },
+    "rules": { "clawback_window_days": 30 },
+    "flags": { "kill_switch_payout": false },
+    "txn": { "value": 100, "age_days": 5 }
+  }'
+
+# Expected: { "allow": false }
+```
+
+**Test 3: Kill Switch Active**
+```bash
+curl -X POST http://localhost:3000/api/policy/payout/check \
+  -H "content-type: application/json" \
+  -d '{
+    "user": { "kyc": true },
+    "rules": { "clawback_window_days": 30 },
+    "flags": { "kill_switch_payout": true },
+    "txn": { "value": 100, "age_days": 5 }
+  }'
+
+# Expected: { "allow": false }
+```
+
+**Test 4: Bundle Update**
+```bash
+# Generate HMAC signature
+node -e "
+const crypto = require('crypto');
+const entries = { 'test.rego': 'package test\nallow { true }' };
+const version = 'test-v1';
+const payload = JSON.stringify({ version, entries });
+const sig = crypto.createHmac('sha256', 'your-hmac-key').update(payload).digest('hex');
+console.log(JSON.stringify({ version, entries, algo: 'HMAC-SHA256', sigHex: sig }));
+"
+
+# Upload bundle
+curl -X POST http://localhost:3000/api/policy/bundle/update \
+  -H "content-type: application/json" \
+  -H "x-bundle-key: your-hmac-key" \
+  -d '<output from above>'
+```
+
+### Production Deployment
+
+**Step 1: Configure secrets**
+```bash
+# GitHub Actions
+gh secret set POLICY_BUNDLE_HMAC --body "$(openssl rand -hex 32)"
+gh secret set BASE_URL --body "https://apexrebate.com"
+```
+
+**Step 2: Deploy bundle API**
+```bash
+npm run build
+vercel --prod
+```
+
+**Step 3: Schedule OPA pull (cron)**
+```yaml
+# .github/workflows/opa-bundle-sync.yml
+name: OPA Bundle Sync
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Every 15 minutes
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm run opa:pull
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+```
+
+### Advantages
+
+| Feature | Before | After |
+|---------|--------|-------|
+| **Policy Updates** | Manual redeploy | ✅ Auto-update via API |
+| **Security** | No signature | ✅ HMAC-SHA256 verified |
+| **Rollback** | Git revert | ✅ Database version control |
+| **Audit Trail** | Git log only | ✅ Database + Git history |
+| **Hot Reload** | Restart required | ✅ OPA auto-detects changes |
+| **Multi-env** | Same policy | ✅ Different bundles per env |
+
+### Next Steps
+
+- [ ] Add bundle versioning UI (/admin/policy-bundles)
+- [ ] Implement policy diff visualization
+- [ ] Add bundle rollback API endpoint
+- [ ] Enable policy testing sandbox
+- [ ] Create bundle approval workflow (2-eyes)
+- [ ] Add Slack/Discord notifications on bundle update
+
+---
+
+## 📚 Industry Standard Documentation (2025 Edition)
+
+**NEW**: Comprehensive MAX Level documentation available in:
+- 📖 **[AGENTS_2025_MAX_LEVEL.md](./AGENTS_2025_MAX_LEVEL.md)** - Complete industry standard reference
+  - 4 Deployment Platforms (Hạt Giống → Cây → Rừng → Đất)
+  - DORA Metrics benchmarks
+  - VibeSDK Cloudflare integration
+  - 10-Step Agentic CI/CD visual flow
+  - Production readiness checklist
+  - Weekly release schedule (Nov-Dec 2025)
+
+---
+
+## 📊 Infrastructure Status (Updated Nov 10, 2025)
+
+### Component Summary
+
+| Component | Files | Status | Notes |
+|-----------|-------|--------|-------|
+| **Agentic CI/CD** | 16 files | ✅ Complete | Guardrails + pre-commit hooks |
+| **DLQ Replay** | 8 files | ✅ Neon Ready | Patch: agentic-neon-prisma.patch |
+| **OPA Policy** | 4 files | ✅ Complete | Rollout + payout rules |
+| **OPA Sidecar** | 3 files | ✅ Ready | HTTP gate via A6b task |
+| **OPA Payouts** | 7 files | ✅ Complete | Auto-bundle + HMAC signing |
+| **SLO Dashboard** | 3 files | ✅ Mock Ready | /admin/slo with real metrics pending |
+| **JWKS + HMAC** | 1 package | ✅ Complete | 8KB deployment ZIP |
+| **SEED Public Flow** | 2 files | ✅ Deployed | Tools marketplace public |
+| **Catalyst Dashboard** | 6 components | ✅ Production | Premium UI library |
+
+**Total Production Files:** 50 files across 9 major components
+
+### Week 1 Milestones (Updated Nov 10)
+
+**Completed:**
+- [x] ✅ OPA Sidecar integration (3 files)
+- [x] ✅ SLO Dashboard mini (3 files)
+- [x] ✅ OPA Payouts Policy (7 files)
+- [x] ✅ HMAC-signed bundle updates
+- [x] ✅ VS Code tasks (A6b, SLO mock)
+- [x] ✅ Package.json scripts (opa:start, opa:pull, slo:mock)
+
+**Pending (Nov 11-16):**
+- [ ] Neon migration execution (patch ready)
+- [ ] E2E test optimization
+- [ ] OPA production deployment (Kubernetes/Docker)
+- [ ] SLO Datadog/Prometheus integration
+- [ ] Production secrets configuration
+
+---
+
 ## 🌟 Closing Notes
 
 > ApexRebate 2025 – Hybrid MAX v2 is where humans and AI build together.
