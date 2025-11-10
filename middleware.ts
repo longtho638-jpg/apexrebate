@@ -146,9 +146,10 @@ export default async function middleware(request: NextRequest) {
       const signInPath = locale ? `/${locale}/auth/signin` : '/auth/signin';
       const signInUrl = new URL(signInPath, request.url);
       // ✅ FIX: Use full locale-aware pathname as callbackUrl
-      const callbackPath = locale ? `/${locale}${pathWithoutLocale}` : pathname;
+      // Always ensure locale is present in callback URL for proper routing
+      const callbackPath = locale ? `/${locale}${pathWithoutLocale}` : `${pathname}`;
       signInUrl.searchParams.set('callbackUrl', callbackPath);
-      console.log(`[middleware] Redirect to signin: callbackUrl=${callbackPath}`);
+      console.log(`[middleware] Protecting route: ${pathname} → Redirect to signin with callbackUrl=${callbackPath}`);
       return NextResponse.redirect(signInUrl);
     }
 

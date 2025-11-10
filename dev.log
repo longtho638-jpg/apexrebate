@@ -1,61 +1,10 @@
 [33m[nodemon] 3.1.10[39m
 [33m[nodemon] to restart at any time, enter `rs`[39m
 [33m[nodemon] watching path(s): server.ts src/**/*[39m
-[33m[nodemon] watching extensions: ts,tsx,js,jsx[39m
-[32m[nodemon] starting `npx tsx server.ts`[39m
-> Ready on http://0.0.0.0:3000
+[33m[nodemon] watching extensions[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] > Ready on http://0.0.0.0:3000
 > Socket.IO server running at ws://0.0.0.0:3000/api/socketio
- ✓ Compiled /middleware in 272ms (236 modules)
-[middleware] Locale detected from Accept-Language: vi
-[middleware] Redirecting root path to: /vi (IP locale: vi)
- ○ Compiling /[locale] ...
- ✓ Compiled /[locale] in 2.5s (2469 modules)
-Error: MISSING_MESSAGE: Could not resolve `signIn` in messages for locale `en`.
-    at Navbar (src/components/navbar.tsx:496:19)
-  494 |                   tabIndex={isMobileMenuOpen ? 0 : -1}
-  495[32m[nodemon] restarting due to changes...[39m
-[32m[nodemon] starting `npx tsx server.ts`[39m
- ⨯ uncaughtException: Error: listen EADDRINUSE: address already ⨯ uncaughtException: Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
-  code: 'EADDRINUSE',
-  errno: -48,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 3000
-}
- ⨯ uncaughtException:  Error: listen EADDRINUSE: address already in use 0.0.0.0:3000
-    at <unknown> (Error: listen EADDRINUSE: address already in use 0.0.0.0:3000) {
-  code: 'EADDRINUSE',
-  errno: -48,
-  syscall: 'listen',
-  address: '0.0.0.0',
-  port: 3000
-}
-} {
-  code: 'MISSING_MESSAGE',
-  originalMessage: 'Could not resolve `signUp` in messages for locale `en`.'
-}
-Error: Route "/[locale]" used `params.locale`. `params` should be awaited before using its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
-    at LocaleHome (src/app/[locale]/page.tsx:11:17)
-   9 |   const { data: session, status } = useSession()
-  10 |   const router = useRouter()
-> 11 |   const locale = params?.locale || 'en'
-     |                 ^
-  12 |
-  13 |   useEffect(() => {
-  14 |     // Chỉ redirect nếu user đã đăng nhập
- GET /vi 200 in 3793ms
- ○ Compiling /favicon.ico ...
- ✓ Compiled /favicon.ico in 1557ms (2796 modules)
- GET /favicon.ico 200 in 1495ms
- GET /vi 200 in 105ms
- GET /api/auth/session 200 in 2741ms
- ✓ Compiled /_not-found in 298ms (2786 modules)
- GET /vi/auth/signup 404 in 424ms
- GET /vi/auth/signup 404 in 277ms
- GET /favicon.ico 200 in 59ms
- GET /api/auth/session 200 in 145ms
-[32m[nodemon] restarting due to changes...[39m
+[39m
 [32m[nodemon] starting `npx tsx server.ts`[39m
 > Ready on http://0.0.0.0:3000
 > Socket.IO server running at ws://0.0.0.0:3000/api/socketio

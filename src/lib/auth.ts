@@ -113,8 +113,16 @@ export const authOptions: NextAuthOptions = {
         if (isAdminRoute && userRole !== 'ADMIN' && userRole !== 'CONCIERGE') {
           // Non-admins trying to access /admin get redirected to dashboard
           console.log(`[NextAuth] User (${userRole}) cannot access /admin, redirecting to dashboard`)
-          const locale = localeMatch ? localeMatch[1] : 'en'
-          return locale && locale !== 'en' ? `/${locale}/dashboard` : '/dashboard'
+          const detectedLocale = locale || 'en'
+          return detectedLocale !== 'en' ? `/${detectedLocale}/dashboard` : '/dashboard'
+        }
+        
+        // ✅ IMPORTANT: Ensure URL has locale prefix for proper routing
+        // If URL doesn't have locale but is a valid path, prepend default locale
+        if (!localeMatch && url !== '/') {
+          const defaultLocale = 'en'
+          console.log(`[NextAuth] Prepending locale to URL: ${url} → /${defaultLocale}${url}`)
+          return `/${defaultLocale}${url}`
         }
         
         // Admin or safe path - just ensure locale is preserved
