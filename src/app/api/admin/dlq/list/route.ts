@@ -1,21 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-// NOTE: dev in-memory; PRODUCTION: thay bằng Neon table (append-only)
-const globalAny = global as unknown as { __DLQ__?: any[] };
-globalAny.__DLQ__ ||= [
-  {
-    id: "e1",
-    kind: "webhook",
-    source: "brokerA",
-    payload: { demo: true },
-    attempts: 3,
-    createdAt: Date.now() - 86400000,
-  },
-];
+// In-memory DLQ store (move to Neon when ready)
+const dlqItems: Array<{
+  id: string;
+  kind: string;
+  source: string;
+  payload: unknown;
+  attempts: number;
+  createdAt: Date;
+}> = [];
 
-export async function GET() {
-  const items = (globalAny.__DLQ__ || []).slice(0, 200);
-  return NextResponse.json({ items });
+export async function GET(req: NextRequest) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    return NextResponse.json({
+      items: dlqItems,
+      count: dlqItems.length,
+      ts: new Date().toISOString(),
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to list DLQ items" },
+      { status: 500 }
+    );
+  }
 }
-
-export const dynamic = "force-dynamic";

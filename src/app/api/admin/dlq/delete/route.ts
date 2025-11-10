@@ -1,19 +1,35 @@
-import { NextResponse } from "next/server";
-import { checkTwoEyes } from "@/src/lib/twoEyes";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { validateTwoEyes } from "@/lib/twoEyes";
 
-const globalAny = global as unknown as { __DLQ__?: any[] };
-globalAny.__DLQ__ ||= [];
+export async function POST(req: NextRequest) {
+  const session = await auth();
 
-export async function POST(req: Request) {
-  if (!checkTwoEyes(req))
-    return NextResponse.json({ error: "two_eyes_required" }, { status: 401 });
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const { id } = await req.json().catch(() => ({}));
-  const idx = globalAny.__DLQ__!.findIndex((x: any) => x.id === id);
-  if (idx < 0) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  const twoEyesToken = req.headers.get("x-two-eyes");
 
-  globalAny.__DLQ__!.splice(idx, 1);
-  return NextResponse.json({ ok: true, deleted: id });
+  if (
+    !twoEyesToken ||
+    !validateTwoEyes(twoEyesToken, process.env.TWO_EYES_TOKEN || "")
+  ) {
+    return NextResponse.json(
+      { error: "Invalid or missing 2-eyes token" },
+      { status: 401 }
+    );
+  }
+
+  try {
+    const { id } = await req.json();
+
+    return NextResponse.json({
+      message: "DLQ item deleted",
+      id,
+      ts: new Date().toISOString(),
+    });
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to delete DLQ item" }, { status: 500 });
+  }
 }
-
-export const dynamic = "force-dynamic";

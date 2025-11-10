@@ -5,6 +5,18 @@
 
 ---
 
+## 🚀 START HERE (Pick Your Path)
+
+| Use Case | File | Time |
+|----------|------|------|
+| **New chat session (copy-paste context)** | `MASTER_PROMPT.md` | 1 sec copy |
+| **Quick reference (navigation)** | `QUICK_JUMP.md` | 2 min read |
+| **Full architecture map** | `ARCHITECTURE_ADMIN_SEED.md` | 15 min read |
+| **All commands** | This file (AGENTS.md) § 1 | 5 min ref |
+| **CI/CD details** | `AGENTIC_SETUP.md` | 20 min read |
+
+---
+
 ## 🚀 1️⃣ Build / Lint / Test / Deploy Commands
 
 | Command                 | Purpose                     |

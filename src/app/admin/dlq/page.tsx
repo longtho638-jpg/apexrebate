@@ -1,103 +1,128 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ConfirmButton from "@/src/components/ConfirmButton";
+import { ConfirmButton } from "@/components/ConfirmButton";
+
+interface DLQItem {
+  id: string;
+  kind: string;
+  source: string;
+  payload: unknown;
+  attempts: number;
+  createdAt: string;
+}
 
 export default function DLQPage() {
-  const [items, setItems] = useState<any[]>([]);
+  const [items, setItems] = useState<DLQItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDLQ = async () => {
-      try {
-        const r = await fetch(
-          `${process.env.NEXT_PUBLIC_BASE_URL || ""}/api/admin/dlq/list`,
-          { cache: "no-store" }
-        );
-        const j = await r.json();
-        setItems(j.items || []);
-      } catch (err) {
-        console.error("Failed to fetch DLQ:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDLQ();
+    fetchItems();
   }, []);
 
+  async function fetchItems() {
+    try {
+      const res = await fetch("/api/admin/dlq/list");
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setItems(data.items || []);
+    } catch (error) {
+      console.error("Error fetching DLQ items:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function replayItem(id: string) {
+    const token = prompt("Enter 2-eyes token:");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/admin/dlq/replay", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-two-eyes": token,
+          "x-idempotency-key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Replay failed");
+      await fetchItems();
+    } catch (error) {
+      console.error("Replay error:", error);
+    }
+  }
+
+  async function deleteItem(id: string) {
+    const token = prompt("Enter 2-eyes token:");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/admin/dlq/delete", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-two-eyes": token,
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Delete failed");
+      await fetchItems();
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  }
+
+  if (loading) return <div>Loading...</div>;
+
   return (
-    <div className="p-6 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">DLQ Replay Center</h1>
-      <p className="text-sm text-neutral-600 mb-6">
-        2-eyes + Idempotency. Dùng cho webhook/tasks lỗi.
-      </p>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-6">DLQ Replay Center</h1>
 
-      {loading ? (
-        <div className="p-4 text-neutral-600">Loading...</div>
+      {items.length === 0 ? (
+        <p>No items in DLQ</p>
       ) : (
-        <div className="space-y-3">
-          {items.length === 0 && (
-            <div className="p-4 border rounded-xl">Không có mục DLQ.</div>
-          )}
-
-          {items.map((it) => (
-            <div
-              key={it.id}
-              className="p-4 border rounded-xl flex items-center justify-between"
-            >
-              <div className="text-sm">
-                <div className="font-medium">
-                  {it.id} — <span className="uppercase">{it.kind}</span> / {it.source}
-                </div>
-                <div className="text-neutral-600">
-                  attempts: {it.attempts} · {new Date(it.createdAt).toLocaleString()}
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <ConfirmButton
-                  label="Replay"
-                  onConfirm={async () => {
-                    await fetch("/api/admin/dlq/replay", {
-                      method: "POST",
-                      headers: {
-                        "content-type": "application/json",
-                        "x-two-eyes": process.env.NEXT_PUBLIC_TWO_EYES_HINT || "",
-                        "x-idempotency-key": crypto.randomUUID(),
-                      },
-                      body: JSON.stringify({ id: it.id }),
-                    });
-                    location.reload();
-                  }}
-                />
-
-                <ConfirmButton
-                  label="Delete"
-                  variant="danger"
-                  onConfirm={async () => {
-                    await fetch("/api/admin/dlq/delete", {
-                      method: "POST",
-                      headers: {
-                        "content-type": "application/json",
-                        "x-two-eyes": process.env.NEXT_PUBLIC_TWO_EYES_HINT || "",
-                      },
-                      body: JSON.stringify({ id: it.id }),
-                    });
-                    location.reload();
-                  }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        <table className="w-full border-collapse border border-gray-300">
+          <thead>
+            <tr>
+              <th className="border p-2 text-left">ID</th>
+              <th className="border p-2 text-left">Kind</th>
+              <th className="border p-2 text-left">Source</th>
+              <th className="border p-2 text-left">Attempts</th>
+              <th className="border p-2 text-left">Created</th>
+              <th className="border p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.id}>
+                <td className="border p-2 font-mono text-sm">{item.id}</td>
+                <td className="border p-2">{item.kind}</td>
+                <td className="border p-2">{item.source}</td>
+                <td className="border p-2 text-center">{item.attempts}</td>
+                <td className="border p-2 text-sm">
+                  {new Date(item.createdAt).toLocaleString()}
+                </td>
+                <td className="border p-2 space-x-2">
+                  <button
+                    onClick={() => replayItem(item.id)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    Replay
+                  </button>
+                  <ConfirmButton
+                    onConfirm={() => deleteItem(item.id)}
+                    variant="destructive"
+                  >
+                    Delete
+                  </ConfirmButton>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
-
-      <div className="mt-6 text-xs text-neutral-500">
-        Gợi ý: đặt <code>TWO_EYES_TOKEN</code> ở server, và{" "}
-        <code>NEXT_PUBLIC_TWO_EYES_HINT</code> = cùng giá trị trên môi trường
-        staging để test nhanh (prod KHÔNG nên public).
-      </div>
     </div>
   );
 }

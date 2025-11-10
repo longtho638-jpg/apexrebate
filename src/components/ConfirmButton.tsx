@@ -1,50 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { ReactNode, useState } from "react";
+import { Button } from "./ui/button";
 
 interface ConfirmButtonProps {
-  label: string;
   onConfirm: () => Promise<void>;
-  variant?: "default" | "danger";
+  children: ReactNode;
+  variant?: "default" | "destructive" | "outline";
+  loading?: boolean;
+  disabled?: boolean;
 }
 
-export default function ConfirmButton({
-  label,
+export function ConfirmButton({
   onConfirm,
+  children,
   variant = "default",
+  loading = false,
+  disabled = false,
 }: ConfirmButtonProps) {
-  const [isConfirming, setIsConfirming] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleClick = async () => {
-    if (!isConfirming) {
-      setIsConfirming(true);
-      return;
-    }
-
-    setIsLoading(true);
+  const handleConfirm = async () => {
     try {
+      setIsLoading(true);
       await onConfirm();
+      setShowConfirm(false);
+    } catch (error) {
+      console.error("Confirmation error:", error);
     } finally {
       setIsLoading(false);
-      setIsConfirming(false);
     }
   };
 
-  const baseClass =
-    "px-3 py-1.5 rounded-lg text-sm font-medium transition-all disabled:opacity-50";
-  const variantClass =
-    variant === "danger"
-      ? "bg-red-100 text-red-700 hover:bg-red-200"
-      : "bg-blue-100 text-blue-700 hover:bg-blue-200";
+  if (!showConfirm) {
+    return (
+      <Button
+        variant={variant}
+        disabled={disabled || loading}
+        onClick={() => setShowConfirm(true)}
+      >
+        {children}
+      </Button>
+    );
+  }
 
   return (
-    <button
-      onClick={handleClick}
-      disabled={isLoading}
-      className={`${baseClass} ${variantClass}`}
-    >
-      {isLoading ? "..." : isConfirming ? `Confirm ${label}?` : label}
-    </button>
+    <div className="flex gap-2">
+      <Button
+        variant="destructive"
+        disabled={isLoading}
+        onClick={handleConfirm}
+      >
+        {isLoading ? "Confirming..." : "Confirm"}
+      </Button>
+      <Button
+        variant="outline"
+        disabled={isLoading}
+        onClick={() => setShowConfirm(false)}
+      >
+        Cancel
+      </Button>
+    </div>
   );
 }

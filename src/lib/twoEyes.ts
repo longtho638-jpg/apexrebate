@@ -1,16 +1,22 @@
-export function checkTwoEyes(req: Request) {
-  const token = req.headers.get("x-two-eyes") || "";
-  const expected = process.env.TWO_EYES_TOKEN || "";
-  return expected && token === expected;
+import crypto from "crypto";
+
+export function validateTwoEyes(
+  token: string,
+  expectedToken: string
+): boolean {
+  if (!token || !expectedToken) return false;
+  return crypto.timingSafeEqual(
+    Buffer.from(token),
+    Buffer.from(expectedToken)
+  );
 }
 
-export function getIdem(req: Request) {
-  return req.headers.get("x-idempotency-key") || "";
+export function generateIdempotencyKey(): string {
+  return crypto.randomUUID();
 }
 
-export function validateTwoEyesHeader(req: Request): { valid: boolean; error?: string } {
-  if (!checkTwoEyes(req)) {
-    return { valid: false, error: "two_eyes_required" };
-  }
-  return { valid: true };
+export function verifyIdempotencyKey(key: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+    key
+  );
 }
