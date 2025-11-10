@@ -88,7 +88,7 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = (token.id || token.sub) as string
         session.user.role = (token.role as string) || 'USER'
-        
+
         // Validate role is a valid enum value
         const validRoles = ['USER', 'ADMIN', 'CONCIERGE']
         if (!validRoles.includes(session.user.role)) {
@@ -96,6 +96,23 @@ export const authOptions: NextAuthOptions = {
         }
       }
       return session
+    },
+
+    async redirect({ url, baseUrl }) {
+      // ✅ FIX: Handle admin redirects properly
+      // If URL is relative, it's safe to redirect
+      if (url.startsWith('/')) {
+        // Extract locale from URL (e.g., /vi/admin → vi)
+        const localeMatch = url.match(/^\/(en|vi|th|id)(\/.*)?$/)
+        const locale = localeMatch ? localeMatch[1] : null
+        
+        // For admin routes, middleware will validate role and redirect if needed
+        // Just ensure locale is preserved
+        return url
+      }
+      
+      // Otherwise use baseUrl (relative URL)
+      return baseUrl
     },
   },
   pages: {

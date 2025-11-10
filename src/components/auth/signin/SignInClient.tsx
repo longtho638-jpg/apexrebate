@@ -63,11 +63,15 @@ export default function SignInClient({
     setError('')
 
     try {
+      // ✅ Decode callbackUrl first (in case it's URL-encoded from query param)
+      const decodedCallback = decodeURIComponent(callbackUrl || '')
+      
       const result = await signIn('credentials', {
         email: formData.email,
         password: formData.password,
         twoFactorCode: isTwoFactorStep ? formData.twoFactorCode : undefined,
-        redirect: false
+        redirect: false,
+        callbackUrl: decodedCallback  // ✅ Pass decoded callback to NextAuth
       })
 
       if (result?.error) {
@@ -85,33 +89,14 @@ export default function SignInClient({
           setError(result.error)
         }
       } else if (result?.ok) {
-        // ✅ Fetch session to determine user role and redirect appropriately
-        try {
-          const sessionResponse = await fetch('/api/auth/session')
-          const session = await sessionResponse.json()
-          
-          // Decode callbackUrl first (in case it's URL-encoded from query param)
-          const decodedCallback = decodeURIComponent(callbackUrl || '')
-          
-          // Extract locale from callback URL (e.g., /vi/dashboard → vi)
-          const localeMatch = decodedCallback.match(/^\/(en|vi|th|id)(\/.*)?$/)
-          const locale = localeMatch ? localeMatch[1] : null
-          
-          // Redirect based on user role and callback URL
-          if (session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') {
-            // Use callback URL if provided and is admin page, otherwise redirect to /admin with locale
-            if (decodedCallback?.includes('/admin')) {
-              router.push(decodedCallback)
-            } else {
-              router.push(locale ? `/${locale}/admin` : '/admin')
-            }
-          } else {
-            // ✅ Fix: Always use callbackUrl which already has locale
-            router.push(decodedCallback)
-          }
-        } catch (error) {
-          // Fallback to default callback URL if session fetch fails
-          router.push(callbackUrl)
+        // ✅ signIn successful - result.url contains the redirect target
+        // The middleware will handle role-based redirects if needed
+        // (admin pages redirect to /admin, regular users go to /dashboard)
+        if (result.url) {
+          router.push(result.url)
+        } else {
+          // Fallback to decoded callback if NextAuth doesn't return url
+          router.push(decodedCallback)
         }
       }
     } catch (error) {
@@ -124,7 +109,9 @@ export default function SignInClient({
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signIn('google', { callbackUrl })
+      // ✅ Decode callbackUrl before passing to NextAuth
+      const decodedCallback = decodeURIComponent(callbackUrl || '')
+      await signIn('google', { callbackUrl: decodedCallback })
     } catch (error) {
       setError('Failed to sign in with Google')
     } finally {
