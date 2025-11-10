@@ -1,14 +1,18 @@
 import SignInClient from '@/components/auth/signin/SignInClient';
 
-export default function Page({
+export default async function Page({
   params,
   searchParams
 }: {
-  params: { locale: string };
-  searchParams: { error?: string; callbackUrl?: string };
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }) {
-  const initialError = typeof searchParams?.error === 'string' ? searchParams.error : undefined;
-  const callbackUrl = typeof searchParams?.callbackUrl === 'string' ? searchParams.callbackUrl : undefined;
+  // ✅ Next.js 15: await params and searchParams
+  const resolvedParams = await params;
+  const resolvedSearchParams = await searchParams;
+  
+  const initialError = typeof resolvedSearchParams?.error === 'string' ? resolvedSearchParams.error : undefined;
+  const callbackUrl = typeof resolvedSearchParams?.callbackUrl === 'string' ? resolvedSearchParams.callbackUrl : undefined;
   
   return <SignInClient initialError={initialError} initialCallbackUrl={callbackUrl} />;
 }
