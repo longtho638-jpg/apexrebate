@@ -493,7 +493,7 @@ export default function Navbar() {
                   role="menuitem"
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
-                  {t('signIn')}
+                  {t('navigation.signIn')}
                   </Link>
                   <Link
                   href="/auth/signup"
@@ -503,7 +503,7 @@ export default function Navbar() {
                   tabIndex={isMobileMenuOpen ? 0 : -1}
                   >
                   <Shield className="inline w-4 h-4 mr-2" />
-                  {t('signUp')}
+                  {t('navigation.signUp')}
                   </Link>
                 </>
               )}
