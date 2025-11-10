@@ -34,6 +34,19 @@
 | `npm run test:seed`     | Test seed algorithms        |
 | `npm run db:reset`      | Full reset (careful!)       |
 
+---
+
+## 🏛️ 1️⃣b Founder Admin Commands (NEW)
+
+| Command                           | Purpose                     |
+| --------------------------------- | --------------------------- |
+| `git apply founder-admin-implementation.patch` | Apply admin schema + routes |
+| `npm run db:push`                 | Push admin schema to DB     |
+| `node scripts/create-admin.js ...`| Create founder admin user   |
+| `curl https://apexrebate.com/admin` | Access admin dashboard     |
+| `npm run admin:create:workflow`   | Create Kimi K2 workflow     |
+| `npm run admin:test:email`        | Test email automation       |
+
 🪄 *Pro Tip:* Agents có thể trigger toàn bộ quy trình này bằng 1 lệnh duy nhất trong CI/CD:
 
 ```bash
@@ -1912,6 +1925,7 @@ jobs:
 | **Agentic CI/CD** | 16 files | ✅ Complete | Guardrails + pre-commit hooks |
 | **Admin DLQ** | 8 files | ✅ **DEPLOYED** | **/admin/dlq live (2-eyes auth)** |
 | **SEED Marketplace** | 19 files | ✅ **DEPLOYED** | **/tools live (public)** |
+| **Founder Admin Schema** | 8 models | ✅ **DEPLOYED** | **Database + Prisma sync complete** |
 | **OPA Policy** | 4 files | ✅ Complete | Rollout + payout rules |
 | **OPA Sidecar** | 3 files | ✅ Ready | HTTP gate via A6b task |
 | **OPA Payouts** | 7 files | ✅ Complete | Auto-bundle + HMAC signing |
@@ -1920,7 +1934,7 @@ jobs:
 | **SEED Public Flow** | 2 files | ✅ Deployed | Tools marketplace public |
 | **Catalyst Dashboard** | 6 components | ✅ Production | Premium UI library |
 
-**Total Production Files:** 50 files across 9 major components
+**Total Production Files:** 50 files across 10 major components
 
 ### 🚀 Latest Deployment (Nov 10, 2025)
 
@@ -1930,7 +1944,8 @@ jobs:
 |-----------|--------|-----|---------|
 | **Admin DLQ** | ✅ Live | `/admin/dlq` | Protected route, 2-eyes auth |
 | **SEED Marketplace** | ✅ Live | `/tools` | Public browsing enabled |
-| **Build** | ✅ Pass | 79 routes | 0 warnings |
+| **Founder Admin Schema** | ✅ Live | Database | 8 models, 3 indexes |
+| **Build** | ✅ Pass | 87 routes | 0 warnings |
 | **Tests** | ✅ Pass | 7/7 tests | Unit + E2E passing |
 | **Production** | ✅ Live | [vercel.app](https://apexrebate-1-alq7hkck8-minh-longs-projects-f5c82c9b.vercel.app) | Latest deploy |
 
@@ -1941,9 +1956,12 @@ jobs:
 - ✅ PolicyBundle routes (bundle management)
 - ✅ Payout policy check endpoint
 - ✅ SLO summary dashboard
+- ✅ **8 Founder Admin models (AdminUser, Permission, KYCVerification, AuditLog, Clawback, Automation)**
 
 **Documentation:**
-- 📄 Full deployment details: `DEPLOYMENT_ADMIN_SEED_NOV10.md`
+- 📄 Admin/SEED deployment: `DEPLOYMENT_ADMIN_SEED_NOV10.md`
+- 📄 Founder Admin Schema: `FOUNDER_ADMIN_SCHEMA_DEPLOYMENT.md`
+- 📄 Integration guide: `FOUNDER_ADMIN_DEPLOYMENT_COMPLETE.md`
 
 ### Week 1 Milestones (Updated Nov 10)
 
@@ -1956,10 +1974,13 @@ jobs:
 - [x] ✅ Package.json scripts (opa:start, opa:pull, slo:mock)
 - [x] ✅ **Admin DLQ deployed to production**
 - [x] ✅ **SEED Marketplace deployed to production**
-- [x] ✅ **Build: 0 warnings, 7/7 tests passing**
+- [x] ✅ **Founder Admin Schema deployed (8 models)**
+- [x] ✅ **Build: 87/87 routes, 0 warnings, 7/7 tests passing**
+- [x] ✅ **Database migration: 8 tables + 3 indexes**
+- [x] ✅ **Prisma Client generated: 3.15 MB TypeScript definitions**
 
 **Pending (Nov 11-16):**
-- [ ] Neon migration execution (patch ready)
+- [ ] Founder admin API routes (/admin/users, /admin/kyc, /admin/audit)
 - [ ] E2E test optimization
 - [ ] OPA production deployment (Kubernetes/Docker)
 - [ ] SLO Datadog/Prometheus integration
