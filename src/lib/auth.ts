@@ -98,16 +98,26 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    async redirect({ url, baseUrl }) {
-      // ✅ FIX: Handle admin redirects properly
+    async redirect({ url, baseUrl, user }) {
+      // ✅ FIX: Handle admin redirects properly with role validation
       // If URL is relative, it's safe to redirect
       if (url.startsWith('/')) {
         // Extract locale from URL (e.g., /vi/admin → vi)
         const localeMatch = url.match(/^\/(en|vi|th|id)(\/.*)?$/)
         const locale = localeMatch ? localeMatch[1] : null
         
-        // For admin routes, middleware will validate role and redirect if needed
-        // Just ensure locale is preserved
+        // Check if attempting to redirect to /admin route
+        const isAdminRoute = url.includes('/admin')
+        const userRole = (user?.role as string) || 'USER'
+        
+        if (isAdminRoute && userRole !== 'ADMIN' && userRole !== 'CONCIERGE') {
+          // Non-admins trying to access /admin get redirected to dashboard
+          console.log(`[NextAuth] User (${userRole}) cannot access /admin, redirecting to dashboard`)
+          const locale = localeMatch ? localeMatch[1] : 'en'
+          return locale && locale !== 'en' ? `/${locale}/dashboard` : '/dashboard'
+        }
+        
+        // Admin or safe path - just ensure locale is preserved
         return url
       }
       

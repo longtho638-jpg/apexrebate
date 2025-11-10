@@ -95,8 +95,14 @@ export default function SignInClient({
         if (result.url) {
           router.push(result.url)
         } else {
-          // Fallback to decoded callback if NextAuth doesn't return url
-          router.push(decodedCallback)
+          // Fallback: Check if callback is /admin path
+          // If user is not admin, fallback to dashboard
+          if (decodedCallback.includes('/admin')) {
+            // Middleware will handle the admin role check and redirect accordingly
+            router.push(decodedCallback)
+          } else {
+            router.push(decodedCallback)
+          }
         }
       }
     } catch (error) {

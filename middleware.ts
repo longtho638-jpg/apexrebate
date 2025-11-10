@@ -158,7 +158,10 @@ export default async function middleware(request: NextRequest) {
       
       // Only ADMIN and CONCIERGE can access /admin
       if (userRole !== 'ADMIN' && userRole !== 'CONCIERGE') {
+        // Allow users to see signin page with admin callbackUrl (will fail after login)
+        // But actually redirect non-admins away from /admin
         const dashboardPath = locale ? `/${locale}/dashboard` : '/dashboard';
+        console.log(`[middleware] User (${userRole}) cannot access /admin, redirecting to dashboard`);
         return NextResponse.redirect(new URL(dashboardPath, request.url));
       }
     }
