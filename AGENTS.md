@@ -1978,6 +1978,7 @@ jobs:
 - [x] ✅ **Build: 87/87 routes, 0 warnings, 7/7 tests passing**
 - [x] ✅ **Database migration: 8 tables + 3 indexes**
 - [x] ✅ **Prisma Client generated: 3.15 MB TypeScript definitions**
+- [x] ✅ **Signin redirect bug fixed (locale preservation: vi, th, id, en)**
 
 **Pending (Nov 11-16):**
 - [ ] Founder admin API routes (/admin/users, /admin/kyc, /admin/audit)
