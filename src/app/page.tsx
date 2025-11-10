@@ -1,28 +1,22 @@
-import { Metadata } from 'next'
+'use client'
+
+import { useEffect } from 'react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import HomePageClient from './homepage-client'
 
-export const metadata: Metadata = {
-  title: 'ApexRebate - Tối ưu hóa lợi nhuận cho trader nghiêm túc',
-  description: 'Nền tảng hoàn phí minh bạch nhất cho trader nghiêm túc. Chúng tôi không hứa hẹn làm giàu nhanh, chúng tôi cung cấp công cụ tối ưu hóa dựa trên dữ liệu.',
-  keywords: [
-    'hoàn phí trading',
-    'crypto rebate',
-    'tối ưu hóa lợi nhuận',
-    'trading fees',
-    'binance rebate',
-    'bybit rebate',
-    'OKX rebate',
-    'trader tools',
-    'phân tích hiệu suất',
-    'trading analytics'
-  ],
-  openGraph: {
-    title: 'ApexRebate - Tối ưu hóa lợi nhuận cho trader nghiêm túc',
-    description: 'Nền tảng hoàn phí minh bạch nhất cho trader nghiêm túc.',
-    type: 'website',
-  },
-}
-
 export default function HomePage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+
+  useEffect(() => {
+    // Chỉ redirect nếu user đã đăng nhập
+    if (status === 'authenticated' && session) {
+      const preferredLocale = localStorage.getItem('preferred-locale') || 'vi'
+      router.push(`/${preferredLocale}/dashboard`)
+    }
+  }, [status, session, router])
+
+  // Hiển thị Homepage cho tất cả (đăng nhập hoặc chưa đăng nhập)
   return <HomePageClient />
 }

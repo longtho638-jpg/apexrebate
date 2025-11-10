@@ -90,21 +90,24 @@ export default function SignInClient({
           const sessionResponse = await fetch('/api/auth/session')
           const session = await sessionResponse.json()
           
+          // Decode callbackUrl first (in case it's URL-encoded from query param)
+          const decodedCallback = decodeURIComponent(callbackUrl || '')
+          
           // Extract locale from callback URL (e.g., /vi/dashboard → vi)
-          const localeMatch = callbackUrl.match(/^\/(en|vi|th|id)(\/.*)?$/)
+          const localeMatch = decodedCallback.match(/^\/(en|vi|th|id)(\/.*)?$/)
           const locale = localeMatch ? localeMatch[1] : null
           
           // Redirect based on user role and callback URL
           if (session?.user?.role === 'ADMIN' || session?.user?.role === 'CONCIERGE') {
             // Use callback URL if provided and is admin page, otherwise redirect to /admin with locale
-            if (callbackUrl?.includes('/admin')) {
-              router.push(callbackUrl)
+            if (decodedCallback?.includes('/admin')) {
+              router.push(decodedCallback)
             } else {
               router.push(locale ? `/${locale}/admin` : '/admin')
             }
           } else {
             // ✅ Fix: Always use callbackUrl which already has locale
-            router.push(callbackUrl)
+            router.push(decodedCallback)
           }
         } catch (error) {
           // Fallback to default callback URL if session fetch fails
