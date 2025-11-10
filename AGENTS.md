@@ -85,18 +85,32 @@ GET /vi/auth/signin?callbackUrl=/vi/admin
   → User lands on admin panel ✅
 ```
 
+### Admin Credentials (Test Account)
+
+**Email:** `admin@apexrebate.com`  
+**Password:** `admin123`  
+**Role:** `ADMIN`
+
+**Note:** Password was reset using bcryptjs hashing to fix corrupted hash in database.
+
 ### Verification Tests
 
 ```bash
-# Test 1: Non-admin user trying /admin route
+# Test 1: Admin user login
+npm run dev
+# → Open http://localhost:3000/vi/auth/signin
+# → Login with admin@apexrebate.com / admin123
+# → Should redirect to /vi/admin ✅
+
+# Test 2: Non-admin user trying /admin route
 curl -L http://localhost:3000/vi/auth/signin?callbackUrl=%2Fvi%2Fadmin
 # Login with USER role → Should redirect to /vi/dashboard ✅
 
-# Test 2: Admin user accessing /admin route
+# Test 3: Admin user accessing /admin route
 curl -L http://localhost:3000/vi/auth/signin?callbackUrl=%2Fvi%2Fadmin
 # Login with ADMIN role → Should redirect to /vi/admin ✅
 
-# Test 3: Non-admin user with /dashboard callback
+# Test 4: Non-admin user with /dashboard callback
 curl -L http://localhost:3000/vi/auth/signin?callbackUrl=%2Fvi%2Fdashboard
 # Login with USER role → Should redirect to /vi/dashboard ✅
 ```
@@ -121,6 +135,18 @@ This complements the earlier **Signin Locale Preservation Fix** (commit `7baffb9
 - Admin redirect: Ensures non-admins don't access `/admin` routes
 - Combined: Full auth flow with role validation + locale preservation
 
+### Additional Fix: Admin Password Reset
+
+**Issue:** Admin user's password hash in database was invalid/corrupted, preventing login.
+
+**Solution:** Reset password to `admin123` using bcryptjs hashing algorithm.
+
+```bash
+# Password reset performed via:
+# bcrypt.hash('admin123', 10) → stored in database
+# Authentication flow already correct, only password hash needed fixing
+```
+
 ### Impact
 
 | Metric | Before | After |
@@ -130,6 +156,7 @@ This complements the earlier **Signin Locale Preservation Fix** (commit `7baffb9
 | Locale preservation | ✅ Working | ✅ Working |
 | User experience | ❌ Stuck on signin | ✅ Smooth login |
 | Security | ⚠️ Relies on middleware | ✅ Defense in depth |
+| Admin login | ❌ Invalid password hash | ✅ Working with admin123 |
 
 ---
 
