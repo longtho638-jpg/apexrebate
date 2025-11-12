@@ -1,0 +1,3 @@
+[submodule "factory/claudekit-engineer"]
+	path = factory/claudekit-engineer
+	url = https://github.com/claudekit/claudekit-engineer
