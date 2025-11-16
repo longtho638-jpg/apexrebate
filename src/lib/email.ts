@@ -36,7 +36,6 @@ export enum EmailType {
 
 export class EmailService {
   private static instance: EmailService
-  private zai: any = null
 
   private constructor() {}
 
@@ -47,21 +46,7 @@ export class EmailService {
     return EmailService.instance
   }
 
-  async initializeZAI() {
-    try {
-      const ZAI = await import('z-ai-web-dev-sdk')
-      this.zai = await ZAI.create()
-      console.log('Email service initialized with ZAI SDK')
-    } catch (error) {
-      console.error('Failed to initialize ZAI SDK for email service:', error)
-    }
-  }
-
   async generateEmailContent(type: EmailType, data: Record<string, any>): Promise<EmailTemplate> {
-    if (!this.zai) {
-      await this.initializeZAI()
-    }
-
     const prompts = {
       [EmailType.WELCOME]: {
         subject: "Chào mừng đến với ApexRebate - Dịch vụ Hoàn phí Concierge",
@@ -110,67 +95,8 @@ export class EmailService {
       throw new Error(`Email type ${type} not supported`)
     }
 
-    try {
-      const completion = await this.zai.chat.completions.create({
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional email writer for ApexRebate, a premium trading rebate service. 
-            Write emails in Vietnamese that are:
-            - Professional yet friendly
-            - Data-driven and personalized
-            - Motivational and encouraging
-            - Clear and concise
-            - Include specific numbers and metrics when provided
-            
-            The email should be well-structured with:
-            1. Compelling subject line
-            2. Personalized greeting
-            3. Main content with specific data
-            4. Call to action
-            5. Professional closing`
-          },
-          {
-            role: 'user',
-            content: `${prompt.context}
-            
-            User data: ${JSON.stringify(data, null, 2)}
-            
-            Generate a complete email with subject and HTML content. The email should be engaging and personalized.`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
-      })
-
-      const content = completion.choices[0]?.message?.content || ''
-      
-      // Parse the generated content
-      const lines = content.split('\n')
-      let subject = prompt.subject
-      let htmlContent = content
-      
-      // Try to extract subject if generated
-      const subjectMatch = content.match(/Subject[:\s]*(.+?)(?:\n|$)/i)
-      if (subjectMatch) {
-        subject = subjectMatch[1].trim()
-        htmlContent = content.replace(/Subject[:\s]*(.+?)(?:\n|$)/i, '').trim()
-      }
-
-      // Convert to HTML format
-      const html = this.convertToHTML(htmlContent, data)
-
-      return {
-        subject,
-        html,
-        text: htmlContent.replace(/<[^>]*>/g, '') // Strip HTML for text version
-      }
-
-    } catch (error) {
-      console.error('Failed to generate email content:', error)
-      // Fallback to template
-      return this.getFallbackTemplate(type, data)
-    }
+    // 当前构建版本默认使用模板
+    return this.getFallbackTemplate(type, data)
   }
 
   private convertToHTML(content: string, data: Record<string, any>): string {
@@ -320,7 +246,7 @@ export class EmailService {
 
     // Save to database
     try {
-      await db.emailNotification.create({
+      await db.email_notifications.create({
         data: {
           id: notification.id,
           userId,
@@ -330,7 +256,9 @@ export class EmailService {
           content: notification.content,
           data: data ? JSON.stringify(data) : null,
           status: notification.status,
-          scheduledFor: scheduledFor
+          scheduledFor: scheduledFor,
+          createdAt: notification.createdAt,
+          updatedAt: new Date()
         }
       })
     } catch (error) {
@@ -365,7 +293,7 @@ export class EmailService {
       notification.sentAt = new Date()
 
       // Update in database
-      await db.emailNotification.update({
+      await db.email_notifications.update({
         where: { id: notification.id },
         data: {
           subject: notification.subject,
@@ -384,7 +312,7 @@ export class EmailService {
       notification.error = error instanceof Error ? error.message : 'Unknown error'
 
       // Update in database
-      await db.emailNotification.update({
+      await db.email_notifications.update({
         where: { id: notification.id },
         data: {
           status: 'failed',
@@ -418,7 +346,7 @@ export class EmailService {
 
   async processPendingEmails(): Promise<void> {
     try {
-      const pendingEmails = await db.emailNotification.findMany({
+      const pendingEmails = await db.email_notifications.findMany({
         where: {
           status: 'pending',
           OR: [

@@ -1,3 +1,5 @@
+import { NotificationStatus, NotificationType, Platform } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -29,11 +31,24 @@ interface PushNotification {
   title: string;
   body: string;
   data?: any;
-  type: 'marketing' | 'transactional' | 'alert';
+  type: NotificationType;
   scheduledFor?: Date;
   sentAt?: Date;
-  status: 'pending' | 'sent' | 'failed';
+  status: NotificationStatus;
 }
+
+const normalizePlatform = (value: string): Platform => {
+  return value?.toUpperCase() === 'ANDROID' ? 'ANDROID' : 'IOS';
+};
+
+const normalizeNotificationType = (value: string): NotificationType => {
+  const normalized = value?.toUpperCase();
+  if (normalized === 'MARKETING' || normalized === 'ALERT' || normalized === 'SYSTEM') {
+    return normalized as NotificationType;
+  }
+  return 'TRANSACTIONAL';
+};
+
 
 // 移动端APP管理API
 export async function GET(request: NextRequest) {
@@ -231,9 +246,9 @@ async function getPushNotifications() {
       title: '新的返利到账',
       body: '您有 $45.67 的返利已到账，请查看详情',
       data: { type: 'payout', amount: 45.67 },
-      type: 'transactional',
+      type: NotificationType.TRANSACTIONAL,
       sentAt: new Date(),
-      status: 'sent'
+      status: NotificationStatus.SENT
     },
     {
       id: '2',
@@ -241,17 +256,17 @@ async function getPushNotifications() {
       title: '市场提醒',
       body: 'BTC 价格突破 $50,000，关注交易机会',
       data: { type: 'market_alert', symbol: 'BTC', price: 50000 },
-      type: 'marketing',
+      type: NotificationType.MARKETING,
       scheduledFor: new Date(Date.now() + 60 * 60 * 1000),
-      status: 'pending'
+      status: NotificationStatus.PENDING
     }
   ];
 
   return NextResponse.json({
     notifications,
     total: notifications.length,
-    sent: notifications.filter(n => n.status === 'sent').length,
-    pending: notifications.filter(n => n.status === 'pending').length
+    sent: notifications.filter(n => n.status === NotificationStatus.SENT).length,
+    pending: notifications.filter(n => n.status === NotificationStatus.PENDING).length
   });
 }
 
@@ -363,17 +378,18 @@ async function registerDevice(deviceInfo: any) {
   };
 
   try {
-    await db.mobileUser.create({
+    await db.mobile_users.create({
       data: {
         id: mobileUser.id,
         userId: mobileUser.userId,
         deviceToken: mobileUser.deviceToken,
-        platform: mobileUser.platform,
+        platform: normalizePlatform(mobileUser.platform),
         appVersion: mobileUser.appVersion,
         deviceInfo: JSON.stringify(mobileUser.deviceInfo),
         preferences: JSON.stringify(mobileUser.preferences),
         createdAt: mobileUser.createdAt,
-        lastActiveAt: mobileUser.lastActiveAt
+        lastActiveAt: mobileUser.lastActiveAt,
+        updatedAt: mobileUser.lastActiveAt
       }
     });
   } catch (error) {
@@ -390,6 +406,7 @@ async function registerDevice(deviceInfo: any) {
 // 发送推送通知
 async function sendPushNotification(notification: any) {
   const { userId, title, body, data, type } = notification;
+  const normalizedType = normalizeNotificationType(type);
 
   const pushNotification: PushNotification = {
     id: `notification_${Date.now()}`,
@@ -397,13 +414,13 @@ async function sendPushNotification(notification: any) {
     title,
     body,
     data,
-    type,
+    type: normalizedType,
     sentAt: new Date(),
-    status: 'sent'
+    status: NotificationStatus.SENT
   };
 
   try {
-    await db.pushNotification.create({
+    await db.push_notifications.create({
       data: {
         id: pushNotification.id,
         userId: pushNotification.userId,
@@ -412,7 +429,9 @@ async function sendPushNotification(notification: any) {
         data: JSON.stringify(pushNotification.data),
         type: pushNotification.type,
         sentAt: pushNotification.sentAt,
-        status: pushNotification.status
+        status: pushNotification.status,
+        updatedAt: pushNotification.sentAt ?? new Date(),
+        createdAt: pushNotification.sentAt ?? new Date()
       }
     });
   } catch (error) {
@@ -431,7 +450,7 @@ async function updateMobilePreferences(preferences: any) {
   const { userId, preferences: prefs } = preferences;
 
   try {
-    await db.mobileUser.updateMany({
+    await db.mobile_users.updateMany({
       where: { userId },
       data: {
         preferences: JSON.stringify(prefs),
@@ -453,8 +472,9 @@ async function trackMobileEvent(event: any) {
   const { userId, eventType, eventName, properties } = event;
 
   try {
-    await db.mobileEvent.create({
+    await db.mobile_events.create({
       data: {
+        id: randomUUID(),
         userId,
         eventType,
         eventName,
@@ -477,14 +497,16 @@ async function submitMobileFeedback(feedback: any) {
   const { userId, rating, comment, category, deviceInfo } = feedback;
 
   try {
-    await db.mobileFeedback.create({
+    await db.mobile_feedbacks.create({
       data: {
+        id: randomUUID(),
         userId,
         rating,
         comment,
         category,
         deviceInfo: JSON.stringify(deviceInfo),
-        createdAt: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     });
   } catch (error) {

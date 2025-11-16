@@ -3,8 +3,23 @@
 
 import { logger, performanceLogger } from './logging';
 import LRU from 'lru-cache';
-import Redis from 'ioredis';
 import { createHash } from 'crypto';
+
+const getPerformanceError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return 'Unknown error';
+  }
+};
 
 // Cache configuration
 interface CacheConfig {
@@ -33,10 +48,8 @@ interface PerformanceMetrics {
 
 class CacheManager {
   private memoryCache: LRU<string, any>;
-  private redisClient?: Redis;
   private config: CacheConfig;
   private metrics: PerformanceMetrics;
-  private isRedisConnected = false;
 
   constructor(config: CacheConfig) {
     this.config = config;
@@ -55,43 +68,8 @@ class CacheManager {
       updateAgeOnGet: true
     });
 
-    // Initialize Redis if needed
     if (config.strategy === 'redis' || config.strategy === 'hybrid') {
-      this.initializeRedis();
-    }
-  }
-
-  // Initialize Redis connection
-  private async initializeRedis(): Promise<void> {
-    try {
-      this.redisClient = new Redis({
-        host: process.env.REDIS_HOST || 'localhost',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-        password: process.env.REDIS_PASSWORD,
-        retryDelayOnFailover: 100,
-        maxRetriesPerRequest: 3,
-        lazyConnect: true
-      });
-
-      this.redisClient.on('connect', () => {
-        this.isRedisConnected = true;
-        logger.info('Redis connected');
-      });
-
-      this.redisClient.on('error', (error) => {
-        this.isRedisConnected = false;
-        logger.error('Redis connection error', { error: error.message });
-      });
-
-      this.redisClient.on('close', () => {
-        this.isRedisConnected = false;
-        logger.warn('Redis connection closed');
-      });
-
-      await this.redisClient.connect();
-    } catch (error) {
-      logger.error('Failed to initialize Redis', { error: error.message });
-      this.isRedisConnected = false;
+      logger.warn('Redis caching is not available in this environment. Falling back to in-memory cache.');
     }
   }
 
@@ -121,37 +99,13 @@ class CacheManager {
       }
 
       // Try Redis if configured and connected
-      if ((this.config.strategy === 'redis' || this.config.strategy === 'hybrid') && this.isRedisConnected) {
-        const cached = await this.redisClient.get(cacheKey);
-        if (cached) {
-          const item: CacheItem<T> = JSON.parse(cached);
-          
-          // Check if expired
-          if (item.expires > Date.now()) {
-            data = item.data;
-            
-            // Store in memory cache for faster access
-            if (this.config.strategy === 'hybrid') {
-              this.memoryCache.set(cacheKey, data);
-            }
-            
-            this.metrics.cacheHits++;
-            this.updateMetrics(startTime);
-            return data;
-          } else {
-            // Remove expired item
-            await this.redisClient.del(cacheKey);
-          }
-        }
-      }
-
       this.metrics.cacheMisses++;
       this.updateMetrics(startTime);
       return null;
     } catch (error) {
       logger.error('Cache get error', { 
         key: cacheKey, 
-        error: error.message 
+        error: getPerformanceError(error) 
       });
       this.metrics.cacheMisses++;
       this.updateMetrics(startTime);
@@ -178,18 +132,10 @@ class CacheManager {
         this.memoryCache.set(cacheKey, data);
       }
 
-      // Store in Redis if configured and connected
-      if ((this.config.strategy === 'redis' || this.config.strategy === 'hybrid') && this.isRedisConnected) {
-        await this.redisClient.setex(
-          cacheKey, 
-          ttl, 
-          JSON.stringify(item)
-        );
-      }
     } catch (error) {
       logger.error('Cache set error', { 
         key: cacheKey, 
-        error: error.message 
+        error: getPerformanceError(error) 
       });
     }
   }
@@ -202,14 +148,10 @@ class CacheManager {
       // Remove from memory cache
       this.memoryCache.delete(cacheKey);
 
-      // Remove from Redis if configured and connected
-      if (this.isRedisConnected) {
-        await this.redisClient.del(cacheKey);
-      }
     } catch (error) {
       logger.error('Cache delete error', { 
         key: cacheKey, 
-        error: error.message 
+        error: getPerformanceError(error) 
       });
     }
   }
@@ -225,18 +167,10 @@ class CacheManager {
           this.memoryCache.delete(key);
         }
       }
-
-      // Clear Redis if configured and connected
-      if (this.isRedisConnected) {
-        const keys = await this.redisClient.keys(pattern);
-        if (keys.length > 0) {
-          await this.redisClient.del(...keys);
-        }
-      }
     } catch (error) {
       logger.error('Cache clear namespace error', { 
         namespace, 
-        error: error.message 
+        error: getPerformanceError(error) 
       });
     }
   }
@@ -267,7 +201,7 @@ class CacheManager {
       logger.error('Cache getOrSet fetch error', { 
         namespace, 
         key, 
-        error: error.message 
+        error: getPerformanceError(error) 
       });
       throw error;
     }
@@ -288,15 +222,13 @@ class CacheManager {
   getMetrics(): PerformanceMetrics & {
     hitRate: number;
     memoryCacheSize: number;
-    redisConnected: boolean;
   } {
     return {
       ...this.metrics,
       hitRate: this.metrics.totalRequests > 0 
         ? (this.metrics.cacheHits / this.metrics.totalRequests) * 100 
         : 0,
-      memoryCacheSize: this.memoryCache.size,
-      redisConnected: this.isRedisConnected
+      memoryCacheSize: this.memoryCache.size
     };
   }
 
@@ -316,7 +248,7 @@ class CacheManager {
         logger.error('Cache warm-up error', { 
           namespace, 
           key, 
-          error: error.message 
+          error: getPerformanceError(error) 
         });
       }
     });
@@ -327,9 +259,7 @@ class CacheManager {
 
   // Close connections
   async close(): Promise<void> {
-    if (this.redisClient) {
-      await this.redisClient.quit();
-    }
+    // No external connections to close in memory-only mode
   }
 }
 
@@ -405,7 +335,7 @@ async function storePerformanceMetrics(metrics: any): Promise<void> {
     const key = `performance:${new Date().toISOString().split('T')[0]}`;
     await analyticsCache.set('daily_metrics', key, metrics, 86400); // 24 hours
   } catch (error) {
-    logger.error('Failed to store performance metrics', { error: error.message });
+    logger.error('Failed to store performance metrics', { error: getPerformanceError(error) });
   }
 }
 
@@ -450,7 +380,7 @@ export function responseCache(options: {
 
       next();
     } catch (error) {
-      logger.error('Response cache error', { error: error.message });
+      logger.error('Response cache error', { error: getPerformanceError(error) });
       next();
     }
   };

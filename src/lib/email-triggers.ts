@@ -62,6 +62,39 @@ class EmailTriggers {
     // Send monthly report email logic here
     console.log(`Monthly report sent to ${user.email}`)
   }
+
+  static async onAchievementUnlocked(userId: string, achievementTitle: string, points: number) {
+    const user = await db.users.findUnique({
+      where: { id: userId },
+      select: { email: true, name: true }
+    });
+
+    if (!user) return;
+
+    console.log(`[EmailTriggers] Achievement unlocked for ${user.email}: ${achievementTitle} (+${points} điểm)`);
+  }
+
+  static async onTierUpgrade(userId: string, newTier: string) {
+    const user = await db.users.findUnique({
+      where: { id: userId },
+      select: { email: true, name: true }
+    });
+
+    if (!user) return;
+
+    console.log(`[EmailTriggers] Tier upgrade for ${user.email}: ${newTier}`);
+  }
+
+  static async onReferralSuccess(userId: string, referredUserName: string) {
+    const user = await db.users.findUnique({
+      where: { id: userId },
+      select: { email: true, name: true }
+    });
+
+    if (!user) return;
+
+    console.log(`[EmailTriggers] Referral success for ${user.email}: referred ${referredUserName}`);
+  }
 }
 
 export const emailTriggers = EmailTriggers

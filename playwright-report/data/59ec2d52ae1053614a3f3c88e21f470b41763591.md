@@ -1,0 +1,62 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - main "Sign in page" [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e9]
+          - generic [ref=e11]: Welcome Back
+          - generic [ref=e12]: Sign in to your ApexRebate account
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - tablist [ref=e15]:
+              - tab "Email" [selected] [ref=e16]
+              - tab "Google" [ref=e17]
+            - tabpanel "Email" [ref=e18]:
+              - generic [ref=e19]:
+                - generic [ref=e20]:
+                  - generic [ref=e21]: Email Address
+                  - generic [ref=e22]:
+                    - img [ref=e23]
+                    - textbox "Email Address" [ref=e26]:
+                      - /placeholder: john@example.com
+                - generic [ref=e27]:
+                  - generic [ref=e28]: Password
+                  - generic [ref=e29]:
+                    - img [ref=e30]
+                    - textbox "Password" [ref=e33]:
+                      - /placeholder: Enter your password
+                    - button "Show password" [ref=e34]:
+                      - img [ref=e35]
+                - generic [ref=e38]:
+                  - generic [ref=e39]:
+                    - checkbox "Remember me" [ref=e40]
+                    - text: Remember me
+                  - button "Forgot password?" [ref=e41]
+                - button "Sign In" [ref=e42]
+          - generic [ref=e43]:
+            - text: Don't have an account?
+            - link "Sign up" [ref=e44] [cursor=pointer]:
+              - /url: /auth/signup
+          - generic [ref=e45]:
+            - text: By signing in, you agree to our
+            - link "Terms of Service" [ref=e46] [cursor=pointer]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=e47] [cursor=pointer]:
+              - /url: /privacy
+  - alert [ref=e48]
+  - generic [ref=e53] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e54]:
+      - img [ref=e55]
+    - generic [ref=e59]:
+      - button "Open issues overlay" [ref=e60]:
+        - generic [ref=e61]:
+          - generic [ref=e62]: "0"
+          - generic [ref=e63]: "1"
+        - generic [ref=e64]: Issue
+      - button "Collapse issues badge" [ref=e65]:
+        - img [ref=e66]
+```

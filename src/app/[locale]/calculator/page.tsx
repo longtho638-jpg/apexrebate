@@ -224,8 +224,9 @@ export default function CalculatorPage() {
                 )}
 
                 <Button 
+                  data-testid="calculate-button"
                   onClick={calculateSavings} 
-                  disabled={isLoading}
+                  disabled={isLoading || parseFloat(volume) <= 0}
                   className="w-full"
                 >
                   {isLoading ? 'Calculating...' : t('calculate')}

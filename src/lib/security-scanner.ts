@@ -4,6 +4,22 @@
 
 import { logger } from './logging';
 
+const getSecurityScanError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return 'Unknown error';
+  }
+};
+
 export interface SecurityVulnerability {
   id: string;
   title: string;
@@ -126,7 +142,7 @@ class SecurityScanner {
     } catch (error) {
       logger.error('Security scan failed', { 
         scanId, 
-        error: error.message 
+        error: getSecurityScanError(error) 
       });
 
       const result: SecurityScanResult = {
@@ -183,7 +199,7 @@ class SecurityScanner {
       vulnerabilities.push(...mockVulnerabilities);
       
     } catch (error) {
-      logger.error('Dependency scan failed', { error: error.message });
+      logger.error('Dependency scan failed', { error: getSecurityScanError(error) });
     }
 
     return vulnerabilities;
@@ -237,7 +253,7 @@ class SecurityScanner {
       }
 
     } catch (error) {
-      logger.error('Configuration scan failed', { error: error.message });
+      logger.error('Configuration scan failed', { error: getSecurityScanError(error) });
     }
 
     return vulnerabilities;
@@ -276,7 +292,7 @@ class SecurityScanner {
       });
 
     } catch (error) {
-      logger.error('Infrastructure scan failed', { error: error.message });
+      logger.error('Infrastructure scan failed', { error: getSecurityScanError(error) });
     }
 
     return vulnerabilities;
@@ -314,7 +330,7 @@ class SecurityScanner {
       });
 
     } catch (error) {
-      logger.error('Code security scan failed', { error: error.message });
+      logger.error('Code security scan failed', { error: getSecurityScanError(error) });
     }
 
     return vulnerabilities;
@@ -351,7 +367,7 @@ class SecurityScanner {
       } catch (error) {
         logger.error('Failed to auto-fix issue', { 
           issueId: issue.id, 
-          error: error.message 
+          error: getSecurityScanError(error) 
         });
       }
     }
@@ -382,7 +398,7 @@ class SecurityScanner {
 
     } catch (error) {
       logger.error('Failed to send security notification', { 
-        error: error.message 
+        error: getSecurityScanError(error) 
       });
     }
   }
@@ -479,7 +495,7 @@ class SecurityScanner {
       try {
         await this.performSecurityScan();
       } catch (error) {
-        logger.error('Periodic security scan failed', { error: error.message });
+        logger.error('Periodic security scan failed', { error: getSecurityScanError(error) });
       }
     }, intervalMs);
 

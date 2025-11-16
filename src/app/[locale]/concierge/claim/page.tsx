@@ -33,7 +33,7 @@ interface EvidencePreview {
 }
 
 export default function ConciergeClaimPage() {
-  const t = useTranslations()
+  const t = useTranslations('concierge_claim')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [claimData, setClaimData] = useState<ClaimData>({
     exchange: '',
@@ -119,10 +119,10 @@ export default function ConciergeClaimPage() {
     <div className="container mx-auto py-6 space-y-6 max-w-4xl">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          🚀 Concierge Rebate Claim
+          {t('title')}
         </h1>
         <p className="text-muted-foreground">
-          Submit your trading rebate claim manually. Our concierge team will process it within 24 hours.
+          {t('description')}
         </p>
       </div>
 
@@ -132,15 +132,15 @@ export default function ConciergeClaimPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Claim Details
+              {t('detailsTitle')}
             </CardTitle>
             <CardDescription>
-              Fill in your trading information for rebate calculation
+              {t('detailsDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="exchange">Exchange</Label>
+              <Label htmlFor="exchange">{t('exchange')}</Label>
               <Select value={claimData.exchange} onValueChange={(value) => handleInputChange('exchange', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select exchange" />
@@ -156,7 +156,7 @@ export default function ConciergeClaimPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tradeRef">Trade Reference</Label>
+              <Label htmlFor="tradeRef">{t('tradeRef')}</Label>
               <Input
                 id="tradeRef"
                 placeholder="Enter trade ID or reference"
@@ -166,7 +166,7 @@ export default function ConciergeClaimPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="grossRebate">Gross Rebate Amount (VND)</Label>
+              <Label htmlFor="grossRebate">{t('grossRebate')}</Label>
               <Input
                 id="grossRebate"
                 type="number"
@@ -177,7 +177,7 @@ export default function ConciergeClaimPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Additional Notes (Optional)</Label>
+              <Label htmlFor="description">{t('optionalNotes')}</Label>
               <Textarea
                 id="description"
                 placeholder="Any additional context or notes..."
@@ -185,21 +185,6 @@ export default function ConciergeClaimPage() {
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={3}
               />
-            </div>
-
-            {/* File evidence upload (added for e2e test expectation) */}
-            <div className="space-y-2">
-              <Label htmlFor="evidenceFiles">Upload Evidence (Screenshots / Reports)</Label>
-              <Input
-                id="evidenceFiles"
-                type="file"
-                multiple
-                accept="image/*,.png,.jpg,.jpeg,.pdf"
-                className="cursor-pointer"
-              />
-              <p className="text-xs text-muted-foreground">
-                Supported: PNG, JPG, PDF. You can attach multiple files. (Manual processing phase)
-              </p>
             </div>
 
             <Button

@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -29,7 +30,7 @@ export async function POST(
     }
 
     // Check if already favorited
-    const existingFavorite = await db.toolFavorite.findUnique({
+    const existingFavorite = await db.tool_favorites.findUnique({
       where: {
         toolId_userId: {
           toolId: id,
@@ -45,8 +46,9 @@ export async function POST(
       );
     }
 
-    const favorite = await db.toolFavorite.create({
+    const favorite = await db.tool_favorites.create({
       data: {
+        id: randomUUID(),
         toolId: id,
         userId: session.user.id
       }
@@ -76,7 +78,7 @@ export async function DELETE(
     }
 
     const { id } = await params;
-    const favorite = await db.toolFavorite.findUnique({
+    const favorite = await db.tool_favorites.findUnique({
       where: {
         toolId_userId: {
           toolId: id,
@@ -92,7 +94,7 @@ export async function DELETE(
       );
     }
 
-    await db.toolFavorite.delete({
+    await db.tool_favorites.delete({
       where: {
         toolId_userId: {
           toolId: id,

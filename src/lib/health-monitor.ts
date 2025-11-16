@@ -36,12 +36,28 @@ interface ServiceStatus {
   metrics?: any;
 }
 
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return 'Unknown error';
+  }
+};
+
 class HealthMonitor {
   private checks: Map<string, HealthCheck> = new Map();
   private services: Map<string, ServiceStatus> = new Map();
   private isRunning = false;
   private checkInterval = 60000; // 1 minute
-  private metricsInterval = 30000; // 30 seconds
+  private metricsIntervalMs = 30000; // 30 seconds
   private recoveryAttempts = new Map<string, number>();
   private maxRecoveryAttempts = 3;
 
@@ -59,7 +75,7 @@ class HealthMonitor {
           await db.$queryRaw`SELECT 1`;
           return true;
         } catch (error) {
-          logger.error('Database health check failed', { error: error.message });
+          logger.error('Database health check failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -70,7 +86,7 @@ class HealthMonitor {
           await db.$connect();
           return true;
         } catch (error) {
-          logger.error('Database recovery failed', { error: error.message });
+          logger.error('Database recovery failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -88,7 +104,7 @@ class HealthMonitor {
           fs.unlinkSync(testFile);
           return true;
         } catch (error) {
-          logger.error('File system health check failed', { error: error.message });
+          logger.error('File system health check failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -120,7 +136,7 @@ class HealthMonitor {
           const metrics = await this.getSystemMetrics();
           return metrics.memory < 85;
         } catch (error) {
-          logger.error('Memory recovery failed', { error: error.message });
+          logger.error('Memory recovery failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -147,7 +163,7 @@ class HealthMonitor {
           const metrics = await this.getSystemMetrics();
           return metrics.disk < 90;
         } catch (error) {
-          logger.error('Disk recovery failed', { error: error.message });
+          logger.error('Disk recovery failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -166,7 +182,7 @@ class HealthMonitor {
           });
           return response.ok;
         } catch (error) {
-          logger.warn('External API health check failed', { error: error.message });
+          logger.warn('External API health check failed', { error: getErrorMessage(error) });
           return false; // Don't fail completely for external APIs
         }
       },
@@ -183,7 +199,7 @@ class HealthMonitor {
           const userCount = await db.users.count();
           return userCount >= 0; // Should always be true if DB is working
         } catch (error) {
-          logger.error('Application health check failed', { error: error.message });
+          logger.error('Application health check failed', { error: getErrorMessage(error) });
           return false;
         }
       },
@@ -237,7 +253,7 @@ class HealthMonitor {
         loadAverage: loadAvg
       };
     } catch (error) {
-      logger.error('Failed to get system metrics', { error: error.message });
+      logger.error('Failed to get system metrics', { error: getErrorMessage(error) });
       return {
         cpu: 0,
         memory: 0,
@@ -284,7 +300,7 @@ class HealthMonitor {
         }
       }
     } catch (error) {
-      logger.error('Failed to cleanup old files', { error: error.message });
+      logger.error('Failed to cleanup old files', { error: getErrorMessage(error) });
     }
   }
 
@@ -315,7 +331,7 @@ class HealthMonitor {
       const duration = Date.now() - startTime;
       
       healthLogger(check.name, 'unhealthy', {
-        error: error.message,
+        error: getErrorMessage(error),
         duration: `${duration}ms`
       });
 
@@ -360,7 +376,7 @@ class HealthMonitor {
     } catch (error) {
       logger.error('Recovery error', { 
         service: checkName, 
-        error: error.message 
+        error: getErrorMessage(error) 
       });
       return false;
     }
@@ -415,7 +431,7 @@ class HealthMonitor {
       } catch (error) {
         logger.error('Health check error', { 
           service: name, 
-          error: error.message 
+          error: getErrorMessage(error) 
         });
         results[name] = false;
         service.status = 'unhealthy';
@@ -463,7 +479,7 @@ class HealthMonitor {
       await this.saveHealthMetrics(healthData);
       
     } catch (error) {
-      logger.error('Failed to update system health', { error: error.message });
+      logger.error('Failed to update system health', { error: getErrorMessage(error) });
     }
   }
 
@@ -474,7 +490,7 @@ class HealthMonitor {
       // For now, just log the data
       logger.debug('Health metrics saved', healthData);
     } catch (error) {
-      logger.error('Failed to save health metrics', { error: error.message });
+      logger.error('Failed to save health metrics', { error: getErrorMessage(error) });
     }
   }
 
@@ -535,9 +551,9 @@ class HealthMonitor {
     }, this.checkInterval);
 
     // Schedule metrics collection
-    this.metricsInterval = setInterval(() => {
+    this.metricsIntervalHandle = setInterval(() => {
       this.collectMetrics();
-    }, this.metricsInterval);
+    }, this.metricsIntervalMs);
   }
 
   // Stop health monitoring
@@ -553,8 +569,8 @@ class HealthMonitor {
       clearInterval(this.healthCheckInterval);
     }
 
-    if (this.metricsInterval) {
-      clearInterval(this.metricsInterval);
+    if (this.metricsIntervalHandle) {
+      clearInterval(this.metricsIntervalHandle);
     }
   }
 
@@ -579,12 +595,12 @@ class HealthMonitor {
       }
       
     } catch (error) {
-      logger.error('Failed to collect metrics', { error: error.message });
+      logger.error('Failed to collect metrics', { error: getErrorMessage(error) });
     }
   }
 
   private healthCheckInterval?: NodeJS.Timeout;
-  private metricsInterval?: NodeJS.Timeout;
+  private metricsIntervalHandle?: NodeJS.Timeout;
 }
 
 // Create singleton instance

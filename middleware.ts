@@ -86,7 +86,7 @@ function detectLocaleFromIP(request: NextRequest): string {
 const intlMiddleware = createMiddleware({
   locales: ['en', 'vi', 'th', 'id'],
   defaultLocale: 'en',
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export default async function middleware(request: NextRequest) {
@@ -103,16 +103,18 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // Auto-detect and redirect to appropriate locale for root path
-  if (pathname === '/' || pathname === '') {
-    const detectedLocale = detectLocaleFromIP(request);
-    let redirectPath = '/'; // English is default (no prefix)
-    if (detectedLocale === 'vi') redirectPath = '/vi';
-    else if (detectedLocale === 'th') redirectPath = '/th';
-    else if (detectedLocale === 'id') redirectPath = '/id';
-    console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
-    return NextResponse.redirect(new URL(redirectPath, request.url));
-  }
+  // The following block is commented out because with localeDetection: true,
+  // the intlMiddleware should handle this automatically. This manual
+  // redirection can conflict with the library's behavior.
+  // if (pathname === '/' || pathname === '') {
+  //   const detectedLocale = detectLocaleFromIP(request);
+  //   let redirectPath = '/'; // English is default (no prefix)
+  //   if (detectedLocale === 'vi') redirectPath = '/vi';
+  //   else if (detectedLocale === 'th') redirectPath = '/th';
+  //   else if (detectedLocale === 'id') redirectPath = '/id';
+  //   console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
+  //   return NextResponse.redirect(new URL(redirectPath, request.url));
+  // }
 
   // Removed redirects for /uiux-v3 as we now have client-only pages
 
@@ -123,7 +125,7 @@ export default async function middleware(request: NextRequest) {
   // Extract locale from pathname if present (e.g., /vi/dashboard → vi)
   const localeMatch = pathname.match(/^\/(en|vi|th|id)(\/.*)?$/);
   const locale = localeMatch ? localeMatch[1] : null;
-  const pathWithoutLocale = locale ? (localeMatch[2] || '/') : pathname;
+  const pathWithoutLocale = localeMatch ? (localeMatch[2] || '/') : pathname;
   
   // Check if this is a protected route (with or without locale)
   const isProtectedRoute = protectedRoutes.some(route => 

@@ -1,4 +1,4 @@
-/** @jest-environment node */
+/** @jest-environment jsdom */
 import { describe, it, expect, jest } from '@jest/globals'
 
 // Mock next-auth và next-auth/next trước khi load route handler
@@ -8,6 +8,11 @@ jest.mock('next-auth', () => ({
 jest.mock('next-auth/next', () => ({
   getServerSession: jest.fn(async () => null),
 }))
+
+// Mock the auth module to prevent NextAuth initialization error in Jest
+jest.mock('@/lib/auth', () => ({
+  auth: jest.fn(async () => null),
+}));
 
 describe('API /api/user/referrals - bảo vệ 401', () => {
   it('trả về 401 khi chưa đăng nhập', async () => {

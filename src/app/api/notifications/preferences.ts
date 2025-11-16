@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get email notification history
-    const notifications = await db.emailNotification.findMany({
+    const notifications = await db.email_notifications.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
       take: 10,

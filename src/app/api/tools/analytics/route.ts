@@ -43,13 +43,13 @@ export async function GET(request: NextRequest) {
       db.tools.count({
         where: { status: 'APPROVED' }
       }),
-      db.toolOrder.count({
+      db.tool_orders.count({
         where: {
           createdAt: { gte: startDate },
           status: 'COMPLETED'
         }
       }),
-      db.toolOrder.aggregate({
+      db.tool_orders.aggregate({
         where: {
           createdAt: { gte: startDate },
           status: 'COMPLETED'
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       }),
       db.users.count({
         where: {
-          toolsSold: {
+          tools: {
             some: {
               status: 'APPROVED'
             }
@@ -76,18 +76,18 @@ export async function GET(request: NextRequest) {
     const topTools = await db.tools.findMany({
       where: { status: 'APPROVED' },
       include: {
-        orders: {
+        tool_orders: {
           where: {
             createdAt: { gte: startDate },
             status: 'COMPLETED'
           }
         },
-        reviews: {
+        tool_reviews: {
           select: {
             rating: true
           }
         },
-        categoryObj: {
+        tool_categories: {
           select: {
             name: true
           }
@@ -98,10 +98,10 @@ export async function GET(request: NextRequest) {
 
     const topToolsData = topTools
       .map(tool => {
-        const revenue = tool.orders.reduce((sum, order) => sum + order.amount, 0);
-        const sales = tool.orders.length;
-        const avgRating = tool.reviews.length > 0 
-          ? tool.reviews.reduce((sum, review) => sum + review.rating, 0) / tool.reviews.length 
+        const revenue = tool.tool_orders.reduce((sum, order) => sum + order.amount, 0);
+        const sales = tool.tool_orders.length;
+        const avgRating = tool.tool_reviews.length > 0 
+          ? tool.tool_reviews.reduce((sum, review) => sum + review.rating, 0) / tool.tool_reviews.length 
           : 0;
 
         return {
@@ -110,19 +110,19 @@ export async function GET(request: NextRequest) {
           sales,
           revenue,
           rating: avgRating,
-          category: tool.categoryObj?.name || 'Unknown'
+          category: tool.tool_categories?.name || 'Unknown'
         };
       })
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 5);
 
     // Category statistics
-    const categoryStats = await db.toolCategory.findMany({
+    const categoryStats = await db.tool_categories.findMany({
       include: {
         tools: {
           where: { status: 'APPROVED' },
           include: {
-            orders: {
+            tool_orders: {
               where: {
                 createdAt: { gte: startDate },
                 status: 'COMPLETED'
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
     const categoryStatsData = categoryStats.map(category => {
       const toolCount = category.tools.length;
       const revenue = category.tools.reduce((sum, tool) => 
-        sum + tool.orders.reduce((orderSum, order) => orderSum + order.amount, 0), 0
+        sum + tool.tool_orders.reduce((orderSum, order) => orderSum + order.amount, 0), 0
       );
       
       // Calculate growth (mock data for now)
@@ -151,17 +151,17 @@ export async function GET(request: NextRequest) {
     }).sort((a, b) => b.revenue - a.revenue);
 
     // Recent sales
-    const recentSales = await db.toolOrder.findMany({
+    const recentSales = await db.tool_orders.findMany({
       where: {
         status: 'COMPLETED'
       },
       include: {
-        tool: {
+        tools: {
           select: {
             name: true
           }
         },
-        buyer: {
+        users: {
           select: {
             name: true
           }
@@ -175,8 +175,8 @@ export async function GET(request: NextRequest) {
 
     const recentSalesData = recentSales.map(sale => ({
       id: sale.id,
-      toolName: sale.tool.name,
-      buyerName: sale.buyer.name || 'Anonymous',
+      toolName: sale.tools.name,
+      buyerName: sale.users.name || 'Anonymous',
       amount: sale.amount,
       timestamp: sale.createdAt.toISOString()
     }));

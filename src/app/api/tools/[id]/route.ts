@@ -12,18 +12,18 @@ export async function GET(
     const tool = await db.tools.findUnique({
       where: { id },
       include: {
-        seller: {
+        users: {
           select: {
             id: true,
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         },
         _count: {
           select: {
-            reviews: true,
-            orders: true
+            tool_reviews: true,
+            tool_orders: true
           }
         }
       }
@@ -49,7 +49,7 @@ export async function GET(
     let isPurchased = false;
 
     if (session?.user) {
-      const favorite = await db.toolFavorite.findUnique({
+      const favorite = await db.tool_favorites.findUnique({
         where: {
           toolId_userId: {
             toolId: id,
@@ -59,7 +59,7 @@ export async function GET(
       });
       isFavorited = !!favorite;
 
-      const purchase = await db.toolOrder.findFirst({
+      const purchase = await db.tool_orders.findFirst({
         where: {
           toolId: id,
           buyerId: session.user.id,
@@ -69,11 +69,21 @@ export async function GET(
       isPurchased = !!purchase;
     }
 
+    const { users, _count, ...rest } = tool;
+    const countData = {
+      reviews: _count.tool_reviews,
+      orders: _count.tool_orders
+    };
+    const seller = users
+      ? { id: users.id, name: users.name, email: users.email, avatar: users.image }
+      : null;
     const toolWithDetails = {
-      ...tool,
+      ...rest,
+      seller,
+      _count: countData,
       rating: ratingData._avg.rating || 0,
       reviews: ratingData._count.rating || 0,
-      sales: tool._count.orders,
+      sales: countData.orders,
       isFavorited,
       isPurchased,
       features: tool.features ? JSON.parse(tool.features) : [],
@@ -150,18 +160,23 @@ export async function PUT(
         documentation
       },
       include: {
-        seller: {
+        users: {
           select: {
             id: true,
             name: true,
             email: true,
-            avatar: true
+            image: true
           }
         }
       }
     });
-
-    return NextResponse.json(updatedTool);
+    const { users: updatedSeller, ...updatedRest } = updatedTool;
+    return NextResponse.json({
+      ...updatedRest,
+      seller: updatedSeller
+        ? { id: updatedSeller.id, name: updatedSeller.name, email: updatedSeller.email, avatar: updatedSeller.image }
+        : null
+    });
   } catch (error) {
     console.error('Error updating tool:', error);
     return NextResponse.json(

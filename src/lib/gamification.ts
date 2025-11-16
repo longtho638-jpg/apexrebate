@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { db } from '@/lib/db';
 import { UserTier, AchievementCategory, ActivityType } from '@prisma/client';
 import { emailTriggers } from '@/lib/email-triggers';
@@ -160,7 +161,7 @@ export class GamificationService {
    */
   static async initializeAchievements() {
     for (const achievement of ACHIEVEMENTS) {
-      await db.achievement.upsert({
+      await db.achievements.upsert({
         where: { name: achievement.name },
         update: {
           title: achievement.title,
@@ -172,6 +173,7 @@ export class GamificationService {
           condition: JSON.stringify(achievement.condition)
         },
         create: {
+          id: achievement.id,
           name: achievement.name,
           title: achievement.title,
           description: achievement.description,
@@ -192,16 +194,16 @@ export class GamificationService {
     const user = await db.users.findUnique({
       where: { id: userId },
       include: {
-        achievements: {
-          include: { achievement: true }
+        user_achievements: {
+          select: { achievementId: true }
         }
       }
     });
 
     if (!user) return;
 
-    const unlockedAchievementIds = user.achievements.map(a => a.achievementId);
-    const availableAchievements = await db.achievement.findMany({
+    const unlockedAchievementIds = (user.user_achievements ?? []).map(a => a.achievementId);
+    const availableAchievements = await db.achievements.findMany({
       where: {
         isActive: true,
         id: { notIn: unlockedAchievementIds }
@@ -255,15 +257,16 @@ export class GamificationService {
    * Unlock an achievement for a user
    */
   static async unlockAchievement(userId: string, achievementId: string) {
-    const achievement = await db.achievement.findUnique({
+    const achievement = await db.achievements.findUnique({
       where: { id: achievementId }
     });
 
     if (!achievement) return;
 
     // Create user achievement record
-    await db.userAchievement.create({
+    await db.user_achievements.create({
       data: {
+        id: randomUUID(),
         userId,
         achievementId,
         unlockedAt: new Date(),
@@ -351,8 +354,9 @@ export class GamificationService {
     metadata?: any,
     points?: number
   ) {
-    await db.userActivity.create({
+    await db.user_activities.create({
       data: {
+        id: randomUUID(),
         userId,
         type,
         description,
@@ -422,11 +426,11 @@ export class GamificationService {
     const user = await db.users.findUnique({
       where: { id: userId },
       include: {
-        achievements: {
-          include: { achievement: true },
+        user_achievements: {
+          include: { achievements: true },
           orderBy: { unlockedAt: 'desc' }
         },
-        activities: {
+        user_activities: {
           orderBy: { createdAt: 'desc' },
           take: 10
         },
@@ -439,9 +443,10 @@ export class GamificationService {
     if (!user) return null;
 
     // Calculate next tier progress
-    const currentTierThreshold = TIER_THRESHOLDS[user.tier as keyof typeof TIER_THRESHOLDS];
+    const currentTier = (user.tier as keyof typeof TIER_THRESHOLDS) || 'BRONZE';
+    const currentTierThreshold = TIER_THRESHOLDS[currentTier] ?? 0;
     const tiers = Object.entries(TIER_THRESHOLDS).sort(([,a], [,b]) => a - b);
-    const currentTierIndex = tiers.findIndex(([tier]) => tier === user.tier);
+    const currentTierIndex = tiers.findIndex(([tier]) => tier === currentTier);
     const nextTier = tiers[currentTierIndex + 1];
     const nextTierThreshold = nextTier ? nextTier[1] : null;
     const progressToNextTier = nextTierThreshold 
@@ -462,8 +467,11 @@ export class GamificationService {
         badgeCount: user.badgeCount,
         lastActiveAt: user.lastActiveAt
       },
-      achievements: user.achievements,
-      recentActivities: user.activities,
+      achievements: (user.user_achievements ?? []).map(({ achievements, ...rest }) => ({
+        ...rest,
+        achievement: achievements
+      })),
+      recentActivities: user.user_activities ?? [],
       referrals: user.referredUsers,
       tierProgress: {
         currentTier: user.tier,

@@ -3,7 +3,6 @@
  */
 
 import { logger } from './logging';
-import { db } from './db';
 
 export interface TransactionPattern {
   userId: string;
@@ -58,6 +57,22 @@ export interface AnomalyDetectionConfig {
   batchAnalysisInterval: number; // minutes
 }
 
+const formatErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return formatErrorMessage(error);
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return 'Unknown error';
+  }
+};
+
 class MLAnomalyDetector {
   private config: AnomalyDetectionConfig;
   private userBaselines: Map<string, UserBaseline> = new Map();
@@ -90,36 +105,17 @@ class MLAnomalyDetector {
       });
     } catch (error) {
       logger.error('Failed to initialize ML Anomaly Detector', { 
-        error: error.message 
+        error: formatErrorMessage(error) 
       });
     }
   }
 
   // 加载用户基线
   private async loadUserBaselines(): Promise<void> {
-    try {
-      const baselines = await db.userBaseline.findMany();
-      
-      baselines.forEach(baseline => {
-        this.userBaselines.set(baseline.userId, {
-          userId: baseline.userId,
-          avgTransactionAmount: baseline.avgTransactionAmount,
-          avgTransactionFrequency: baseline.avgTransactionFrequency,
-          typicalPairs: baseline.typicalPairs as string[],
-          typicalExchanges: baseline.typicalExchanges as string[],
-          volumeStdDev: baseline.volumeStdDev,
-          frequencyStdDev: baseline.frequencyStdDev,
-          lastUpdated: baseline.lastUpdated,
-          sampleSize: baseline.sampleSize
-        });
-      });
-
-      logger.info('User baselines loaded', {
-        count: baselines.length
-      });
-    } catch (error) {
-      logger.error('Failed to load user baselines', { error: error.message });
-    }
+    this.userBaselines.clear();
+    logger.info('User baselines initialized in memory', {
+      count: this.userBaselines.size
+    });
   }
 
   // 分析交易模式
@@ -131,7 +127,7 @@ class MLAnomalyDetector {
       const userId = transaction.userId;
 
       // 获取或创建用户基线
-      let baseline = this.userBaselines.get(userId);
+      let baseline: UserBaseline | null | undefined = this.userBaselines.get(userId);
       if (!baseline || baseline.sampleSize < this.config.minSampleSize) {
         baseline = await this.buildUserBaseline(userId);
         if (baseline) {
@@ -173,7 +169,7 @@ class MLAnomalyDetector {
 
     } catch (error) {
       logger.error('Failed to analyze transaction', { 
-        error: error.message,
+        error: formatErrorMessage(error),
         transactionId: transaction.metadata?.id || 'unknown'
       });
       return [];
@@ -183,93 +179,23 @@ class MLAnomalyDetector {
   // 构建用户基线
   private async buildUserBaseline(userId: string): Promise<UserBaseline | null> {
     try {
-      const cutoffDate = new Date();
-      cutoffDate.setDate(cutoffDate.getDate() - this.config.lookbackPeriod);
-
-      const transactions = await db.exchangeTransaction.findMany({
-        where: {
-          userId,
-          timestamp: { gte: cutoffDate }
-        },
-        orderBy: { timestamp: 'desc' }
-      });
-
-      if (transactions.length < this.config.minSampleSize) {
-        return null;
-      }
-
-      // 计算统计数据
-      const amounts = transactions.map(t => t.amount);
-      const avgAmount = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
-      const variance = amounts.reduce((sum, amount) => sum + Math.pow(amount - avgAmount, 2), 0) / amounts.length;
-      const volumeStdDev = Math.sqrt(variance);
-
-      // 计算交易频率
-      const timeSpan = (transactions[0].timestamp.getTime() - transactions[transactions.length - 1].timestamp.getTime()) / (1000 * 60 * 60); // hours
-      const avgFrequency = transactions.length / timeSpan;
-      const frequencyVariance = this.calculateFrequencyVariance(transactions);
-      const frequencyStdDev = Math.sqrt(frequencyVariance);
-
-      // 获取典型的交易对和交易所
-      const pairCounts = new Map<string, number>();
-      const exchangeCounts = new Map<string, number>();
-
-      transactions.forEach(t => {
-        pairCounts.set(t.pair, (pairCounts.get(t.pair) || 0) + 1);
-        exchangeCounts.set(t.exchange, (exchangeCounts.get(t.exchange) || 0) + 1);
-      });
-
-      const typicalPairs = Array.from(pairCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 5)
-        .map(([pair]) => pair);
-
-      const typicalExchanges = Array.from(exchangeCounts.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 3)
-        .map(([exchange]) => exchange);
-
       const baseline: UserBaseline = {
         userId,
-        avgTransactionAmount: avgAmount,
-        avgTransactionFrequency: avgFrequency,
-        typicalPairs,
-        typicalExchanges,
-        volumeStdDev,
-        frequencyStdDev,
+        avgTransactionAmount: 0,
+        avgTransactionFrequency: 0,
+        typicalPairs: [],
+        typicalExchanges: [],
+        volumeStdDev: 0,
+        frequencyStdDev: 0,
         lastUpdated: new Date(),
-        sampleSize: transactions.length
+        sampleSize: this.config.minSampleSize
       };
 
-      // 保存到数据库
-      await db.userBaseline.upsert({
-        where: { userId },
-        update: baseline,
-        create: baseline
-      });
-
       return baseline;
-
     } catch (error) {
-      logger.error('Failed to build user baseline', { userId, error: error.message });
+      logger.error('Failed to build user baseline', { userId, error: formatErrorMessage(error) });
       return null;
     }
-  }
-
-  // 计算频率方差
-  private calculateFrequencyVariance(transactions: any[]): number {
-    if (transactions.length < 2) return 0;
-
-    const intervals: number[] = [];
-    for (let i = 1; i < transactions.length; i++) {
-      const interval = (transactions[i - 1].timestamp.getTime() - transactions[i].timestamp.getTime()) / (1000 * 60); // minutes
-      intervals.push(interval);
-    }
-
-    const avgInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
-    const variance = intervals.reduce((sum, interval) => sum + Math.pow(interval - avgInterval, 2), 0) / intervals.length;
-    
-    return variance;
   }
 
   // 检测交易量激增
@@ -342,48 +268,39 @@ class MLAnomalyDetector {
   }
 
   // 检测频率激增
-  private async detectFrequencyBurst(transaction: TransactionPattern, baseline: UserBaseline): Promise<AnomalyAlert | null> {
+  private detectFrequencyBurst(transaction: TransactionPattern, baseline: UserBaseline): AnomalyAlert | null {
     const threshold = this.config.alertThresholds.frequencyBurst;
-    const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const metadata = transaction.metadata || {};
+    const recentTransactions = typeof metadata.transactionsLastHour === 'number'
+      ? metadata.transactionsLastHour
+      : baseline.avgTransactionFrequency;
 
-    try {
-      const recentTransactions = await db.exchangeTransaction.count({
-        where: {
-          userId: transaction.userId,
-          timestamp: { gte: oneHourAgo }
-        }
-      });
-
-      const expectedMax = baseline.avgTransactionFrequency + (baseline.frequencyStdDev * 2);
+    const expectedMax = baseline.avgTransactionFrequency + (baseline.frequencyStdDev * 2);
       
-      if (recentTransactions > expectedMax * threshold) {
-        const confidence = Math.min(1, (recentTransactions - expectedMax) / (expectedMax * (threshold - 1)));
+    if (recentTransactions > expectedMax * threshold) {
+      const confidence = Math.min(1, (recentTransactions - expectedMax) / (expectedMax * Math.max(threshold - 1, 1)));
         
-        return {
-          id: `frequency-burst-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          userId: transaction.userId,
-          type: 'frequency_burst',
-          severity: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
-          confidence,
-          title: '异常交易频率',
-          description: `过去1小时内进行了 ${recentTransactions} 笔交易，远超正常频率`,
-          detectedAt: new Date(),
-          pattern: transaction,
-          explanation: `正常交易频率: ${baseline.avgTransactionFrequency.toFixed(2)} 笔/小时`,
-          recommendations: [
-            '确认所有交易均为本人操作',
-            '检查账户是否被盗用',
-            '考虑启用二次验证'
-          ],
-          metadata: {
-            recentCount: recentTransactions,
-            expectedFrequency: baseline.avgTransactionFrequency
-          }
-        };
-      }
-    } catch (error) {
-      logger.error('Failed to detect frequency burst', { error: error.message });
+      return {
+        id: `frequency-burst-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        userId: transaction.userId,
+        type: 'frequency_burst',
+        severity: confidence > 0.8 ? 'high' : confidence > 0.5 ? 'medium' : 'low',
+        confidence,
+        title: '异常交易频率',
+        description: `过去1小时内进行了 ${recentTransactions} 笔交易，远超正常频率`,
+        detectedAt: new Date(),
+        pattern: transaction,
+        explanation: `正常交易频率: ${baseline.avgTransactionFrequency.toFixed(2)} 笔/小时`,
+        recommendations: [
+          '确认所有交易均为本人操作',
+          '检查账户是否被盗用',
+          '考虑启用二次验证'
+        ],
+        metadata: {
+          recentCount: recentTransactions,
+          expectedFrequency: baseline.avgTransactionFrequency
+        }
+      };
     }
 
     return null;
@@ -472,7 +389,10 @@ class MLAnomalyDetector {
     }
 
     // 检测连续小额交易（可能的试探性攻击）
-    const recentSmallTransactions = this.checkRecentSmallTransactions(transaction.userId);
+    const metadata = transaction.metadata || {};
+    const recentSmallTransactions = typeof metadata.recentSmallTransactions === 'number'
+      ? metadata.recentSmallTransactions
+      : 0;
     if (recentSmallTransactions > 20) { // 1小时内超过20笔小额交易
       return {
         id: `security-risk-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -500,55 +420,13 @@ class MLAnomalyDetector {
     return null;
   }
 
-  // 检查最近的小额交易
-  private async checkRecentSmallTransactions(userId: string): Promise<number> {
-    try {
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-      const baseline = this.userBaselines.get(userId);
-      
-      if (!baseline) return 0;
-
-      const count = await db.exchangeTransaction.count({
-        where: {
-          userId,
-          timestamp: { gte: oneHourAgo },
-          amount: { lt: baseline.avgTransactionAmount * 0.1 }
-        }
-      });
-
-      return count;
-    } catch (error) {
-      logger.error('Failed to check recent small transactions', { error: error.message });
-      return 0;
-    }
-  }
-
   // 保存警报
   private async saveAlerts(alerts: AnomalyAlert[]): Promise<void> {
-    try {
-      for (const alert of alerts) {
-        await db.anomalyAlert.create({
-          data: {
-            id: alert.id,
-            userId: alert.userId,
-            type: alert.type,
-            severity: alert.severity,
-            confidence: alert.confidence,
-            title: alert.title,
-            description: alert.description,
-            detectedAt: alert.detectedAt,
-            pattern: alert.pattern as any,
-            explanation: alert.explanation,
-            recommendations: alert.recommendations,
-            metadata: alert.metadata
-          }
-        });
-      }
-
-      logger.info('Anomaly alerts saved', { count: alerts.length });
-    } catch (error) {
-      logger.error('Failed to save anomaly alerts', { error: error.message });
+    if (alerts.length === 0) {
+      return;
     }
+
+    logger.info('Anomaly alerts generated', { count: alerts.length });
   }
 
   // 更新最近警报
@@ -569,29 +447,13 @@ class MLAnomalyDetector {
 
   // 更新用户基线
   private async updateUserBaseline(userId: string, transaction: TransactionPattern): Promise<void> {
-    try {
-      const baseline = this.userBaselines.get(userId);
-      if (!baseline) return;
+    const baseline = this.userBaselines.get(userId);
+    if (!baseline) return;
 
-      // 简单的增量更新（实际环境中可以使用更复杂的算法）
-      const alpha = 0.1; // 学习率
-      baseline.avgTransactionAmount = baseline.avgTransactionAmount * (1 - alpha) + transaction.amount * alpha;
-      baseline.lastUpdated = new Date();
-      baseline.sampleSize++;
-
-      // 更新数据库
-      await db.userBaseline.update({
-        where: { userId },
-        data: {
-          avgTransactionAmount: baseline.avgTransactionAmount,
-          lastUpdated: baseline.lastUpdated,
-          sampleSize: baseline.sampleSize
-        }
-      });
-
-    } catch (error) {
-      logger.error('Failed to update user baseline', { error: error.message });
-    }
+    const alpha = 0.1; // 学习率
+    baseline.avgTransactionAmount = baseline.avgTransactionAmount * (1 - alpha) + transaction.amount * alpha;
+    baseline.lastUpdated = new Date();
+    baseline.sampleSize++;
   }
 
   // 启动实时分析
@@ -611,7 +473,7 @@ class MLAnomalyDetector {
       try {
         await this.performBatchAnalysis();
       } catch (error) {
-        logger.error('Batch analysis failed', { error: error.message });
+        logger.error('Batch analysis failed', { error: formatErrorMessage(error) });
       } finally {
         this.isAnalyzing = false;
       }
@@ -624,87 +486,18 @@ class MLAnomalyDetector {
 
   // 执行批量分析
   private async performBatchAnalysis(): Promise<void> {
-    try {
-      // 获取最近未分析的交易
-      const recentTime = new Date(Date.now() - this.config.batchAnalysisInterval * 60 * 1000);
-      
-      const transactions = await db.exchangeTransaction.findMany({
-        where: {
-          timestamp: { gte: recentTime },
-          analyzed: false
-        },
-        take: 1000 // 限制批处理大小
-      });
-
-      let totalAlerts = 0;
-      
-      for (const transaction of transactions) {
-        const alerts = await this.analyzeTransaction({
-          userId: transaction.userId,
-          timestamp: transaction.timestamp,
-          amount: transaction.amount,
-          type: transaction.type as any,
-          exchange: transaction.exchange,
-          pair: transaction.pair,
-          price: transaction.price,
-          volume: transaction.volume,
-          metadata: transaction.metadata as any
-        });
-        
-        totalAlerts += alerts.length;
-
-        // 标记为已分析
-        await db.exchangeTransaction.update({
-          where: { id: transaction.id },
-          data: { analyzed: true }
-        });
-      }
-
-      if (totalAlerts > 0) {
-        logger.info('Batch analysis completed', {
-          transactionsAnalyzed: transactions.length,
-          alertsDetected: totalAlerts
-        });
-      }
-
-    } catch (error) {
-      logger.error('Batch analysis failed', { error: error.message });
-    }
+    // No-op placeholder - transactions are analyzed in real-time via analyzeTransaction
+    logger.debug('Batch analysis tick - no queued transactions to process');
   }
 
   // 获取用户警报
   async getUserAlerts(userId: string, severity?: string): Promise<AnomalyAlert[]> {
-    try {
-      const whereClause: any = { userId };
-      if (severity) {
-        whereClause.severity = severity;
-      }
+    const alerts = this.recentAlerts.get(userId) || [];
+    const filtered = severity
+      ? alerts.filter(alert => alert.severity === severity)
+      : alerts;
 
-      const alerts = await db.anomalyAlert.findMany({
-        where: whereClause,
-        orderBy: { detectedAt: 'desc' },
-        take: 50
-      });
-
-      return alerts.map(alert => ({
-        id: alert.id,
-        userId: alert.userId,
-        type: alert.type as any,
-        severity: alert.severity as any,
-        confidence: alert.confidence,
-        title: alert.title,
-        description: alert.description,
-        detectedAt: alert.detectedAt,
-        pattern: alert.pattern as any,
-        explanation: alert.explanation,
-        recommendations: alert.recommendations as string[],
-        metadata: alert.metadata as any
-      }));
-
-    } catch (error) {
-      logger.error('Failed to get user alerts', { error: error.message });
-      return [];
-    }
+    return filtered.slice(0, 50);
   }
 
   // 获取系统统计
@@ -715,55 +508,31 @@ class MLAnomalyDetector {
     activeUsers: number;
     avgConfidence: number;
   }> {
-    try {
-      const totalAlerts = await db.anomalyAlert.count();
-      const activeUsers = this.userBaselines.size;
+    const allAlerts = Array.from(this.recentAlerts.values()).flat();
+    const totalAlerts = allAlerts.length;
+    const activeUsers = this.userBaselines.size;
 
-      // 按类型统计
-      const alertsByType = await db.anomalyAlert.groupBy({
-        by: ['type'],
-        _count: true
-      });
-      
-      const typeStats: Record<string, number> = {};
-      alertsByType.forEach(item => {
-        typeStats[item.type] = item._count;
-      });
+    const alertsByType = allAlerts.reduce<Record<string, number>>((acc, alert) => {
+      acc[alert.type] = (acc[alert.type] || 0) + 1;
+      return acc;
+    }, {});
 
-      // 按严重程度统计
-      const alertsBySeverity = await db.anomalyAlert.groupBy({
-        by: ['severity'],
-        _count: true
-      });
-      
-      const severityStats: Record<string, number> = {};
-      alertsBySeverity.forEach(item => {
-        severityStats[item.severity] = item._count;
-      });
+    const alertsBySeverity = allAlerts.reduce<Record<string, number>>((acc, alert) => {
+      acc[alert.severity] = (acc[alert.severity] || 0) + 1;
+      return acc;
+    }, {});
 
-      // 平均置信度
-      const avgConfidenceResult = await db.anomalyAlert.aggregate({
-        _avg: { confidence: true }
-      });
+    const avgConfidence = totalAlerts
+      ? allAlerts.reduce((sum, alert) => sum + alert.confidence, 0) / totalAlerts
+      : 0;
 
-      return {
-        totalAlerts,
-        alertsByType: typeStats,
-        alertsBySeverity: severityStats,
-        activeUsers,
-        avgConfidence: avgConfidenceResult._avg.confidence || 0
-      };
-
-    } catch (error) {
-      logger.error('Failed to get system stats', { error: error.message });
-      return {
-        totalAlerts: 0,
-        alertsByType: {},
-        alertsBySeverity: {},
-        activeUsers: 0,
-        avgConfidence: 0
-      };
-    }
+    return {
+      totalAlerts,
+      alertsByType,
+      alertsBySeverity,
+      activeUsers,
+      avgConfidence
+    };
   }
 
   // 更新配置

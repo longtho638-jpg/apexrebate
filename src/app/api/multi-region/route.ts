@@ -1,3 +1,5 @@
+import { DeploymentStrategy, FailoverStatus, RegionStatus, SyncStatus, SyncType } from '@prisma/client';
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -25,6 +27,32 @@ interface DeploymentConfig {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const normalizeRegionStatus = (status: string): RegionStatus => {
+  const normalized = status?.toUpperCase();
+  if (
+    normalized === 'ACTIVE' ||
+    normalized === 'MAINTENANCE' ||
+    normalized === 'DEGRADED' ||
+    normalized === 'ERROR'
+  ) {
+    return normalized as RegionStatus;
+  }
+  return 'INACTIVE';
+};
+
+const normalizeDeploymentStrategy = (strategy: string): DeploymentStrategy => {
+  const normalized = strategy?.toUpperCase().replace(/-/g, '_');
+  if (
+    normalized === 'WEIGHTED' ||
+    normalized === 'GEOGRAPHIC' ||
+    normalized === 'PERFORMANCE' ||
+    normalized === 'PRIORITY'
+  ) {
+    return normalized as DeploymentStrategy;
+  }
+  return 'ROUND_ROBIN';
+};
 
 // 区域配置管理
 export async function GET(request: NextRequest) {
@@ -259,14 +287,14 @@ async function addRegion(regionData: Partial<RegionConfig>) {
 
   // 模拟保存到数据库
   try {
-    await db.deploymentRegion.create({
+    await db.deployment_regions.create({
       data: {
         id: newRegion.id,
         name: newRegion.name,
         code: newRegion.code,
         endpoint: newRegion.endpoint,
-        status: newRegion.status,
-        capabilities: newRegion.capabilities,
+        status: normalizeRegionStatus(newRegion.status),
+        capabilities: JSON.stringify(newRegion.capabilities),
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -286,12 +314,22 @@ async function addRegion(regionData: Partial<RegionConfig>) {
 // 更新区域配置
 async function updateRegion(regionId: string, updates: Partial<RegionConfig>) {
   try {
-    await db.deploymentRegion.update({
+    const updateData: Record<string, any> = {
+      ...updates,
+      updatedAt: new Date()
+    };
+
+    if (updates.status) {
+      updateData.status = normalizeRegionStatus(updates.status);
+    }
+
+    if (updates.capabilities) {
+      updateData.capabilities = JSON.stringify(updates.capabilities);
+    }
+
+    await db.deployment_regions.update({
       where: { id: regionId },
-      data: {
-        ...updates,
-        updatedAt: new Date()
-      }
+      data: updateData
     });
   } catch (error) {
     console.log('Region updated (simulated)');
@@ -317,12 +355,12 @@ async function createDeployment(deploymentData: Partial<DeploymentConfig>) {
   };
 
   try {
-    await db.deploymentConfig.create({
+    await db.deployment_configs.create({
       data: {
         id: newDeployment.id,
         name: newDeployment.name,
-        regions: newDeployment.regions,
-        strategy: newDeployment.strategy,
+        regions: JSON.stringify(newDeployment.regions),
+        strategy: normalizeDeploymentStrategy(newDeployment.strategy),
         failoverEnabled: newDeployment.failoverEnabled,
         healthCheckInterval: newDeployment.healthCheckInterval,
         createdAt: newDeployment.createdAt,
@@ -343,12 +381,19 @@ async function createDeployment(deploymentData: Partial<DeploymentConfig>) {
 // 更新部署配置
 async function updateDeployment(deploymentId: string, updates: Partial<DeploymentConfig>) {
   try {
-    await db.deploymentConfig.update({
+    const updateData: Record<string, any> = {
+      updatedAt: new Date()
+    };
+
+    if (updates.name) updateData.name = updates.name;
+    if (updates.regions) updateData.regions = JSON.stringify(updates.regions);
+    if (updates.strategy) updateData.strategy = normalizeDeploymentStrategy(updates.strategy);
+    if (typeof updates.failoverEnabled === 'boolean') updateData.failoverEnabled = updates.failoverEnabled;
+    if (typeof updates.healthCheckInterval === 'number') updateData.healthCheckInterval = updates.healthCheckInterval;
+
+    await db.deployment_configs.update({
       where: { id: deploymentId },
-      data: {
-        ...updates,
-        updatedAt: new Date()
-      }
+      data: updateData
     });
   } catch (error) {
     console.log('Deployment updated (simulated)');
@@ -363,13 +408,14 @@ async function updateDeployment(deploymentId: string, updates: Partial<Deploymen
 // 触发故障转移
 async function triggerFailover(deploymentId: string, targetRegion: string) {
   try {
-    await db.failoverEvent.create({
+    await db.failover_events.create({
       data: {
+        id: randomUUID(),
         deploymentId,
         sourceRegion: 'auto-detected',
         targetRegion,
         reason: 'manual_trigger',
-        status: 'initiated',
+        status: FailoverStatus.INITIATED,
         initiatedAt: new Date(),
         completedAt: null
       }
@@ -381,10 +427,10 @@ async function triggerFailover(deploymentId: string, targetRegion: string) {
   // 模拟故障转移逻辑
   setTimeout(async () => {
     try {
-      await db.failoverEvent.updateMany({
+      await db.failover_events.updateMany({
         where: { deploymentId },
         data: {
-          status: 'completed',
+          status: FailoverStatus.COMPLETED,
           completedAt: new Date()
         }
       });
@@ -406,12 +452,13 @@ async function syncRegionalData(sourceRegion: string, targetRegion: string) {
   const syncId = `sync-${Date.now()}`;
   
   try {
-    await db.dataSync.create({
+    await db.data_syncs.create({
       data: {
         id: syncId,
-        sourceRegion,
-        targetRegion,
-        status: 'pending',
+        sourceRegionId: sourceRegion,
+        targetRegionId: targetRegion,
+        syncType: SyncType.INCREMENTAL,
+        status: SyncStatus.PENDING,
         initiatedAt: new Date(),
         completedAt: null,
         recordsProcessed: 0,
@@ -425,10 +472,10 @@ async function syncRegionalData(sourceRegion: string, targetRegion: string) {
   // 模拟数据同步过程
   setTimeout(async () => {
     try {
-      await db.dataSync.update({
+      await db.data_syncs.update({
         where: { id: syncId },
         data: {
-          status: 'completed',
+          status: SyncStatus.SUCCESS,
           completedAt: new Date(),
           recordsProcessed: 15420,
           recordsTotal: 15420

@@ -1,8 +1,6 @@
-import { createSampleUser } from './seed-user.js';
-import { seedToolsMarketplace } from './seed-tools.js';
+import { seedToolsMarketplace } from './seed-complete';
 
 async function runFullSeed() {
-  await createSampleUser();
   await seedToolsMarketplace();
   process.exit(0);
 }

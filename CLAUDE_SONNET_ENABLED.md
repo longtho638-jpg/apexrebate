@@ -14,7 +14,7 @@ src/
 ├── app/api/ai/chat/
 │   └── route.ts                  # REST API endpoint (/api/ai/chat)
 ├── hooks/
-│   └── use-ai-chat.ts           # React hooks (useAIChat, useAICompletion)
+│   └── useAiChat.ts           # React hooks (useAIChat, useAICompletion)
 └── components/
     └── claude-sonnet-demo.tsx   # Demo UI component
 
@@ -72,7 +72,7 @@ Truy cập: `http://localhost:3000/ai-demo`
 
 ```tsx
 'use client';
-import { useAIChat } from '@/hooks/use-ai-chat';
+import { useAIChat } from '@/hooks/useAiChat';
 
 export default function MyComponent() {
   const { messages, sendMessage, isLoading } = useAIChat({

@@ -3,6 +3,22 @@
 
 import { logger } from './logging'
 
+const monitoringErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (typeof error === 'string') {
+    return error
+  }
+
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return 'Unknown error'
+  }
+}
+
 export interface Metric {
   name: string
   value: number
@@ -326,7 +342,7 @@ export class MonitoringService {
           status: 'unhealthy',
           responseTime: -1,
           lastCheck: new Date(),
-          details: { error: error.message }
+          details: { error: monitoringErrorMessage(error) }
         })
       }
     }
@@ -354,7 +370,7 @@ export class MonitoringService {
         status: 'unhealthy',
         responseTime: Date.now() - startTime,
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: monitoringErrorMessage(error) }
       }
     }
   }
@@ -377,7 +393,7 @@ export class MonitoringService {
         status: 'unhealthy',
         responseTime: Date.now() - startTime,
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: monitoringErrorMessage(error) }
       }
     }
   }
@@ -399,7 +415,7 @@ export class MonitoringService {
         status: 'unhealthy',
         responseTime: Date.now() - startTime,
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: monitoringErrorMessage(error) }
       }
     }
   }
@@ -421,7 +437,7 @@ export class MonitoringService {
         status: 'degraded',
         responseTime: Date.now() - startTime,
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: monitoringErrorMessage(error) }
       }
     }
   }
@@ -443,7 +459,7 @@ export class MonitoringService {
         status: 'unhealthy',
         responseTime: Date.now() - startTime,
         lastCheck: new Date(),
-        details: { error: error.message }
+        details: { error: monitoringErrorMessage(error) }
       }
     }
   }

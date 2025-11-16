@@ -3,9 +3,16 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
 
+type BasicSession = {
+  user?: {
+    id?: string;
+  };
+};
+
 export async function GET(request: NextRequest) {
+  let session: BasicSession | null = null;
   try {
-    const session = await getServerSession(authOptions);
+    session = await getServerSession(authOptions);
     
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -15,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user's payouts
-    const payouts = await db.payout.findMany({
+    const payouts = await db.payouts.findMany({
       where: { userId: session.user.id },
       orderBy: { createdAt: 'desc' },
       take: 100, // Limit to last 100 payouts

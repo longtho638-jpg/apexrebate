@@ -34,12 +34,12 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        achievements: {
+        user_achievements: {
           include: {
-            achievement: true
+            achievements: true
           }
         },
-        activities: {
+        user_activities: {
           orderBy: { createdAt: 'desc' },
           take: 200
         }
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
       new Date(referral.createdAt) >= startDate
     )
 
-    const filteredActivities = user.activities.filter(activity => 
+    const filteredActivities = user.user_activities.filter(activity => 
       new Date(activity.createdAt) >= startDate
     )
 
@@ -153,8 +153,8 @@ function generateCSV(user: any, payouts: any[], referrals: any[], activities: an
   if (type === 'full' || type === 'achievements') {
     csv += '=== BÁO CÁO THÀNH TỰCH ===\n'
     csv += 'Thành tựh,Loại,Điểm,Ngày mở khóa\n'
-    user.achievements.forEach((ua: any) => {
-      csv += `"${ua.achievement.title}","${ua.achievement.category}",${ua.achievement.points},"${ua.unlockedAt}"\n`
+    user.user_achievements.forEach((ua: any) => {
+      csv += `"${ua.achievements.title}","${ua.achievements.category}",${ua.achievements.points},"${ua.unlockedAt}"\n`
     })
     csv += '\n'
   }
@@ -165,7 +165,7 @@ function generateCSV(user: any, payouts: any[], referrals: any[], activities: an
     csv += `Tổng hoàn phí,${payouts.reduce((sum, p) => sum + p.amount, 0)}\n`
     csv += `Khối lượng giao dịch,${payouts.reduce((sum, p) => sum + (p.tradingVolume || 0), 0)}\n`
     csv += `Số người giới thiệu,${referrals.length}\n`
-    csv += `Số thành tựh,${user.achievements.length}\n`
+    csv += `Số thành tựh,${user.user_achievements.length}\n`
     csv += `Điểm hiện tại,${user.points}\n`
     csv += `Hạng hiện tại,${user.tier}\n`
     csv += `Chuỗi hoạt động,${user.streak}\n`
@@ -212,10 +212,10 @@ function generateJSON(user: any, payouts: any[], referrals: any[], activities: a
   }
 
   if (type === 'full' || type === 'achievements') {
-    report.achievements = user.achievements.map((ua: any) => ({
-      title: ua.achievement.title,
-      category: ua.achievement.category,
-      points: ua.achievement.points,
+    report.achievements = user.user_achievements.map((ua: any) => ({
+      title: ua.achievements.title,
+      category: ua.achievements.category,
+      points: ua.achievements.points,
       unlockedAt: ua.unlockedAt,
       progress: ua.progress
     }))
@@ -226,7 +226,7 @@ function generateJSON(user: any, payouts: any[], referrals: any[], activities: a
       totalPayouts: payouts.reduce((sum, p) => sum + p.amount, 0),
       totalTradingVolume: payouts.reduce((sum, p) => sum + (p.tradingVolume || 0), 0),
       totalReferrals: referrals.length,
-      totalAchievements: user.achievements.length,
+      totalAchievements: user.user_achievements.length,
       averagePayout: payouts.length > 0 ? payouts.reduce((sum, p) => sum + p.amount, 0) / payouts.length : 0,
       bestBroker: getBestBroker(payouts),
       growthRate: calculateGrowthRate(payouts)

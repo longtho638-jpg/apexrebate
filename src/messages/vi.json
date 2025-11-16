@@ -189,5 +189,15 @@
     "book": "Đặt Lịch Họp",
     "sessions": "Phiên Họp Của Tôi",
     "experts": "Các Chuyên Gia"
+  },
+  "concierge_claim": {
+    "title": "Yêu Cầu Hoàn Phí Concierge",
+    "description": "Gửi yêu cầu hoàn phí giao dịch của bạn theo cách thủ công. Đội ngũ concierge của chúng tôi sẽ xử lý trong vòng 24 giờ.",
+    "detailsTitle": "Chi Tiết Yêu Cầu",
+    "detailsDescription": "Điền thông tin giao dịch của bạn để tính toán hoàn phí",
+    "exchange": "Sàn Giao Dịch",
+    "tradeRef": "Mã Giao Dịch",
+    "grossRebate": "Số Tiền Hoàn Lại (VND)",
+    "optionalNotes": "Ghi Chú Thêm (Tùy chọn)"
   }
 }

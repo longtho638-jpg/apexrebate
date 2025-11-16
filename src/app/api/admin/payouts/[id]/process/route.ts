@@ -30,7 +30,7 @@ export async function POST(
     const payoutId = id;
 
     // Find the payout
-    const payout = await db.payout.findUnique({
+    const payout = await db.payouts.findUnique({
       where: { id: payoutId }
     });
 
@@ -42,7 +42,7 @@ export async function POST(
     }
 
     // Update payout status to processed
-    const updatedPayout = await db.payout.update({
+    const updatedPayout = await db.payouts.update({
       where: { id: payoutId },
       data: {
         status: 'PROCESSED',

@@ -189,7 +189,7 @@ services:
       - "5432:5432"
 
   redis:
-    image: redis:7-alpine
+    image: redis:latest
     ports:
       - "6379:6379"
 
@@ -213,8 +213,8 @@ docker run -p 3000:3000 --env-file .env.production apexrebate
 #### Server Setup (Ubuntu 22.04)
 
 ```bash
-# Update system
-sudo apt update && sudo apt upgrade -y
+# Update system (run as root or with sudo)
+apt update && apt upgrade -y
 
 # Install Node.js 18
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -222,11 +222,11 @@ sudo apt-get install -y nodejs
 
 # Install PM2
 sudo npm install -g pm2
-
 # Install PostgreSQL
-sudo apt install postgresql postgresql-contrib
+apt install -y postgresql postgresql-contrib
 
 # Create database and user
+service postgresql start
 sudo -u postgres psql
 CREATE DATABASE apexrebate;
 CREATE USER apexuser WITH PASSWORD 'your-password';
@@ -242,7 +242,7 @@ git clone <repository-url> /var/www/apexrebate
 cd /var/www/apexrebate
 
 # Install dependencies
-npm install --production
+npm ci --only=production
 
 # Build application
 npm run build
@@ -364,53 +364,46 @@ sudo nano /etc/logrotate.d/apexrebate
 
 ## 🚀 CI/CD Pipeline
 
-### GitHub Actions
+### Agentic CI/CD Pipeline (Recommended)
+
+Dự án này được trang bị **Agentic Pipeline**, một hệ thống CI/CD nâng cao với các cổng kiểm soát chất lượng (policy gates) và khả năng tự động rollback. Đây là phương pháp triển khai được khuyến nghị để đảm bảo an toàn và ổn định.
+
+**Luồng hoạt động (10 bước):**
+1.  **A1-A3**: Lint, Unit Test, Build (Cổng kiểm tra chất lượng code)
+2.  **A7**: Deploy bản Preview lên Vercel
+3.  **A4**: Chạy E2E Test trên môi trường Preview
+4.  **A5, A8**: Ký số bằng chứng (evidence) và thu thập số liệu (guardrails)
+5.  **A6**: Kiểm tra Policy Gate (so sánh số liệu với SLOs)
+6.  **A9**: Nếu tất cả các cổng đều qua, deploy lên Production
+7.  **A10**: Nếu có lỗi, tự động Rollback về phiên bản ổn định trước đó
+
+**Cách sử dụng:**
+- **Tự động**: Chỉ cần `git push` lên nhánh `main`, pipeline sẽ tự động chạy.
+- **Thủ công**: Vào tab "Actions" trên GitHub và trigger workflow `agentic.yml`.
+
+Để biết thêm chi tiết, vui lòng tham khảo các tài liệu sau:
+- `AGENTIC_README.md`
+- `AGENTIC_SETUP.md`
+- `AGENTIC_QUICK_REFERENCE.md`
 
 ```yaml
-# .github/workflows/deploy.yml
-name: Deploy to Production
+# .github/workflows/agentic.yml (Simplified example)
+name: Agentic CI/CD Pipeline
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  agentic-pipeline:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run tests
-      run: npm run lint
-    
-    - name: Build application
-      run: npm run build
-      env:
-        NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    
-    - name: Deploy to server
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd /var/www/apexrebate
-          git pull origin main
-          npm install --production
-          npm run build
-          pm2 restart apexrebate
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # ... (các bước A1-A10 được định nghĩa trong agentic.yml thực tế)
+      - name: Run Agentic Pipeline
+        run: echo "Running full Agentic pipeline..."
 ```
 
 ## 🔧 Environment Variables
@@ -514,13 +507,15 @@ module.exports = {
 
 ### Health Checks
 
-```javascript
-// pages/api/health.js
-export default function handler(req, res) {
-  res.status(200).json({ 
-    status: 'ok', 
+```typescript
+// src/app/api/health/route.ts
+import { NextResponse } from 'next/server';
+
+export async function GET() {
+  return NextResponse.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version 
+    version: process.env.npm_package_version,
   });
 }
 ```

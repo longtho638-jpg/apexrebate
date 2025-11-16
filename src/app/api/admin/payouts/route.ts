@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -23,9 +24,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all payouts with user information
-    const payouts = await db.payout.findMany({
+    const payouts = await db.payouts.findMany({
       include: {
-        user: {
+        users: {
           select: {
             id: true,
             name: true,
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
           mockPayouts.push({
             id: `mock-${i}`,
             userId: user.id,
-            user: {
+            users: {
               id: user.id,
               name: user.name || 'Mock User',
               email: user.email
@@ -84,7 +85,7 @@ export async function GET(request: NextRequest) {
       data: payoutsData.map(payout => ({
         id: payout.id,
         userId: payout.userId,
-        user: payout.user,
+        user: payout.users,
         amount: payout.amount,
         currency: payout.currency,
         period: payout.period,
@@ -137,9 +138,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new payout
-    const now = new Date();
-    const payout = await db.payout.create({
+    const payout = await db.payouts.create({
       data: {
+        id: randomUUID(),
         userId,
         amount: parseFloat(amount),
         currency: 'USD',
@@ -149,6 +150,7 @@ export async function POST(request: NextRequest) {
         feeRate: parseFloat(feeRate) || 0,
         status: 'PENDING', // Default to PENDING, admin can process
         notes,
+        updatedAt: new Date()
       }
     });
 

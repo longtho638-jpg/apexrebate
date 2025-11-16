@@ -1,0 +1,26 @@
+{
+  "commit": "62c12fe7bc7787cfe5a93b7c5f46aec79fdcd30b",
+  "manifest": [
+    {
+      "path": "package.json",
+      "sha256": "b3a84a2c76a755717eda7bf4452aa118dbdbb84b635e07b51babc9376f878929",
+      "dir": false
+    },
+    {
+      "path": "src/app",
+      "sha256": null,
+      "dir": true
+    },
+    {
+      "path": "src/components",
+      "sha256": null,
+      "dir": true
+    },
+    {
+      "path": "src/lib",
+      "sha256": null,
+      "dir": true
+    }
+  ],
+  "created_at": "2025-11-12T11:38:32.307Z"
+}

@@ -2,11 +2,11 @@
 
 export const dynamic = 'force-dynamic'
 
-import dynamic from 'next/dynamic'
+import nextDynamic from 'next/dynamic'
 import React from 'react'
 
 // Lazy-load dashboard để giảm time-to-interactive cho page shell
-const CICDPage = dynamic(() => import('@/components/cicd/cicd-page'), {
+const CICDPage = nextDynamic(() => import('@/components/cicd/cicd-page'), {
   ssr: false,
 })
 

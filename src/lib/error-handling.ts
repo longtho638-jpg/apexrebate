@@ -2,7 +2,27 @@
 // Integrates the logging system with Next.js error handling
 
 import { NextRequest, NextResponse } from 'next/server';
-import { logger, errorHandler, ApexError, asyncHandler } from './logging';
+import crypto from 'crypto';
+import {
+  logger,
+  errorHandler,
+  ApexError,
+  asyncHandler,
+  ValidationError,
+  AuthenticationError,
+  AuthorizationError,
+  NotFoundError,
+  ConflictError,
+  DatabaseError,
+  ExternalServiceError,
+  requestLogger,
+  performanceLogger,
+  securityLogger,
+  businessLogger,
+  databaseLogger,
+  apiLogger,
+  healthLogger,
+} from './logging';
 
 // Global error handler for Next.js App Router
 export function handleGlobalError(error: Error, context: {
@@ -67,44 +87,63 @@ export function handleGlobalError(error: Error, context: {
 
 // API route wrapper with error handling
 export function withErrorHandler(handler: (req: NextRequest, context?: any) => Promise<NextResponse>) {
-  return asyncHandler(async (req: NextRequest, context?: any) => {
-    try {
-      // Add request context to logger
-      logger.addContext({
-        requestId: crypto.randomUUID(),
-        method: req.method,
-        url: req.url,
-        userAgent: req.headers.get('user-agent'),
-        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
-      });
+  return async (req: NextRequest, context?: any) => {
+    const requestContext = {
+      requestId: crypto.randomUUID(),
+      method: req.method,
+      url: req.url,
+      userAgent: req.headers.get('user-agent'),
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+    };
 
-      // Log request start
+    try {
       logger.http('API Request Started', {
         method: req.method,
         url: req.url,
         headers: Object.fromEntries(req.headers.entries()),
+        context: requestContext,
       });
 
       const startTime = Date.now();
-      
-      // Execute the handler
       const response = await handler(req, context);
-      
-      // Log successful response
       const duration = Date.now() - startTime;
+
       logger.http('API Request Completed', {
         method: req.method,
         url: req.url,
         statusCode: response.status,
         duration: `${duration}ms`,
+        context: requestContext,
       });
 
       return response;
     } catch (error) {
-      // Error will be handled by asyncHandler and errorHandler
-      throw error;
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      logger.error('API Request Failed', {
+        method: req.method,
+        url: req.url,
+        error: message,
+        context: requestContext,
+      });
+
+      const apexError =
+        error instanceof ApexError
+          ? error
+          : new ApexError(message, 500, 'INTERNAL_SERVER_ERROR');
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: apexError.code,
+            message: apexError.message,
+          },
+          timestamp: new Date().toISOString(),
+        },
+        { status: apexError.statusCode }
+      );
     }
-  });
+  };
 }
 
 // Database operation wrapper
@@ -247,7 +286,7 @@ export function validateRequest(req: NextRequest, schema: any): void {
     
     // Validate body and query against schema
     // If validation fails, throw ValidationError
-  } catch (error) {
+  } catch (error: any) {
     throw createValidationError('Invalid request data', error.field, error.value);
   }
 }
@@ -332,7 +371,11 @@ export function createHealthCheck(checks: Record<string, () => Promise<boolean>>
 
     const statusCode = overallHealthy ? 200 : 503;
     
-    logger.healthCheck('application', overallHealthy ? 'healthy' : 'unhealthy', results);
+    logger.info('Health check result', {
+      target: 'application',
+      status: overallHealthy ? 'healthy' : 'unhealthy',
+      checks: results,
+    });
     
     return NextResponse.json({
       status: overallHealthy ? 'healthy' : 'unhealthy',

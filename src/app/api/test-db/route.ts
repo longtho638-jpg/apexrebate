@@ -13,8 +13,8 @@ export async function GET() {
     
     // Deep inspect prisma instance
     const prismaKeys = Object.keys(prisma);
-    const prismaHasUser = 'user' in prisma;
-    const userValue = (prisma as any).user;
+    const prismaHasUser = 'users' in prisma;
+    const userValue = (prisma as any).users;
     const userType = typeof userValue;
     const userKeys = userValue ? Object.keys(userValue) : [];
     
@@ -23,7 +23,7 @@ export async function GET() {
     let manualQuerySuccess = false;
     try {
       const newPrisma = new PrismaClient();
-      const count = await newPrisma.user.count();
+      const count = await newPrisma.users.count();
       manualQuerySuccess = true;
       await newPrisma.$disconnect();
     } catch (e: any) {

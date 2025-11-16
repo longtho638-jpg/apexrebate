@@ -21,8 +21,7 @@ export async function POST(req: NextRequest) {
         name,
         experience,
         monthlyVolume: parseInt(monthlyVolume),
-        reason,
-        updatedAt: new Date()
+        reason
       },
       create: {
         name,

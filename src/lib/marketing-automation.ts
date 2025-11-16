@@ -111,8 +111,8 @@ export class MarketingAutomation {
         return
       }
 
-      const importedModule = await import('z-ai-web-dev-sdk')
-      const sdk: any = importedModule?.default ?? importedModule?.ZAI ?? importedModule
+      const importedModule: any = await import('z-ai-web-dev-sdk')
+      const sdk: any = importedModule?.default ?? importedModule
 
       if (sdk?.create) {
         this.zai = await sdk.create()
@@ -170,7 +170,7 @@ export class MarketingAutomation {
       
       const inactiveUsers = await db.users.findMany({
         where: {
-          emailVerified: true,
+          emailVerified: { not: null },
           lastActiveAt: { lt: thirtyDaysAgo },
           totalSaved: { gt: 0 } // Only users who have saved something
         },
@@ -224,7 +224,7 @@ export class MarketingAutomation {
     // Get active users who might benefit from educational content
     const activeUsers = await db.users.findMany({
       where: {
-        emailVerified: true,
+        emailVerified: { not: null },
         lastActiveAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
       },
       take: 200
@@ -253,7 +253,7 @@ export class MarketingAutomation {
       // Find users with high referral potential
       const potentialReferrers = await db.users.findMany({
         where: {
-          emailVerified: true,
+          emailVerified: { not: null },
           totalSaved: { gt: 100 }, // Users who have saved significant amount
           referralCount: { lt: 5 } // But haven't referred many people yet
         },
@@ -344,7 +344,7 @@ export class MarketingAutomation {
       // Find users approaching milestones
       const users = await db.users.findMany({
         where: {
-          emailVerified: true,
+          emailVerified: { not: null },
           totalSaved: { gt: 0 }
         },
         take: 100

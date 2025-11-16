@@ -210,10 +210,17 @@ export class CDNManager {
 
   private async purgeFastlyCache(request: PurgeRequest): Promise<boolean> {
     // Fastly API调用
+    const fastlyKey = process.env.FASTLY_API_KEY
+
+    if (!fastlyKey) {
+      console.warn('Fastly API key is not configured, skipping cache purge')
+      return false
+    }
+
     const response = await fetch(`https://api.fastly.com/purge`, {
       method: 'POST',
       headers: {
-        'Fastly-Key': process.env.FASTLY_API_KEY,
+        'Fastly-Key': fastlyKey,
         'Fastly-Soft-Purge': '1',
         'Content-Type': 'application/json'
       },
@@ -280,9 +287,16 @@ export class CDNManager {
 
   private async getFastlyMetrics(): Promise<CDNMetrics> {
     // Fastly Analytics API调用
+    const fastlyKey = process.env.FASTLY_API_KEY
+
+    if (!fastlyKey) {
+      console.warn('Fastly API key is not configured, returning cached metrics')
+      return this.metrics
+    }
+
     const response = await fetch(`https://api.fastly.com/stats/usage?from=${Math.floor(Date.now() / 1000) - 86400}&to=${Math.floor(Date.now() / 1000)}`, {
       headers: {
-        'Fastly-Key': process.env.FASTLY_API_KEY
+        'Fastly-Key': fastlyKey
       }
     })
 

@@ -103,7 +103,7 @@ export const setupSocket = (io: Server) => {
       io.to('admin').emit('admin-notification', {
         type: 'referral',
         title: 'Lượt giới thiệu mới',
-        message: `${data.referredUser.name} (${data.referredUser.email}) đã được giới thiệu bởi ${data.referralId}`,
+        message: `${data.referredUser.name} (${data.referredUser.email}) đã được giới thiệu bởi ${data.referrerId}`,
         data,
         timestamp: new Date().toISOString(),
       });

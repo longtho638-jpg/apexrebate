@@ -85,49 +85,10 @@ class AIRecommendationEngine {
   // 加载历史数据
   private async loadHistoricalData(): Promise<void> {
     try {
-      // 加载用户行为数据
-      const behaviors = await db.userBehavior.findMany({
-        orderBy: { timestamp: 'desc' },
-        take: 10000 // 最近10000条行为记录
-      });
-
-      // 按用户分组
-      behaviors.forEach(behavior => {
-        const userId = behavior.userId;
-        if (!this.userBehaviors.has(userId)) {
-          this.userBehaviors.set(userId, []);
-        }
-        this.userBehaviors.get(userId)!.push({
-          userId: behavior.userId,
-          action: behavior.action as any,
-          target: behavior.target,
-          timestamp: behavior.timestamp,
-          duration: behavior.duration || undefined,
-          metadata: behavior.metadata as any || undefined
-        });
-      });
-
-      // 加载用户偏好数据
-      const preferences = await db.userPreference.findMany();
-      preferences.forEach(pref => {
-        const userId = pref.userId;
-        if (!this.userPreferences.has(userId)) {
-          this.userPreferences.set(userId, []);
-        }
-        this.userPreferences.get(userId)!.push({
-          userId: pref.userId,
-          category: pref.category,
-          score: pref.score,
-          lastUpdated: pref.lastUpdated
-        });
-      });
-
-      logger.info('Historical data loaded', {
-        behaviorCount: behaviors.length,
-        preferenceCount: preferences.length,
-        userCount: this.userBehaviors.size
-      });
-
+      // 当前开源版本没有持久化的行为/偏好表，使用空数据启动
+      this.userBehaviors.clear();
+      this.userPreferences.clear();
+      logger.info('Historical data not available - starting with empty datasets');
     } catch (error) {
       logger.error('Failed to load historical data', { error: error instanceof Error ? error.message : String(error) });
     }
@@ -147,21 +108,7 @@ class AIRecommendationEngine {
     }
     this.userBehaviors.get(userId)!.push(fullBehavior);
 
-    // 存储到数据库
-    try {
-      await db.userBehavior.create({
-        data: {
-          userId: fullBehavior.userId,
-          action: fullBehavior.action,
-          target: fullBehavior.target,
-          timestamp: fullBehavior.timestamp,
-          duration: fullBehavior.duration,
-          metadata: fullBehavior.metadata || {}
-        }
-      });
-    } catch (error) {
-      logger.error('Failed to save user behavior', { error: error instanceof Error ? error.message : String(error) });
-    }
+    // 开源版本不持久化行为数据，仅记录在内存
 
     // 更新用户偏好
     await this.updateUserPreferences(userId, fullBehavior);
@@ -196,26 +143,6 @@ class AIRecommendationEngine {
 
       pref.score = Math.min(1, pref.score + scoreIncrease * 0.1);
       pref.lastUpdated = new Date();
-
-      // 保存到数据库
-      await db.userPreference.upsert({
-        where: {
-          userId_category: {
-            userId,
-            category
-          }
-        },
-        update: {
-          score: pref.score,
-          lastUpdated: pref.lastUpdated
-        },
-        create: {
-          userId,
-          category,
-          score: pref.score,
-          lastUpdated: pref.lastUpdated
-        }
-      });
 
     } catch (error) {
       logger.error('Failed to update user preferences', { error: error instanceof Error ? error.message : String(error) });
@@ -730,33 +657,11 @@ class AIRecommendationEngine {
 
   // 保存推荐到数据库
   private async saveRecommendations(userId: string, recommendations: Recommendation[]): Promise<void> {
-    try {
-      // 删除旧推荐
-      await db.recommendation.deleteMany({
-        where: { userId }
-      });
-
-      // 保存新推荐
-      for (const rec of recommendations) {
-        await db.recommendation.create({
-          data: {
-            id: rec.id,
-            userId: rec.userId,
-            type: rec.type,
-            title: rec.title,
-            description: rec.description,
-            url: rec.url,
-            confidence: rec.confidence,
-            reason: rec.reason,
-            metadata: rec.metadata,
-            createdAt: rec.createdAt,
-            expiresAt: rec.expiresAt
-          }
-        });
-      }
-    } catch (error) {
-      logger.error('Failed to save recommendations', { error: error instanceof Error ? error.message : String(error) });
-    }
+    // 在开源版本中，我们仅在内存中缓存推荐结果
+    logger.debug('Recommendations cached in memory', {
+      userId,
+      count: recommendations.length
+    });
   }
 
   // 获取用户推荐
