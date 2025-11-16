@@ -16,7 +16,7 @@
     "opa:pull": "node scripts/opa/pull-bundle.mjs",
     "policy:gate:opa": "node scripts/policy/eval-opa.mjs",
     "slo:mock": "node scripts/slo/mock-slo.mjs",
-    "test": "npx jest",
+    "test": "node scripts/run-tests-with-localstorage.cjs",
     "test:watch": "npx jest --watch",
     "test:coverage": "npx jest --coverage",
     "test:architecture": "npx jest tests/architecture/architecture.test.ts",

@@ -47,12 +47,20 @@ global.ResizeObserver = class ResizeObserver {
   unobserve() {}
 }
 
-// Mock localStorage for Node.js environment
-if (typeof global.localStorage === 'undefined') {
-  global.localStorage = {
-    getItem: jest.fn(),
-    setItem: jest.fn(),
-    removeItem: jest.fn(),
-    clear: jest.fn(),
-  }
+// Mock localStorage for Node.js environment (Node 22 throws when accessing native localStorage)
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+
+try {
+  Object.defineProperty(global, 'localStorage', {
+    value: localStorageMock,
+    configurable: true,
+    writable: true,
+  })
+} catch {
+  global.localStorage = localStorageMock
 }
