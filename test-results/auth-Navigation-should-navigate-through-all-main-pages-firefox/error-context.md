@@ -463,7 +463,7 @@
               - button "Quay lên trên" [ref=e514]:
                 - img
                 - text: Quay lên trên
-  - alert [ref=e515]: ApexRebate
+  - alert [ref=e515]
   - button "Open Next.js Dev Tools" [ref=e521] [cursor=pointer]:
     - img [ref=e522]
 ```

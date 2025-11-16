@@ -7,4 +7,6 @@
       - heading "404" [level=1] [ref=e6]
       - heading "This page could not be found." [level=2] [ref=e8]
   - alert [ref=e9]
+  - button "Open Next.js Dev Tools" [ref=e15] [cursor=pointer]:
+    - img [ref=e16]
 ```
