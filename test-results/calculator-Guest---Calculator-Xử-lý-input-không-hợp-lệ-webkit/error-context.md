@@ -1,0 +1,182 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - link "ApexRebate" [ref=e6]:
+          - /url: /en
+          - generic [ref=e8]: ApexRebate
+        - generic [ref=e9]:
+          - link "Calculator" [ref=e10]:
+            - /url: /en/calculator
+          - link "Wall of Fame" [ref=e11]:
+            - /url: /en/wall-of-fame
+          - link "Hang Sói" [ref=e12]:
+            - /url: /en/hang-soi
+            - img [ref=e13]
+            - text: Hang Sói
+          - link "Tools Market" [ref=e18]:
+            - /url: /en/tools
+            - img [ref=e19]
+            - text: Tools Market
+          - link "FAQ" [ref=e22]:
+            - /url: /en/faq
+          - link "How It Works" [ref=e23]:
+            - /url: /en/how-it-works
+        - generic [ref=e24]:
+          - combobox [ref=e25]:
+            - img
+            - generic: 🇺🇸 English
+            - img
+          - button "Toggle theme" [ref=e26]:
+            - img
+            - generic [ref=e27]: Toggle theme
+          - link "Sign In" [ref=e28]:
+            - /url: /auth/signin
+            - button "Sign In" [ref=e29]
+          - link "Sign Up" [ref=e30]:
+            - /url: /auth/signup
+            - button "Sign Up" [ref=e31]
+    - main [ref=e32]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - heading "Fee Calculator" [level=1] [ref=e39]
+          - paragraph [ref=e40]: Calculate your potential rebates
+        - generic [ref=e41]:
+          - generic [ref=e43]:
+            - generic [ref=e45]:
+              - img [ref=e46]
+              - text: Fee Calculator
+            - generic [ref=e48]:
+              - generic [ref=e49]:
+                - generic [ref=e50]: Trading Volume
+                - spinbutton "Trading Volume" [active] [ref=e51]: "1000000"
+              - generic [ref=e52]:
+                - generic [ref=e53]: Exchange
+                - combobox [ref=e54]:
+                  - generic: Binance
+                  - img
+              - generic [ref=e55]:
+                - generic [ref=e56]: Exchange
+                - combobox [ref=e57]:
+                  - generic: Taker
+                  - img
+              - button "Calculate" [ref=e58]
+          - generic [ref=e60]:
+            - generic [ref=e62]: Binance Futures - VIP 0
+            - generic [ref=e63]:
+              - tablist [ref=e64]:
+                - tab "Savings" [selected] [ref=e65]
+                - tab "Fees" [ref=e66]
+                - tab "Analysis" [ref=e67]
+              - tabpanel "Savings" [ref=e68]:
+                - generic [ref=e69]:
+                  - generic [ref=e72]:
+                    - generic [ref=e73]:
+                      - paragraph [ref=e74]: Monthly
+                      - paragraph [ref=e75]: $16.00
+                    - img [ref=e76]
+                  - generic [ref=e80]:
+                    - generic [ref=e81]:
+                      - paragraph [ref=e82]: Yearly
+                      - paragraph [ref=e83]: $192.00
+                    - img [ref=e84]
+    - contentinfo [ref=e87]:
+      - generic [ref=e88]:
+        - generic [ref=e89]:
+          - generic [ref=e90]:
+            - generic [ref=e93]: ApexRebate
+            - paragraph [ref=e94]: Tối ưu hóa lợi nhuận cho trader nghiêm túc
+            - generic [ref=e95]:
+              - link [ref=e96]:
+                - /url: "#"
+                - img [ref=e97]
+              - link [ref=e99]:
+                - /url: "#"
+                - img [ref=e100]
+              - link [ref=e102]:
+                - /url: "#"
+                - img [ref=e103]
+              - link [ref=e107]:
+                - /url: "#"
+                - img [ref=e108]
+          - generic [ref=e111]:
+            - heading "Sản phẩm" [level=3] [ref=e112]
+            - list [ref=e113]:
+              - listitem [ref=e114]:
+                - link "Hoàn phí" [ref=e115]:
+                  - /url: /calculator
+              - listitem [ref=e116]:
+                - link "ApexPro" [ref=e117]:
+                  - /url: /apex-pro
+              - listitem [ref=e118]:
+                - link "Hang Sói" [ref=e119]:
+                  - /url: /hang-soi
+          - generic [ref=e120]:
+            - heading "Công ty" [level=3] [ref=e121]
+            - list [ref=e122]:
+              - listitem [ref=e123]:
+                - link "Về chúng tôi" [ref=e124]:
+                  - /url: /about
+              - listitem [ref=e125]:
+                - link "Liên hệ" [ref=e126]:
+                  - /url: /contact
+              - listitem [ref=e127]:
+                - link "Điều khoản" [ref=e128]:
+                  - /url: /terms
+          - generic [ref=e129]:
+            - heading "Đối tác" [level=3] [ref=e130]
+            - generic [ref=e131]:
+              - generic [ref=e134]: Binance
+              - generic [ref=e137]: Bybit
+              - generic [ref=e140]: OKX
+        - generic [ref=e141]:
+          - generic [ref=e142]:
+            - generic [ref=e143]:
+              - heading "Liên kết nhanh" [level=4] [ref=e144]
+              - list [ref=e145]:
+                - listitem [ref=e146]:
+                  - link "Trang chủ" [ref=e147]:
+                    - /url: /
+                - listitem [ref=e148]:
+                  - link "Máy tính" [ref=e149]:
+                    - /url: /calculator
+                - listitem [ref=e150]:
+                  - link "Danh vọng" [ref=e151]:
+                    - /url: /wall-of-fame
+            - generic [ref=e152]:
+              - heading "Dịch vụ" [level=4] [ref=e153]
+              - list [ref=e154]:
+                - listitem [ref=e155]:
+                  - link "Hoàn phí Binance" [ref=e156]:
+                    - /url: /services/binance-rebate
+                - listitem [ref=e157]:
+                  - link "Hoàn phí Bybit" [ref=e158]:
+                    - /url: /services/bybit-rebate
+                - listitem [ref=e159]:
+                  - link "Hoàn phí OKX" [ref=e160]:
+                    - /url: /services/okx-rebate
+            - generic [ref=e161]:
+              - heading "Liên hệ" [level=4] [ref=e162]
+              - list [ref=e163]:
+                - listitem [ref=e164]:
+                  - img [ref=e165]
+                  - generic [ref=e168]: support@apexrebate.com
+                - listitem [ref=e169]:
+                  - img [ref=e170]
+                  - generic [ref=e172]: +84 123 456 789
+          - generic [ref=e173]:
+            - generic [ref=e174]: © 2024 ApexRebate. Tất cả quyền được bảo lưu.
+            - generic [ref=e175]:
+              - generic [ref=e176]: Trang web này sử dụng cookie để cải thiện trải nghiệm của bạn.
+              - button "Quay lên trên" [ref=e177]:
+                - img
+                - text: Quay lên trên
+  - alert [ref=e178]
+  - button "Open Next.js Dev Tools" [ref=e184] [cursor=pointer]:
+    - img [ref=e185]
+```
