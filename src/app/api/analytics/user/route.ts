@@ -33,12 +33,12 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        achievements: {
+        user_achievements: {
           include: {
-            achievement: true
+            achievements: true
           }
         },
-        activities: {
+        user_activities: {
           orderBy: { createdAt: 'desc' },
           take: 100
         }
@@ -195,15 +195,15 @@ export async function GET(request: NextRequest) {
       : 0
 
     // Achievement analytics
-    const achievementsByCategory = user.achievements.reduce((acc, ua) => {
-      const category = ua.achievement.category
+    const achievementsByCategory = user.user_achievements.reduce((acc, ua) => {
+      const category = ua.achievements.category
       if (!acc[category]) acc[category] = 0
       acc[category] += 1
       return acc
     }, {} as Record<string, number>)
 
     // Activity patterns
-    const recentActivity = user.activities.slice(0, 30)
+    const recentActivity = user.user_activities.slice(0, 30)
     const activityByType = recentActivity.reduce((acc, activity) => {
       if (!acc[activity.type]) acc[activity.type] = 0
       acc[activity.type] += 1

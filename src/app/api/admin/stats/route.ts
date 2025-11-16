@@ -45,10 +45,10 @@ export async function GET(request: NextRequest) {
       }),
       
       // Total payouts
-      db.payout.count(),
+      db.payouts.count(),
       
       // Pending payouts
-      db.payout.count({
+      db.payouts.count({
         where: { status: 'PENDING' }
       }),
       
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       }),
       
       // Current month payouts
-      db.payout.count({
+      db.payouts.count({
         where: {
           createdAt: {
             gte: new Date(currentYear, currentMonth, 1),
@@ -76,12 +76,12 @@ export async function GET(request: NextRequest) {
     // Calculate total amounts
     const [totalPayoutAmount, pendingPayoutAmount] = await Promise.all([
       // Total payout amount
-      db.payout.aggregate({
+      db.payouts.aggregate({
         _sum: { amount: true }
       }),
       
       // Pending payout amount
-      db.payout.aggregate({
+      db.payouts.aggregate({
         where: { status: 'PENDING' },
         _sum: { amount: true }
       })

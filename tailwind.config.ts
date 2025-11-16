@@ -3,7 +3,7 @@ import tailwindcssAnimate from "tailwindcss-animate";
 import { preset } from "catalyst-ui";
 
 const config: Config = {
-darkMode: ["class"],
+darkMode: 'class',
 presets: [preset],
 content: [
 "./pages/**/*.{js,ts,jsx,tsx,mdx}",

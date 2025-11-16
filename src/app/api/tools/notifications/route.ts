@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -21,11 +22,11 @@ export async function POST(request: NextRequest) {
     if (type === 'tool_update') {
       // Find all users who favorited or purchased this tool
       const [favoritedUsers, purchasedUsers] = await Promise.all([
-        db.toolFavorite.findMany({
+        db.tool_favorites.findMany({
           where: { toolId },
           select: { userId: true }
         }),
-        db.toolOrder.findMany({
+        db.tool_orders.findMany({
           where: { toolId, status: 'COMPLETED' },
           select: { buyerId: true }
         })
@@ -40,8 +41,9 @@ export async function POST(request: NextRequest) {
       // Create notifications for all relevant users
       const notifications = await Promise.all(
         Array.from(uniqueUserIds).map(userId =>
-          db.notification.create({
+          db.notifications.create({
             data: {
+              id: randomUUID(),
               userId,
               type: 'tool_update',
               title: 'Cập nhật công cụ',
@@ -92,15 +94,15 @@ export async function GET(request: NextRequest) {
       whereClause.isRead = false;
     }
 
-    const notifications = await db.notification.findMany({
+    const notifications = await db.notifications.findMany({
       where: whereClause,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit
     });
 
-    const total = await db.notification.count({ where: whereClause });
-    const unreadCount = await db.notification.count({
+    const total = await db.notifications.count({ where: whereClause });
+    const unreadCount = await db.notifications.count({
       where: { userId: session.user.id, isRead: false }
     });
 

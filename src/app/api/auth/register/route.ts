@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { nanoid } from 'nanoid'
@@ -35,9 +36,9 @@ export async function POST(request: NextRequest) {
     const userReferralCode = nanoid(8).toUpperCase()
 
     // Handle referral logic
-    let referredBy = null
+    let referredBy: string | null = null
     if (referralCode) {
-      const referrer = await db.users.findUnique({
+      const referrer = await db.users.findFirst({
         where: { referralCode }
       })
       if (referrer) {
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
     // Create user
     const user = await db.users.create({
       data: {
+        id: randomUUID(),
         name,
         email,
         password: hashedPassword,
@@ -55,7 +57,8 @@ export async function POST(request: NextRequest) {
         preferredBroker,
         referralCode: userReferralCode,
         referredBy,
-        role: 'USER'
+        role: 'USER',
+        updatedAt: new Date()
       }
     })
 
@@ -63,8 +66,9 @@ export async function POST(request: NextRequest) {
     await sendVerificationEmail(email)
 
     // Create welcome activity
-    await db.userActivity.create({
+    await db.user_activities.create({
       data: {
+        id: randomUUID(),
         userId: user.id,
         type: 'LOGIN',
         description: 'Account created',

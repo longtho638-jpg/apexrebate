@@ -98,7 +98,15 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    async redirect({ url, baseUrl, user }) {
+    async redirect({
+      url,
+      baseUrl,
+      ...rest
+    }: {
+      url: string;
+      baseUrl: string;
+      [key: string]: unknown;
+    }) {
       // ✅ FIX: Handle admin redirects properly with role validation
       // If URL is relative, it's safe to redirect
       if (url.startsWith('/')) {
@@ -108,7 +116,7 @@ export const authOptions: NextAuthOptions = {
         
         // Check if attempting to redirect to /admin route
         const isAdminRoute = url.includes('/admin')
-        const userRole = (user?.role as string) || 'USER'
+        const userRole = ((rest as any)?.user?.role as string) || 'USER'
         
         if (isAdminRoute && userRole !== 'ADMIN' && userRole !== 'CONCIERGE') {
           // Non-admins trying to access /admin get redirected to dashboard

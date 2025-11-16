@@ -1,0 +1,285 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - link "ApexRebate" [ref=e6] [cursor=pointer]:
+          - /url: /en
+          - generic [ref=e8]: ApexRebate
+        - generic [ref=e9]:
+          - link "Calculator" [ref=e10] [cursor=pointer]:
+            - /url: /en/calculator
+          - link "Wall of Fame" [ref=e11] [cursor=pointer]:
+            - /url: /en/wall-of-fame
+          - link "Hang Sói" [ref=e12] [cursor=pointer]:
+            - /url: /en/hang-soi
+            - img [ref=e13]
+            - text: Hang Sói
+          - link "Tools Market" [ref=e18] [cursor=pointer]:
+            - /url: /en/tools
+            - img [ref=e19]
+            - text: Tools Market
+          - link "FAQ" [ref=e23] [cursor=pointer]:
+            - /url: /en/faq
+          - link "How It Works" [ref=e24] [cursor=pointer]:
+            - /url: /en/how-it-works
+        - generic [ref=e25]:
+          - combobox [ref=e26]:
+            - img
+            - generic: 🇺🇸 English
+            - img
+          - button "Toggle theme" [ref=e27]:
+            - img
+            - generic [ref=e28]: Toggle theme
+          - link "Sign In" [ref=e29] [cursor=pointer]:
+            - /url: /auth/signin
+            - button "Sign In" [ref=e30]
+          - link "Sign Up" [ref=e31] [cursor=pointer]:
+            - /url: /auth/signup
+            - button "Sign Up" [ref=e32]
+    - main [ref=e33]:
+      - generic [ref=e34]:
+        - generic [ref=e35]:
+          - heading "Concierge Dashboard - Phase 1" [level=1] [ref=e36]:
+            - img [ref=e37]
+            - text: Concierge Dashboard - Phase 1
+          - paragraph [ref=e43]: Your personalized journey to becoming a successful ApexRebate trader
+        - generic [ref=e44]:
+          - link "Submit Rebate Claim Manually submit your trading rebate claim for concierge processing Manual Process" [ref=e46] [cursor=pointer]:
+            - /url: /vi/concierge/claim
+            - generic [ref=e47]:
+              - generic [ref=e48]:
+                - img [ref=e49]
+                - text: Submit Rebate Claim
+              - generic [ref=e55]: Manually submit your trading rebate claim for concierge processing
+            - generic [ref=e57]:
+              - generic [ref=e58]: Manual Process
+              - img [ref=e59]
+          - link "Email Ritual Tracker Track your onboarding progress and claim bonuses 220K VND Rewards" [ref=e63] [cursor=pointer]:
+            - /url: "#onboarding"
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - img [ref=e66]
+                - text: Email Ritual Tracker
+              - generic [ref=e69]: Track your onboarding progress and claim bonuses
+            - generic [ref=e71]:
+              - generic [ref=e72]: 220K VND Rewards
+              - img [ref=e73]
+          - link "Wall of Fame See top performers and community champions 1,247 Kaison" [ref=e77] [cursor=pointer]:
+            - /url: "#wall-of-fame"
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - img [ref=e80]
+                - text: Wall of Fame
+              - generic [ref=e87]: See top performers and community champions
+            - generic [ref=e89]:
+              - generic [ref=e90]: 1,247 Kaison
+              - img [ref=e91]
+        - generic [ref=e94]:
+          - tablist [ref=e95]:
+            - tab "Onboarding Journey" [selected] [ref=e96]:
+              - img
+              - text: Onboarding Journey
+            - tab "Hang Sói Community" [ref=e97]:
+              - img
+              - text: Hang Sói Community
+            - tab "Your Status" [ref=e98]:
+              - img
+              - text: Your Status
+          - tabpanel "Onboarding Journey" [ref=e99]:
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - generic [ref=e102]:
+                  - img [ref=e103]
+                  - text: Kaison Onboarding Journey
+                - generic [ref=e110]: Your personalized path to becoming a successful ApexRebate trader
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]:
+                    - generic [ref=e114]: Progress
+                    - generic [ref=e115]: 2 of 6 completed
+                  - progressbar [ref=e116]
+                  - generic [ref=e118]:
+                    - generic [ref=e119]: "🎯 Aha Moment: First Payout"
+                    - generic [ref=e120]: "🏆 Achievement: Full Completion"
+                - generic [ref=e121]:
+                  - generic [ref=e122]:
+                    - img [ref=e124]
+                    - generic [ref=e127]:
+                      - generic [ref=e128]:
+                        - heading "Welcome Email" [level=3] [ref=e129]
+                        - generic [ref=e130]: Completed
+                      - paragraph [ref=e131]: Account created and welcome message sent
+                      - generic [ref=e132]:
+                        - img [ref=e133]
+                        - generic [ref=e138]: "Welcome bonus: 50,000 VND"
+                      - generic [ref=e139]:
+                        - img [ref=e140]
+                        - generic [ref=e143]: Completed on 2024-11-07
+                  - generic [ref=e144]:
+                    - img [ref=e146]
+                    - generic [ref=e149]:
+                      - generic [ref=e150]:
+                        - heading "First Trade Detected" [level=3] [ref=e151]
+                        - generic [ref=e152]: Completed
+                      - paragraph [ref=e153]: Complete your first trade on supported exchange
+                      - generic [ref=e154]:
+                        - img [ref=e155]
+                        - generic [ref=e160]: "First trade bonus: 25,000 VND"
+                      - generic [ref=e161]:
+                        - img [ref=e162]
+                        - generic [ref=e165]: Completed on 2024-11-08
+                  - generic [ref=e166]:
+                    - img [ref=e168]
+                    - generic [ref=e171]:
+                      - heading "Rebate Claim Submitted" [level=3] [ref=e173]
+                      - paragraph [ref=e174]: Submit your first rebate claim through concierge
+                      - generic [ref=e175]:
+                        - img [ref=e176]
+                        - generic [ref=e181]: "Claim bonus: 15,000 VND"
+                      - button "Mark as Complete (Demo)" [ref=e182]
+                  - generic [ref=e183]:
+                    - img [ref=e185]
+                    - generic [ref=e190]:
+                      - heading "First Payout Received" [level=3] [ref=e192]
+                      - paragraph [ref=e193]: Receive your first rebate payout
+                      - generic [ref=e194]:
+                        - img [ref=e195]
+                        - generic [ref=e200]: "Payout bonus: 10,000 VND"
+                      - button "Mark as Complete (Demo)" [ref=e201]
+                  - generic [ref=e202]:
+                    - img [ref=e204]
+                    - generic [ref=e209]:
+                      - heading "Invite First Friend" [level=3] [ref=e211]
+                      - paragraph [ref=e212]: Share ApexRebate with a fellow trader
+                      - generic [ref=e213]:
+                        - img [ref=e214]
+                        - generic [ref=e219]: "Referral bonus: 20,000 VND"
+                      - button "Mark as Complete (Demo)" [ref=e220]
+                  - generic [ref=e221]:
+                    - img [ref=e223]
+                    - generic [ref=e230]:
+                      - heading "Achievement Unlocked" [level=3] [ref=e232]
+                      - paragraph [ref=e233]: Complete all onboarding steps
+                      - generic [ref=e234]:
+                        - img [ref=e235]
+                        - generic [ref=e240]: Achievement badge + 100,000 VND
+                      - button "Mark as Complete (Demo)" [ref=e241]
+                - generic [ref=e243]:
+                  - heading "💡 Pro Tips for Success" [level=3] [ref=e244]
+                  - list [ref=e245]:
+                    - listitem [ref=e246]: • Submit your first rebate claim through the concierge form
+                    - listitem [ref=e247]: • Check your email daily for progress updates and bonuses
+                    - listitem [ref=e248]: • Invite friends to unlock referral rewards
+                    - listitem [ref=e249]: • Join the Hang Sói community for exclusive insights
+                - generic [ref=e251]:
+                  - generic [ref=e252]:
+                    - heading "Total Potential Rewards" [level=3] [ref=e253]
+                    - paragraph [ref=e254]: Complete all steps to unlock maximum benefits
+                  - generic [ref=e255]:
+                    - generic [ref=e256]: 220,000 VND
+                    - generic [ref=e257]: + Exclusive badges
+        - generic [ref=e260]:
+          - 'heading "🎯 Phase 1: Manual Excellence - Jobs'' Simplicity" [level=2] [ref=e261]'
+          - paragraph [ref=e262]: We're focusing on perfecting the concierge experience for our first 100 'Kaison' traders. Every interaction is personal, every process is manual, and every outcome delivers the 'aha' moment of understanding ApexRebate's value.
+          - generic [ref=e263]:
+            - generic [ref=e264]: Manual Processing
+            - generic [ref=e265]: Personal Touch
+            - generic [ref=e266]: Guaranteed Success
+    - contentinfo [ref=e267]:
+      - generic [ref=e268]:
+        - generic [ref=e269]:
+          - generic [ref=e270]:
+            - generic [ref=e273]: ApexRebate
+            - paragraph [ref=e274]: Tối ưu hóa lợi nhuận cho trader nghiêm túc
+            - generic [ref=e275]:
+              - link [ref=e276] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e277]
+              - link [ref=e279] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e280]
+              - link [ref=e282] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e283]
+              - link [ref=e287] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e288]
+          - generic [ref=e292]:
+            - heading "Sản phẩm" [level=3] [ref=e293]
+            - list [ref=e294]:
+              - listitem [ref=e295]:
+                - link "Hoàn phí" [ref=e296] [cursor=pointer]:
+                  - /url: /calculator
+              - listitem [ref=e297]:
+                - link "ApexPro" [ref=e298] [cursor=pointer]:
+                  - /url: /apex-pro
+              - listitem [ref=e299]:
+                - link "Hang Sói" [ref=e300] [cursor=pointer]:
+                  - /url: /hang-soi
+          - generic [ref=e301]:
+            - heading "Công ty" [level=3] [ref=e302]
+            - list [ref=e303]:
+              - listitem [ref=e304]:
+                - link "Về chúng tôi" [ref=e305] [cursor=pointer]:
+                  - /url: /about
+              - listitem [ref=e306]:
+                - link "Liên hệ" [ref=e307] [cursor=pointer]:
+                  - /url: /contact
+              - listitem [ref=e308]:
+                - link "Điều khoản" [ref=e309] [cursor=pointer]:
+                  - /url: /terms
+          - generic [ref=e310]:
+            - heading "Đối tác" [level=3] [ref=e311]
+            - generic [ref=e312]:
+              - generic [ref=e315]: Binance
+              - generic [ref=e318]: Bybit
+              - generic [ref=e321]: OKX
+        - generic [ref=e322]:
+          - generic [ref=e323]:
+            - generic [ref=e324]:
+              - heading "Liên kết nhanh" [level=4] [ref=e325]
+              - list [ref=e326]:
+                - listitem [ref=e327]:
+                  - link "Trang chủ" [ref=e328] [cursor=pointer]:
+                    - /url: /
+                - listitem [ref=e329]:
+                  - link "Máy tính" [ref=e330] [cursor=pointer]:
+                    - /url: /calculator
+                - listitem [ref=e331]:
+                  - link "Danh vọng" [ref=e332] [cursor=pointer]:
+                    - /url: /wall-of-fame
+            - generic [ref=e333]:
+              - heading "Dịch vụ" [level=4] [ref=e334]
+              - list [ref=e335]:
+                - listitem [ref=e336]:
+                  - link "Hoàn phí Binance" [ref=e337] [cursor=pointer]:
+                    - /url: /services/binance-rebate
+                - listitem [ref=e338]:
+                  - link "Hoàn phí Bybit" [ref=e339] [cursor=pointer]:
+                    - /url: /services/bybit-rebate
+                - listitem [ref=e340]:
+                  - link "Hoàn phí OKX" [ref=e341] [cursor=pointer]:
+                    - /url: /services/okx-rebate
+            - generic [ref=e342]:
+              - heading "Liên hệ" [level=4] [ref=e343]
+              - list [ref=e344]:
+                - listitem [ref=e345]:
+                  - img [ref=e346]
+                  - generic [ref=e349]: support@apexrebate.com
+                - listitem [ref=e350]:
+                  - img [ref=e351]
+                  - generic [ref=e353]: +84 123 456 789
+          - generic [ref=e354]:
+            - generic [ref=e355]: © 2024 ApexRebate. Tất cả quyền được bảo lưu.
+            - generic [ref=e356]:
+              - generic [ref=e357]: Trang web này sử dụng cookie để cải thiện trải nghiệm của bạn.
+              - button "Quay lên trên" [ref=e358]:
+                - img
+                - text: Quay lên trên
+  - alert [ref=e359]: ApexRebate
+  - button "Open Next.js Dev Tools" [ref=e365] [cursor=pointer]:
+    - img [ref=e366]
+```

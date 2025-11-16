@@ -235,6 +235,19 @@ export default function PerformanceOptimization() {
     }
   }
 
+  const cacheHitRate = metrics?.database?.cacheHitRate ?? 0
+  const queryOptimization = metrics?.database?.queryOptimization ?? 0
+  const indexUsage = metrics?.database?.indexUsage ?? 0
+  const apiResponseTime = metrics?.api?.responseTime ?? 0
+  const apiThroughput = metrics?.api?.throughput ?? 0
+  const apiErrorRate = metrics?.api?.errorRate ?? 0
+  const apiCompressionRate = metrics?.api?.compressionRate ?? 0
+  const frontendLoadTime = metrics?.frontend?.loadTime ?? 0
+  const frontendFCP = metrics?.frontend?.firstContentfulPaint ?? 0
+  const frontendLCP = metrics?.frontend?.largestContentfulPaint ?? 0
+  const frontendCLS = metrics?.frontend?.cumulativeLayoutShift ?? 0
+  const infraCpuOptimization = metrics?.infrastructure?.cpuOptimization ?? 0
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -294,9 +307,9 @@ export default function PerformanceOptimization() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.database.cacheHitRate.toFixed(1)}%
+              {cacheHitRate.toFixed(1)}%
             </div>
-            <Progress value={metrics?.database.cacheHitRate} className="mt-2" />
+            <Progress value={cacheHitRate} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-1">
               缓存命中率
             </p>
@@ -310,16 +323,16 @@ export default function PerformanceOptimization() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.api.responseTime.toFixed(0)}ms
+              {apiResponseTime.toFixed(0)}ms
             </div>
             <div className="flex items-center mt-2">
-              {metrics?.api.responseTime < 200 ? (
+              {apiResponseTime < 200 ? (
                 <TrendingDown className="h-4 w-4 text-green-600 mr-1" />
               ) : (
                 <TrendingUp className="h-4 w-4 text-red-600 mr-1" />
               )}
               <span className="text-xs text-muted-foreground">
-                {metrics?.api.throughput.toFixed(0)} req/s
+                {apiThroughput.toFixed(0)} req/s
               </span>
             </div>
           </CardContent>
@@ -332,10 +345,10 @@ export default function PerformanceOptimization() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.frontend.loadTime.toFixed(1)}s
+              {frontendLoadTime.toFixed(1)}s
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              FCP: {metrics?.frontend.firstContentfulPaint.toFixed(1)}s
+              FCP: {frontendFCP.toFixed(1)}s
             </p>
           </CardContent>
         </Card>
@@ -347,9 +360,9 @@ export default function PerformanceOptimization() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.infrastructure.cpuOptimization.toFixed(1)}%
+              {infraCpuOptimization.toFixed(1)}%
             </div>
-            <Progress value={metrics?.infrastructure.cpuOptimization} className="mt-2" />
+            <Progress value={infraCpuOptimization} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-1">
               CPU优化率
             </p>
@@ -431,9 +444,9 @@ export default function PerformanceOptimization() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>查询优化率</span>
-                    <span>{metrics?.database.queryOptimization.toFixed(1)}%</span>
+                    <span>{queryOptimization.toFixed(1)}%</span>
                   </div>
-                  <Progress value={metrics?.database.queryOptimization} />
+                  <Progress value={queryOptimization} />
                 </div>
               </CardContent>
             </Card>
@@ -446,9 +459,9 @@ export default function PerformanceOptimization() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>索引使用率</span>
-                    <span>{metrics?.database.indexUsage.toFixed(1)}%</span>
+                    <span>{indexUsage.toFixed(1)}%</span>
                   </div>
-                  <Progress value={metrics?.database.indexUsage} />
+                  <Progress value={indexUsage} />
                 </div>
               </CardContent>
             </Card>
@@ -465,15 +478,15 @@ export default function PerformanceOptimization() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>吞吐量</span>
-                    <span>{metrics?.api.throughput.toFixed(0)} req/s</span>
+                    <span>{apiThroughput.toFixed(0)} req/s</span>
                   </div>
                   <div className="flex justify-between">
                     <span>错误率</span>
-                    <span>{metrics?.api.errorRate.toFixed(2)}%</span>
+                    <span>{apiErrorRate.toFixed(2)}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span>压缩率</span>
-                    <span>{metrics?.api.compressionRate.toFixed(1)}%</span>
+                    <span>{apiCompressionRate.toFixed(1)}%</span>
                   </div>
                 </div>
               </CardContent>
@@ -491,11 +504,11 @@ export default function PerformanceOptimization() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>LCP</span>
-                    <span>{metrics?.frontend.largestContentfulPaint.toFixed(1)}s</span>
+                    <span>{frontendLCP.toFixed(1)}s</span>
                   </div>
                   <div className="flex justify-between">
                     <span>CLS</span>
-                    <span>{metrics?.frontend.cumulativeLayoutShift.toFixed(3)}</span>
+                    <span>{frontendCLS.toFixed(3)}</span>
                   </div>
                 </div>
               </CardContent>

@@ -35,6 +35,7 @@ async redirect({ url, baseUrl, user }) {
     const locale = localeMatch ? localeMatch[1] : null
     
     // Check if attempting to redirect to /admin route
+    
     const isAdminRoute = url.includes('/admin')
     const userRole = (user?.role as string) || 'USER'
     
@@ -2390,8 +2391,8 @@ jobs:
 | **Founder Admin Schema** | ✅ Live | Database | 8 models, 3 indexes |
 | **Build** | ✅ Pass | 87 routes | 0 warnings |
 | **Tests** | ✅ Pass | 7/7 tests | Unit + E2E passing |
-| **Production** | ✅ Live | [apexrebate-1-40fla36ew.vercel.app](https://apexrebate-1-40fla36ew-minh-longs-projects-f5c82c9b.vercel.app) | **Nov 10 deploy (latest)** |
-| **Admin Signin Fix** | ✅ Live | All 5 bugs fixed | Role validation, locale preservation, Next.js 15 compat, redirect race condition |
+| **Production** | ✅ Live | [apexrebate-1-malwv5isv.vercel.app](https://apexrebate-1-malwv5isv-minh-longs-projects-f5c82c9b.vercel.app) | **Nov 10 deploy v2 (session retry)** |
+| **Admin Signin Fix** | ✅ Live | Session verification + retry | redirect:false + wait for session (3s max) |
 
 **Key Files Deployed:**
 - ✅ DLQ replay center (list/replay/delete APIs)

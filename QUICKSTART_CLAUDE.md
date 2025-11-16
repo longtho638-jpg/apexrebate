@@ -37,7 +37,7 @@ Bạn sẽ thấy giao diện chat với Claude Sonnet 4.5!
 ✅ `src/lib/ai-config.ts` - Cấu hình models  
 ✅ `src/lib/anthropic-service.ts` - Service gọi API  
 ✅ `src/app/api/ai/chat/route.ts` - REST API endpoint  
-✅ `src/hooks/use-ai-chat.ts` - React hooks  
+✅ `src/hooks/useAiChat.ts` - React hooks  
 ✅ `src/components/claude-sonnet-demo.tsx` - Demo UI  
 ✅ `src/app/ai-demo/page.tsx` - Demo page  
 ✅ `.env.example` - Template env vars  
@@ -45,7 +45,7 @@ Bạn sẽ thấy giao diện chat với Claude Sonnet 4.5!
 ## 💻 Sử dụng trong code
 
 ```tsx
-import { useAIChat } from '@/hooks/use-ai-chat';
+import { useAIChat } from '@/hooks/useAiChat';
 
 export default function MyComponent() {
   const { messages, sendMessage, isLoading } = useAIChat({

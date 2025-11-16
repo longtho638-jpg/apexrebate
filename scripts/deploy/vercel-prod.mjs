@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { $ } from "zx";
 import fs from "fs";
+import "dotenv/config";
 $.verbose = false;
 
 if (!process.env.VERCEL_TOKEN) {

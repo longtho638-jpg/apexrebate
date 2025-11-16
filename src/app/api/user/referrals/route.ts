@@ -48,7 +48,7 @@ export async function GET() {
     // Process referrals data
     const referrals = user.referredUsers.map(referral => {
       const totalEarnings = referral.payouts.reduce((sum, payout) => sum + payout.amount, 0);
-      const status = referral.tradingVolume > 0 ? 'active' : 'pending';
+      const status = (referral.tradingVolume || 0) > 0 ? 'active' : 'pending';
       
       return {
         id: referral.id,

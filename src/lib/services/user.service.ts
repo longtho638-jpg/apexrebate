@@ -1,5 +1,5 @@
 import { db } from '@/lib/db';
-import { User, UserTier, PayoutStatus, ActivityType } from '@prisma/client';
+import { UserTier, PayoutStatus, ActivityType } from '@prisma/client';
 import { nanoid } from 'nanoid';
 
 export class UserService {
@@ -19,10 +19,10 @@ export class UserService {
       });
 
       // Handle referral logic - lookup referrer by referralCode
-      let referredBy = null;
+      let referredBy: string | null = null;
       if (userData.referralCode && !existingUser) {
         // Only process referral for new users
-        const referrer = await db.users.findUnique({
+        const referrer = await db.users.findFirst({
           where: { referralCode: userData.referralCode }
         });
         if (referrer) {
@@ -49,6 +49,7 @@ export class UserService {
         
         return await db.users.create({
           data: {
+            id: nanoid(),
             email: userData.email,
             name: userData.name,
             tradingVolume: userData.tradingVolume ? parseFloat(userData.tradingVolume) : 0,
@@ -83,12 +84,12 @@ export class UserService {
             orderBy: { createdAt: 'desc' },
             take: 10
           },
-          achievements: {
+          user_achievements: {
             include: {
-              achievement: true
+              achievements: true
             }
           },
-          activities: {
+          user_activities: {
             orderBy: { createdAt: 'desc' },
             take: 20
           }
@@ -157,8 +158,9 @@ export class UserService {
   // Record user activity
   static async recordActivity(userId: string, type: ActivityType, description: string, metadata?: any) {
     try {
-      return await db.userActivity.create({
+      return await db.user_activities.create({
         data: {
+          id: nanoid(),
           userId,
           type,
           description,
@@ -276,11 +278,11 @@ export class UserService {
         },
         savingsHistory,
         brokerStats,
-        achievements: user.achievements.map(ua => ({
-          id: ua.achievement.id,
-          title: ua.achievement.title,
-          description: ua.achievement.description,
-          icon: ua.achievement.icon,
+        achievements: user.user_achievements.map(ua => ({
+          id: ua.achievements.id,
+          title: ua.achievements.title,
+          description: ua.achievements.description,
+          icon: ua.achievements.icon,
           unlocked: ua.progress === 100,
           date: ua.unlockedAt.toISOString().split('T')[0],
           progress: ua.progress

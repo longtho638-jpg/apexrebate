@@ -15,9 +15,10 @@ import AdminDashboardClient from '@/components/admin/admin-client';
 export default async function AdminPage({
   params,
 }: {
-  params: { locale: string };
+  params: { locale: string } | Promise<{ locale: string }>;
 }) {
-  const locale = params.locale || 'en';
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale || 'en';
 
   // 🔒 Server-side authentication check
   const session = await getServerSession(authOptions);

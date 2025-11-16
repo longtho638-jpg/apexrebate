@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the referrer
-    const referrer = await db.users.findUnique({
+    const referrer = await db.users.findFirst({
       where: { referralCode }
     });
 

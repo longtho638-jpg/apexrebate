@@ -29,12 +29,12 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        achievements: {
+        user_achievements: {
           include: {
-            achievement: true
+            achievements: true
           }
         },
-        activities: {
+        user_activities: {
           orderBy: { createdAt: 'desc' },
           take: 100
         }
@@ -68,8 +68,8 @@ export async function GET(request: NextRequest) {
 async function generateInsights(user: any) {
   const payouts = user.payouts
   const referrals = user.referredUsers
-  const achievements = user.achievements
-  const activities = user.activities
+  const achievements = user.user_achievements
+  const activities = user.user_activities
 
   // 1. Performance Insights
   const performanceInsights = generatePerformanceInsights(payouts, user)
@@ -194,7 +194,7 @@ function generateReferralInsights(referrals: any[], user: any) {
 
 function generateAchievementInsights(achievements: any[], user: any) {
   const achievementsByCategory = achievements.reduce((acc, ua) => {
-    const category = ua.achievement.category
+    const category = ua.achievements.category
     if (!acc[category]) acc[category] = []
     acc[category].push(ua)
     return acc
@@ -206,7 +206,7 @@ function generateAchievementInsights(achievements: any[], user: any) {
     return {
       category,
       count: typedAchs.length,
-      totalPoints: typedAchs.reduce((sum, ach) => sum + ach.achievement.points, 0),
+      totalPoints: typedAchs.reduce((sum, ach) => sum + ach.achievements.points, 0),
       completionRate: calculateCategoryCompletionRate(category, typedAchs.length)
     };
   })
@@ -218,7 +218,7 @@ function generateAchievementInsights(achievements: any[], user: any) {
 
   return {
     totalAchievements: achievements.length,
-    totalPoints: achievements.reduce((sum, ach) => sum + ach.achievement.points, 0),
+    totalPoints: achievements.reduce((sum, ach) => sum + ach.achievements.points, 0),
     categoryProgress,
     recentAchievements,
     achievementMomentum: recentAchievements > 0 ? 'high' : achievements.length > 5 ? 'medium' : 'low',
@@ -238,7 +238,7 @@ function generatePredictiveInsights(payouts: any[], referrals: any[], user: any)
   const referralPrediction = predictReferralGrowth(referrals)
 
   // Predict achievement timeline
-  const achievementPrediction = predictAchievementTimeline(user.achievements, user)
+  const achievementPrediction = predictAchievementTimeline(user.user_achievements, user)
 
   return {
     nextMonthPrediction: prediction,

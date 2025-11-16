@@ -126,7 +126,7 @@ export class StepByStepAutomation {
       this.startScheduler();
 
       logger.info('Step-by-Step Automation System initialized successfully');
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize Step-by-Step Automation System', error);
       throw error;
     }
@@ -461,7 +461,7 @@ export class StepByStepAutomation {
       await this.addExecutionLog(executionId, 'info', `Starting workflow: ${workflow.name}`);
 
       for (const step of workflow.steps) {
-        if (execution.status === 'cancelled') break;
+        if ((execution.status as WorkflowExecution['status']) === 'cancelled') break;
 
         // 检查依赖
         if (!await this.checkStepDependencies(step, execution)) {
@@ -479,14 +479,14 @@ export class StepByStepAutomation {
         await this.executeStep(step, execution);
       }
 
-      if (execution.status !== 'cancelled') {
+      if ((execution.status as WorkflowExecution['status']) !== 'cancelled') {
         execution.status = 'completed';
         execution.endTime = new Date();
         execution.progress = 100;
         await this.addExecutionLog(executionId, 'info', 'Workflow completed successfully');
       }
 
-    } catch (error) {
+    } catch (error: any) {
       execution.status = 'failed';
       execution.endTime = new Date();
       await this.addExecutionLog(executionId, 'error', `Workflow failed: ${error.message}`);
@@ -499,7 +499,7 @@ export class StepByStepAutomation {
     step.startTime = new Date();
     execution.currentStep = step.id;
 
-    await this.addExecutionLog(executionId, 'info', `Executing step: ${step.name}`);
+    await this.addExecutionLog(execution.id, 'info', `Executing step: ${step.name}`);
 
     try {
       for (const action of step.actions) {
@@ -517,15 +517,15 @@ export class StepByStepAutomation {
         execution.progress = (execution.completedSteps.length / workflow.steps.length) * 100;
       }
 
-      await this.addExecutionLog(executionId, 'info', `Step completed: ${step.name}`);
+      await this.addExecutionLog(execution.id, 'info', `Step completed: ${step.name}`);
 
-    } catch (error) {
+    } catch (error: any) {
       step.status = 'failed';
       step.endTime = new Date();
       step.errorMessage = error.message;
       execution.failedSteps.push(step.id);
 
-      await this.addExecutionLog(executionId, 'error', `Step failed: ${step.name} - ${error.message}`);
+      await this.addExecutionLog(execution.id, 'error', `Step failed: ${step.name} - ${error.message}`);
 
       // 尝试重试
       if (step.retryPolicy && await this.shouldRetryStep(step)) {

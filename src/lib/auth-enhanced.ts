@@ -31,10 +31,7 @@ export const authOptions: NextAuthOptions = {
 
         // Find user by email
         const user = await db.users.findUnique({
-          where: { email: credentials.email },
-          include: {
-            emailNotifications: true
-          }
+          where: { email: credentials.email }
         })
 
         if (!user || !user.password) {
@@ -123,7 +120,7 @@ export async function sendVerificationEmail(email: string) {
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
   // Store verification token
-  await db.verificationToken.create({
+  await db.verification_tokens.create({
     data: {
       identifier: email,
       token,
@@ -149,7 +146,7 @@ export async function sendVerificationEmail(email: string) {
 }
 
 export async function verifyEmail(token: string) {
-  const verificationToken = await db.verificationToken.findUnique({
+  const verificationToken = await db.verification_tokens.findUnique({
     where: { token }
   })
 
@@ -164,7 +161,7 @@ export async function verifyEmail(token: string) {
   })
 
   // Delete verification token
-  await db.verificationToken.delete({
+  await db.verification_tokens.delete({
     where: { token }
   })
 
@@ -186,7 +183,7 @@ export async function sendPasswordResetEmail(email: string) {
   const expires = new Date(Date.now() + 1 * 60 * 60 * 1000) // 1 hour
 
   // Store reset token
-  await db.verificationToken.create({
+  await db.verification_tokens.create({
     data: {
       identifier: email,
       token,
@@ -212,7 +209,7 @@ export async function sendPasswordResetEmail(email: string) {
 }
 
 export async function resetPassword(token: string, newPassword: string) {
-  const resetToken = await db.verificationToken.findUnique({
+  const resetToken = await db.verification_tokens.findUnique({
     where: { token }
   })
 
@@ -230,7 +227,7 @@ export async function resetPassword(token: string, newPassword: string) {
   })
 
   // Delete reset token
-  await db.verificationToken.delete({
+  await db.verification_tokens.delete({
     where: { token }
   })
 
@@ -385,19 +382,13 @@ export async function checkPasswordStrength(password: string): Promise<{
 }
 
 export async function detectSuspiciousActivity(userId: string, activity: string, ip: string) {
-  // Log suspicious activity
-  await db.userActivity.create({
-    data: {
-      userId,
-      type: 'SECURITY_ALERT',
-      description: `Suspicious activity: ${activity}`,
-      metadata: JSON.stringify({ ip, timestamp: new Date() })
-    }
+  // 当前版本仅记录日志。生产环境可集成至 SIEM/告警系统
+  console.warn('[Security] Suspicious activity detected', {
+    userId,
+    activity,
+    ip,
+    timestamp: new Date().toISOString()
   })
 
-  // In production, implement more sophisticated detection
-  // - IP geolocation checking
-  // - Multiple failed login attempts
-  // - Unusual device patterns
-  // - Rapid password changes
+  // TODO: Implement geo-ip checks, rate limits, device fingerprinting, etc.
 }

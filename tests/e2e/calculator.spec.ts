@@ -13,8 +13,7 @@ test.describe('Guest - Calculator', () => {
     await page.locator('[data-testid="trade-type-trigger"]').click()
     await page.locator('[data-testid="trade-type-option-taker"]').click()
 
-    // Bấm tính toán
-    await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
+    await page.locator('[data-testid="calculate-button"]').click()
 
     // Kết quả hiển thị
     await expect(page.getByText(/Tiết kiệm hàng tháng/i)).toBeVisible()
@@ -39,7 +38,7 @@ test.describe('Guest - Calculator', () => {
     await page.locator('[data-testid="trade-type-trigger"]').click()
     await page.locator('[data-testid="trade-type-option-maker"]').click()
 
-    await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
+    await page.locator('[data-testid="calculate-button"]').click()
 
     // Tab Phân tích có ROI và tiết kiệm mỗi lệnh
     await page.getByRole('tab', { name: /Phân tích/i }).click()
@@ -49,12 +48,6 @@ test.describe('Guest - Calculator', () => {
 
   test('Xử lý input không hợp lệ', async ({ page }) => {
     await page.fill('#volume', '-5')
-    await page.getByRole('button', { name: /Tính toán|Đang tính/i }).click()
-
-    // Chờ calculation hoàn thành
-    await page.getByRole('button', { name: 'Tính toán' }).waitFor()
-
-    // Với volume <= 0 sẽ không có kết quả → hiển thị card "Chưa có kết quả"
-    await expect(page.getByText(/Chưa có kết quả/i)).toBeVisible()
+    await expect(page.locator('[data-testid="calculate-button"]')).toBeDisabled()
   })
 })

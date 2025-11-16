@@ -52,13 +52,13 @@ export async function GET() {
       totalSavings,
       memberSince: user.createdAt.toISOString(),
       status: 'active',
-      phone: user.phone || '',
-      timezone: user.timezone || 'UTC+7',
+      phone: '',
+      timezone: 'UTC+7',
       notifications: {
-        email: user.emailNotifications !== false,
-        payout: user.payoutNotifications !== false,
-        referral: user.referralNotifications !== false,
-        weekly: user.weeklyNotifications !== false
+        email: true,
+        payout: true,
+        referral: true,
+        weekly: true
       }
     };
 
@@ -90,12 +90,9 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const {
       name,
-      phone,
-      timezone,
       tradingVolume,
       preferredBroker,
-      experience,
-      notifications
+      experience
     } = body;
 
     // Validate required fields
@@ -118,15 +115,9 @@ export async function PUT(request: NextRequest) {
       where: { id: session.user.id },
       data: {
         name: name.trim(),
-        phone: phone || null,
-        timezone: timezone || 'UTC+7',
         tradingVolume: tradingVolume ? parseFloat(tradingVolume) : undefined,
         preferredBroker: preferredBroker || undefined,
         experience: experience || undefined,
-        emailNotifications: notifications?.email !== false,
-        payoutNotifications: notifications?.payout !== false,
-        referralNotifications: notifications?.referral !== false,
-        weeklyNotifications: notifications?.weekly !== false,
         updatedAt: new Date()
       }
     });
@@ -170,13 +161,13 @@ export async function PUT(request: NextRequest) {
       totalSavings,
       memberSince: user.createdAt.toISOString(),
       status: 'active',
-      phone: user.phone || '',
-      timezone: user.timezone || 'UTC+7',
+      phone: '',
+      timezone: 'UTC+7',
       notifications: {
-        email: user.emailNotifications !== false,
-        payout: user.payoutNotifications !== false,
-        referral: user.referralNotifications !== false,
-        weekly: user.weeklyNotifications !== false
+        email: true,
+        payout: true,
+        referral: true,
+        weekly: true
       }
     };
 

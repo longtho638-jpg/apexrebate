@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -17,11 +18,11 @@ export async function GET(
     const reviews = await db.tool_reviews.findMany({
       where: { toolId: id },
       include: {
-        user: {
+        users: {
           select: {
             id: true,
             name: true,
-            avatar: true
+            image: true
           }
         }
       },
@@ -30,11 +31,18 @@ export async function GET(
       take: limit
     });
 
-    const reviewsWithParsedData = reviews.map(review => ({
-      ...review,
-      pros: review.pros ? JSON.parse(review.pros) : [],
-      cons: review.cons ? JSON.parse(review.cons) : []
-    }));
+    const reviewsWithParsedData = reviews.map(review => {
+      const { users, ...rest } = review;
+      const userData = users
+        ? { id: users.id, name: users.name, avatar: users.image }
+        : null;
+      return {
+        ...rest,
+        user: userData,
+        pros: review.pros ? JSON.parse(review.pros) : [],
+        cons: review.cons ? JSON.parse(review.cons) : []
+      };
+    });
 
     const total = await db.tool_reviews.count({
       where: { toolId: id }
@@ -84,7 +92,7 @@ export async function POST(
     }
 
     // Check if user has purchased this tool
-    const purchase = await db.toolOrder.findFirst({
+    const purchase = await db.tool_orders.findFirst({
       where: {
         toolId: id,
         buyerId: session.user.id,
@@ -104,6 +112,7 @@ export async function POST(
 
     const review = await db.tool_reviews.create({
       data: {
+        id: randomUUID(),
         toolId: id,
         userId: session.user.id,
         rating,
@@ -111,21 +120,27 @@ export async function POST(
         content,
         pros: pros ? JSON.stringify(pros) : null,
         cons: cons ? JSON.stringify(cons) : null,
-        verified: !!purchase
+        verified: !!purchase,
+        updatedAt: new Date()
       },
       include: {
-        user: {
+        users: {
           select: {
             id: true,
             name: true,
-            avatar: true
+            image: true
           }
         }
       }
     });
 
+    const { users, ...rest } = review;
+    const userData = users
+      ? { id: users.id, name: users.name, avatar: users.image }
+      : null;
     const reviewWithParsedData = {
-      ...review,
+      ...rest,
+      user: userData,
       pros: review.pros ? JSON.parse(review.pros) : [],
       cons: review.cons ? JSON.parse(review.cons) : []
     };

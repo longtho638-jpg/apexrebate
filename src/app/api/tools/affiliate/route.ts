@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create affiliate link
-    const affiliateLink = await db.toolAffiliateLink.upsert({
+    const affiliateLink = await db.tool_affiliate_links.upsert({
       where: {
         toolId_affiliateId: {
           toolId,
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       },
       update: {},
       create: {
+        id: randomUUID(),
         toolId,
         affiliateId: affiliate.id,
         linkCode: `${affiliateCode}-${toolId.slice(-8)}`,
@@ -79,19 +81,19 @@ export async function GET(request: NextRequest) {
 
     if (toolId) {
       // Get affiliate stats for specific tool
-      const stats = await db.toolAffiliateLink.findMany({
+      const stats = await db.tool_affiliate_links.findMany({
         where: { 
           affiliateId: session.user.id,
           toolId 
         },
         include: {
-          tool: {
+          tools: {
             select: {
               name: true,
               price: true
             }
           },
-          orders: {
+          tool_orders: {
             where: { status: 'COMPLETED' }
           }
         }
@@ -99,28 +101,28 @@ export async function GET(request: NextRequest) {
 
       const affiliateStats = stats.map(link => ({
         id: link.id,
-        toolName: link.tool.name,
+        toolName: link.tools.name,
         linkCode: link.linkCode,
         commission: link.commission,
-        totalSales: link.orders.length,
-        totalRevenue: link.orders.reduce((sum, order) => sum + order.amount, 0),
-        totalCommission: link.orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
+        totalSales: link.tool_orders.length,
+        totalRevenue: link.tool_orders.reduce((sum, order) => sum + order.amount, 0),
+        totalCommission: link.tool_orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
         createdAt: link.createdAt
       }));
 
       return NextResponse.json({ affiliateStats });
     } else {
       // Get all affiliate links for user
-      const affiliateLinks = await db.toolAffiliateLink.findMany({
+      const affiliateLinks = await db.tool_affiliate_links.findMany({
         where: { affiliateId: session.user.id },
         include: {
-          tool: {
+          tools: {
             select: {
               name: true,
               price: true
             }
           },
-          orders: {
+          tool_orders: {
             where: { status: 'COMPLETED' }
           }
         }
@@ -129,9 +131,9 @@ export async function GET(request: NextRequest) {
       const totalStats = affiliateLinks.reduce((acc, link) => {
         return {
           totalLinks: acc.totalLinks + 1,
-          totalSales: acc.totalSales + link.orders.length,
-          totalRevenue: acc.totalRevenue + link.orders.reduce((sum, order) => sum + order.amount, 0),
-          totalCommission: acc.totalCommission + link.orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0)
+          totalSales: acc.totalSales + link.tool_orders.length,
+          totalRevenue: acc.totalRevenue + link.tool_orders.reduce((sum, order) => sum + order.amount, 0),
+          totalCommission: acc.totalCommission + link.tool_orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0)
         };
       }, { totalLinks: 0, totalSales: 0, totalRevenue: 0, totalCommission: 0 });
 
@@ -139,12 +141,12 @@ export async function GET(request: NextRequest) {
         summary: totalStats,
         links: affiliateLinks.map(link => ({
           id: link.id,
-          toolName: link.tool.name,
+          toolName: link.tools.name,
           linkCode: link.linkCode,
           commissionRate: link.commission,
-          sales: link.orders.length,
-          revenue: link.orders.reduce((sum, order) => sum + order.amount, 0),
-          commissionEarned: link.orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
+          sales: link.tool_orders.length,
+          revenue: link.tool_orders.reduce((sum, order) => sum + order.amount, 0),
+          commissionEarned: link.tool_orders.reduce((sum, order) => sum + (order.amount * link.commission / 100), 0),
           createdAt: link.createdAt
         }))
       });

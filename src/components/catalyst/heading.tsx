@@ -17,7 +17,7 @@ export function Heading({
     4: 'text-lg font-semibold text-slate-900',
   };
 
-  const Component = `h${level}` as keyof JSX.IntrinsicElements;
+  const Component = `h${level}` as keyof React.JSX.IntrinsicElements;
 
   return React.createElement(Component, {
     className: `${baseClasses[level]} ${className}`,

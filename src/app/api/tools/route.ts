@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -159,6 +160,7 @@ export async function POST(request: NextRequest) {
     // Create tool
     const tool = await db.tools.create({
       data: {
+        id: randomUUID(),
         name,
         description,
         price: parseFloat(price),
@@ -169,7 +171,8 @@ export async function POST(request: NextRequest) {
         requirements,
         documentation,
         sellerId: session.user.id,
-        status: 'PENDING'
+        status: 'PENDING',
+        updatedAt: new Date()
       },
       include: {
         users: {

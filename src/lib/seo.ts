@@ -1,5 +1,19 @@
 import { Metadata } from 'next'
 
+type OpenGraphType =
+  | 'article'
+  | 'website'
+  | 'book'
+  | 'profile'
+  | 'music.song'
+  | 'music.album'
+  | 'music.playlist'
+  | 'music.radio_station'
+  | 'video.movie'
+  | 'video.episode'
+  | 'video.tv_show'
+  | 'video.other'
+
 export interface SEOConfig {
   title: string
   description: string
@@ -7,8 +21,8 @@ export interface SEOConfig {
   openGraph?: {
     title?: string
     description?: string
-    images?: string[]
-    type?: string
+    images?: Array<string | { url: string; width?: number; height?: number; alt?: string }>
+    type?: OpenGraphType
     locale?: string
     siteName?: string
   }

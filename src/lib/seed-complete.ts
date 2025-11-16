@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { db } from '@/lib/db';
 import { ToolType, ToolStatus } from '@prisma/client';
 
@@ -7,12 +8,14 @@ async function createSampleUser() {
       where: { email: 'seller@example.com' },
       update: {},
       create: {
+        id: randomUUID(),
         email: 'seller@example.com',
         name: 'Người Bán Công Cụ',
         role: 'USER',
         tradingVolume: 50000,
         preferredBroker: 'binance',
-        experience: 'advanced'
+        experience: 'advanced',
+        updatedAt: new Date()
       }
     });
 
@@ -33,82 +36,76 @@ export async function seedToolsMarketplace() {
       return;
     }
 
-    // Create categories
-    const categories = await Promise.all([
-      db.toolCategory.upsert({
-        where: { slug: 'indicators' },
-        update: {},
-        create: {
-          name: 'Chỉ báo Kỹ thuật',
-          slug: 'indicators',
-          description: 'Các chỉ báo phân tích kỹ thuật tùy chỉnh',
-          icon: 'trending-up',
-          sortOrder: 1
-        }
-      }),
-      db.toolCategory.upsert({
-        where: { slug: 'bots' },
-        update: {},
-        create: {
-          name: 'Bot Giao dịch',
-          slug: 'bots',
-          description: 'Bot tự động hóa giao dịch',
-          icon: 'cpu',
-          sortOrder: 2
-        }
-      }),
-      db.toolCategory.upsert({
-        where: { slug: 'scanners' },
-        update: {},
-        create: {
-          name: 'Market Scanner',
-          slug: 'scanners',
-          description: 'Công cụ quét thị trường',
-          icon: 'radar',
-          sortOrder: 3
-        }
-      }),
-      db.toolCategory.upsert({
-        where: { slug: 'strategies' },
-        update: {},
-        create: {
-          name: 'Chiến lược Giao dịch',
-          slug: 'strategies',
-          description: 'Chiến lược giao dịch đã được kiểm chứng',
-          icon: 'lightbulb',
-          sortOrder: 4
-        }
-      }),
-      db.toolCategory.upsert({
-        where: { slug: 'education' },
-        update: {},
-        create: {
-          name: 'Giáo dục',
-          slug: 'education',
-          description: 'Ebook, khóa học và tài liệu học tập',
-          icon: 'book-open',
-          sortOrder: 5
-        }
-      })
-    ]);
+    // Create categories aligned with Prisma schema
+    const categoryDefinitions = [
+      {
+        key: 'indicators',
+        name: 'Chỉ báo Kỹ thuật',
+        description: 'Các chỉ báo phân tích kỹ thuật tùy chỉnh',
+        icon: 'trending-up'
+      },
+      {
+        key: 'bots',
+        name: 'Bot Giao dịch',
+        description: 'Bot tự động hóa giao dịch',
+        icon: 'cpu'
+      },
+      {
+        key: 'scanners',
+        name: 'Market Scanner',
+        description: 'Công cụ quét thị trường',
+        icon: 'radar'
+      },
+      {
+        key: 'strategies',
+        name: 'Chiến lược Giao dịch',
+        description: 'Chiến lược giao dịch đã được kiểm chứng',
+        icon: 'lightbulb'
+      },
+      {
+        key: 'education',
+        name: 'Giáo dục',
+        description: 'Ebook, khóa học và tài liệu học tập',
+        icon: 'book-open'
+      }
+    ];
+
+    const categories = await Promise.all(
+      categoryDefinitions.map(def =>
+        db.tool_categories.upsert({
+          where: { name: def.name },
+          update: {
+            description: def.description,
+            icon: def.icon,
+            updatedAt: new Date()
+          },
+          create: {
+            id: randomUUID(),
+            name: def.name,
+            description: def.description,
+            icon: def.icon,
+            updatedAt: new Date()
+          }
+        })
+      )
+    );
+
+    const categoryMap = new Map<string, string>();
+    categoryDefinitions.forEach((def, index) => {
+      categoryMap.set(def.key, categories[index].id);
+    });
 
     // Create sample tools
     const tools = [
       {
-        title: 'RSI Divergence Master',
-        slug: 'rsi-divergence-master',
+        name: 'RSI Divergence Master',
         description: 'Chỉ báo RSI nâng cao phát hiện sự phân kỳ một cách tự động. Công cụ này giúp bạn xác định các điểm đảo ngược tiềm năng với độ chính xác cao.',
         shortDescription: 'Chỉ báo RSI phát hiện phân kỳ tự động',
-        categoryId: categories[0].id,
-        sellerId: sellerUser.id,
+        categoryKey: 'indicators',
         price: 49.99,
-        currency: 'USD',
         type: ToolType.INDICATOR,
-        status: ToolStatus.PUBLISHED,
-        images: [
-          'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop'
-        ],
-        tags: ['RSI', 'Divergence', 'Technical Analysis', 'MT4', 'MT5'],
+        status: ToolStatus.APPROVED,
+        image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop',
         features: [
           'Phát hiện phân kỳ ẩn và phân kỳ thông thường',
           'Cảnh báo âm thanh và visual',
@@ -116,27 +113,17 @@ export async function seedToolsMarketplace() {
           'Hỗ trợ multiple timeframe',
           'Tích hợp với TradingView'
         ],
-        rating: 4.8,
-        reviewCount: 23,
-        salesCount: 156,
-        isFeatured: true,
-        publishedAt: new Date('2024-01-15')
+        featured: true
       },
       {
-        title: 'Grid Trading Bot Pro',
-        slug: 'grid-trading-bot-pro',
+        name: 'Grid Trading Bot Pro',
         description: 'Bot giao dịch lưới chuyên nghiệp với thuật toán thông minh. Tự động đặt lệnh mua bán theo grid để tối ưu hóa lợi nhuận trong thị trường sideway.',
         shortDescription: 'Bot giao dịch lưới tự động',
-        categoryId: categories[1].id,
-        sellerId: sellerUser.id,
+        categoryKey: 'bots',
         price: 199.99,
-        currency: 'USD',
         type: ToolType.BOT,
-        status: ToolStatus.PUBLISHED,
-        images: [
-          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop'
-        ],
-        tags: ['Grid Trading', 'Bot', 'Automated Trading', 'Binance', 'Bybit'],
+        status: ToolStatus.APPROVED,
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
         features: [
           'Thuật toán grid thông minh',
           'Quản lý rủi ro tự động',
@@ -144,27 +131,17 @@ export async function seedToolsMarketplace() {
           'Hỗ trợ nhiều sàn giao dịch',
           'Dashboard theo dõi real-time'
         ],
-        rating: 4.6,
-        reviewCount: 18,
-        salesCount: 89,
-        isFeatured: true,
-        publishedAt: new Date('2024-01-20')
+        featured: true
       },
       {
-        title: 'Volume Profile Scanner',
-        slug: 'volume-profile-scanner',
+        name: 'Volume Profile Scanner',
         description: 'Công cụ quét thị trường dựa trên phân tích khối lượng. Giúp xác định các vùng giá quan trọng và điểm vào lệnh tiềm năng.',
         shortDescription: 'Scanner phân tích khối lượng giá',
-        categoryId: categories[2].id,
-        sellerId: sellerUser.id,
+        categoryKey: 'scanners',
         price: 79.99,
-        currency: 'USD',
         type: ToolType.SCANNER,
-        status: ToolStatus.PUBLISHED,
-        images: [
-          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop'
-        ],
-        tags: ['Volume Profile', 'Scanner', 'Market Analysis', 'Support Resistance'],
+        status: ToolStatus.APPROVED,
+        image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop',
         features: [
           'Phân tích volume profile real-time',
           'Xác định vùng giá cao/thấp',
@@ -172,27 +149,17 @@ export async function seedToolsMarketplace() {
           'Hỗ trợ multiple timeframe',
           'Export dữ liệu phân tích'
         ],
-        rating: 4.5,
-        reviewCount: 12,
-        salesCount: 67,
-        isFeatured: false,
-        publishedAt: new Date('2024-02-01')
+        featured: false
       },
       {
-        title: 'Smart Money Concepts',
-        slug: 'smart-money-concepts',
+        name: 'Smart Money Concepts',
         description: 'Chiến lược giao dịch dựa trên các khái niệm smart money. Hướng dẫn chi tiết cách xác định và theo dõi dòng tiền thông minh.',
         shortDescription: 'Chiến lược giao dịch Smart Money',
-        categoryId: categories[3].id,
-        sellerId: sellerUser.id,
+        categoryKey: 'strategies',
         price: 29.99,
-        currency: 'USD',
         type: ToolType.STRATEGY,
-        status: ToolStatus.PUBLISHED,
-        images: [
-          'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop'
-        ],
-        tags: ['Smart Money', 'Price Action', 'Market Structure', 'Liquidity'],
+        status: ToolStatus.APPROVED,
+        image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=300&fit=crop',
         features: [
           'Phân tích market structure',
           'Xác định liquidity zones',
@@ -200,52 +167,55 @@ export async function seedToolsMarketplace() {
           'Quản lý rủi ro',
           'Case studies thực tế'
         ],
-        rating: 4.9,
-        reviewCount: 31,
-        salesCount: 234,
-        isFeatured: true,
-        publishedAt: new Date('2024-02-10')
+        featured: true
       },
       {
-        title: 'Crypto Trading Masterclass',
-        slug: 'crypto-trading-masterclass',
+        name: 'Crypto Trading Masterclass',
         description: 'Khóa học toàn diện về giao dịch cryptocurrency. Từ cơ bản đến nâng cao, bao gồm cả phân tích kỹ thuật và fundamental.',
         shortDescription: 'Khóa học giao dịch Crypto toàn diện',
-        categoryId: categories[4].id,
-        sellerId: sellerUser.id,
+        categoryKey: 'education',
         price: 149.99,
-        currency: 'USD',
-        type: ToolType.COURSE,
-        status: ToolStatus.PUBLISHED,
-        images: [
-          'https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=400&h=300&fit=crop'
-        ],
-        tags: ['Crypto', 'Trading Course', 'Technical Analysis', 'Fundamental Analysis'],
+        type: ToolType.EDUCATION,
+        status: ToolStatus.APPROVED,
+        image: 'https://images.unsplash.com/photo-1621504450181-5d356f61d307?w=400&h=300&fit=crop',
         features: [
           '50+ video bài giảng',
           'Phân tích kỹ thuật nâng cao',
           'Fundamental analysis',
           'Risk management',
-          'Community support',
-          'Certificate of completion'
+          'Community support'
         ],
-        rating: 4.7,
-        reviewCount: 45,
-        salesCount: 178,
-        isFeatured: false,
-        publishedAt: new Date('2024-02-15')
+        featured: false
       }
     ];
 
     for (const toolData of tools) {
+      const categoryId = categoryMap.get(toolData.categoryKey);
+      if (!categoryId) continue;
+
       await db.tools.upsert({
-        where: { slug: toolData.slug },
-        update: toolData,
+        where: {
+          name_sellerId: {
+            name: toolData.name,
+            sellerId: sellerUser.id
+          }
+        },
+        update: {},
         create: {
-          ...toolData,
-          images: JSON.stringify(toolData.images),
-          tags: JSON.stringify(toolData.tags),
-          features: JSON.stringify(toolData.features)
+          id: randomUUID(),
+          name: toolData.name,
+          description: toolData.description,
+          price: toolData.price,
+          category: categoryId,
+          type: toolData.type,
+          image: toolData.image,
+          features: JSON.stringify(toolData.features),
+          requirements: 'Không yêu cầu đặc biệt',
+          documentation: toolData.shortDescription,
+          status: toolData.status,
+          featured: toolData.featured,
+          sellerId: sellerUser.id,
+          updatedAt: new Date()
         }
       });
     }
@@ -259,41 +229,49 @@ export async function seedToolsMarketplace() {
       const reviews = [
         {
           toolId: tool.id,
-          reviewerId: sellerUser.id,
+          userId: sellerUser.id,
           rating: 5,
           title: 'Tuyệt vời!',
           content: 'Công cụ rất hữu ích và dễ sử dụng. Đã giúp tôi cải thiện kết quả giao dịch đáng kể.',
           pros: ['Dễ sử dụng', 'Hiệu quả cao', 'Hỗ trợ tốt'],
           cons: [],
-          isVerified: true,
-          status: 'APPROVED'
+          verified: true
         },
         {
           toolId: tool.id,
-          reviewerId: sellerUser.id,
+          userId: sellerUser.id,
           rating: 4,
           title: 'Rất tốt',
           content: 'Chất lượng tốt, đáng đồng tiền. Có thể cải thiện thêm về tài liệu hướng dẫn.',
           pros: ['Giá cả hợp lý', 'Chất lượng tốt'],
           cons: ['Cần thêm tài liệu'],
-          isVerified: true,
-          status: 'APPROVED'
+          verified: true
         }
       ];
 
       for (const reviewData of reviews) {
-        await db.toolReview.upsert({
+        await db.tool_reviews.upsert({
           where: {
-            toolId_reviewerId: {
+            toolId_userId: {
               toolId: reviewData.toolId,
-              reviewerId: reviewData.reviewerId
+              userId: reviewData.userId
             }
           },
-          update: reviewData,
+          update: {
+            rating: reviewData.rating,
+            title: reviewData.title,
+            content: reviewData.content,
+            pros: JSON.stringify(reviewData.pros),
+            cons: JSON.stringify(reviewData.cons),
+            verified: reviewData.verified,
+            updatedAt: new Date()
+          },
           create: {
+            id: randomUUID(),
             ...reviewData,
             pros: JSON.stringify(reviewData.pros),
-            cons: JSON.stringify(reviewData.cons)
+            cons: JSON.stringify(reviewData.cons),
+            updatedAt: new Date()
           }
         });
       }

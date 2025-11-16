@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "sourcegraph.amp"
+        "sourcegraph.amp",
+        "qwenlm.qwen-code-vscode-ide-companion"
     ]
 }

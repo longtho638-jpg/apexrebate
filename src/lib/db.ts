@@ -1,4 +1,7 @@
-import { PrismaClient } from '@prisma/client'
+// ARCHITECTURE LOCK - DO NOT MODIFY
+// Hand-written core architecture. AI-generated code MUST import from here.
+
+import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

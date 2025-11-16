@@ -185,6 +185,24 @@ export default function SystemMonitoringDashboard() {
     }
   }
 
+  const cpuUsage = metrics?.cpu?.usage ?? 0
+  const cpuCores = metrics?.cpu?.cores ?? 0
+  const memoryPercentage = metrics?.memory?.percentage ?? 0
+  const memoryUsed = metrics?.memory?.used ?? 0
+  const memoryTotal = metrics?.memory?.total ?? 0
+  const diskPercentage = metrics?.disk?.percentage ?? 0
+  const diskUsed = metrics?.disk?.used ?? 0
+  const diskTotal = metrics?.disk?.total ?? 0
+  const networkLatency = metrics?.network?.latency ?? 0
+  const networkInbound = metrics?.network?.inbound ?? 0
+  const networkOutbound = metrics?.network?.outbound ?? 0
+  const databaseConnections = metrics?.database?.connections ?? 0
+  const databaseQueryTime = metrics?.database?.queryTime ?? 0
+  const databaseCacheHit = metrics?.database?.cacheHit ?? 0
+  const apiRequests = metrics?.api?.requests ?? 0
+  const apiResponseTime = metrics?.api?.responseTime ?? 0
+  const apiErrorRate = metrics?.api?.errorRate ?? 0
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -260,11 +278,11 @@ export default function SystemMonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.cpu.usage.toFixed(1)}%
+              {cpuUsage.toFixed(1)}%
             </div>
-            <Progress value={metrics?.cpu.usage} className="mt-2" />
+            <Progress value={cpuUsage} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-1">
-              {metrics?.cpu.cores} 核心
+              {cpuCores} 核心
             </p>
           </CardContent>
         </Card>
@@ -276,11 +294,11 @@ export default function SystemMonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.memory.percentage.toFixed(1)}%
+              {memoryPercentage.toFixed(1)}%
             </div>
-            <Progress value={metrics?.memory.percentage} className="mt-2" />
+            <Progress value={memoryPercentage} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-1">
-              {metrics?.memory.used.toFixed(1)}GB / {metrics?.memory.total}GB
+              {memoryUsed.toFixed(1)}GB / {memoryTotal}GB
             </p>
           </CardContent>
         </Card>
@@ -292,11 +310,11 @@ export default function SystemMonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.disk.percentage.toFixed(1)}%
+              {diskPercentage.toFixed(1)}%
             </div>
-            <Progress value={metrics?.disk.percentage} className="mt-2" />
+            <Progress value={diskPercentage} className="mt-2" />
             <p className="text-xs text-muted-foreground mt-1">
-              {metrics?.disk.used.toFixed(0)}GB / {metrics?.disk.total}GB
+              {diskUsed.toFixed(0)}GB / {diskTotal}GB
             </p>
           </CardContent>
         </Card>
@@ -308,16 +326,16 @@ export default function SystemMonitoringDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics?.network.latency.toFixed(0)}ms
+              {networkLatency.toFixed(0)}ms
             </div>
             <div className="flex items-center mt-2">
-              {metrics?.network.latency < 50 ? (
+              {networkLatency < 50 ? (
                 <TrendingDown className="h-4 w-4 text-green-600 mr-1" />
               ) : (
                 <TrendingUp className="h-4 w-4 text-red-600 mr-1" />
               )}
               <span className="text-xs text-muted-foreground">
-                入站: {metrics?.network.inbound.toFixed(0)}KB/s
+                入站: {networkInbound.toFixed(0)}KB/s
               </span>
             </div>
           </CardContent>
@@ -344,7 +362,7 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.database.connections}
+                  {databaseConnections}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   活跃连接数
@@ -361,7 +379,7 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.database.queryTime.toFixed(0)}ms
+                  {databaseQueryTime.toFixed(0)}ms
                 </div>
                 <p className="text-sm text-muted-foreground">
                   平均查询时间
@@ -378,9 +396,9 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.database.cacheHit.toFixed(1)}%
+                  {databaseCacheHit.toFixed(1)}%
                 </div>
-                <Progress value={metrics?.database.cacheHit} className="mt-2" />
+                <Progress value={databaseCacheHit} className="mt-2" />
               </CardContent>
             </Card>
           </div>
@@ -397,7 +415,7 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.api.requests}
+                  {apiRequests}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   每分钟请求数
@@ -414,7 +432,7 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.api.responseTime.toFixed(0)}ms
+                  {apiResponseTime.toFixed(0)}ms
                 </div>
                 <p className="text-sm text-muted-foreground">
                   平均响应时间
@@ -431,10 +449,10 @@ export default function SystemMonitoringDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold">
-                  {metrics?.api.errorRate.toFixed(2)}%
+                  {apiErrorRate.toFixed(2)}%
                 </div>
                 <Progress 
-                  value={metrics?.api.errorRate} 
+                  value={apiErrorRate} 
                   className="mt-2"
                   max={10}
                 />
@@ -453,13 +471,13 @@ export default function SystemMonitoringDashboard() {
                 <div>
                   <h4 className="font-semibold mb-2">入站流量</h4>
                   <div className="text-2xl font-bold">
-                    {metrics?.network.inbound.toFixed(0)} KB/s
+                    {networkInbound.toFixed(0)} KB/s
                   </div>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">出站流量</h4>
                   <div className="text-2xl font-bold">
-                    {metrics?.network.outbound.toFixed(0)} KB/s
+                    {networkOutbound.toFixed(0)} KB/s
                   </div>
                 </div>
               </div>

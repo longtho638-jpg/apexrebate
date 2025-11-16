@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { getServerSession } from 'next-auth';
@@ -18,16 +19,7 @@ export async function POST(
 
     const { id } = await params;
     const tool = await db.tools.findUnique({
-      where: { id },
-      include: {
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
+      where: { id }
     });
 
     if (!tool) {
@@ -45,7 +37,7 @@ export async function POST(
     }
 
     // Check if user already purchased this tool
-    const existingPurchase = await db.toolOrder.findFirst({
+    const existingPurchase = await db.tool_orders.findFirst({
       where: {
         toolId: id,
         buyerId: session.user.id,
@@ -61,8 +53,9 @@ export async function POST(
     }
 
     // Create order
-    const order = await db.toolOrder.create({
+    const order = await db.tool_orders.create({
       data: {
+        id: randomUUID(),
         toolId: id,
         buyerId: session.user.id,
         sellerId: tool.sellerId,
@@ -70,27 +63,39 @@ export async function POST(
         currency: 'USD',
         status: 'PENDING',
         downloadUrl: `https://apexrebate.com/tools/${id}/download`,
-        licenseKey: generateLicenseKey()
+        licenseKey: generateLicenseKey(),
+        updatedAt: new Date()
       },
       include: {
-        tool: {
+        tools: {
           select: {
             id: true,
             name: true,
             price: true
           }
-        },
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
         }
       }
     });
 
-    return NextResponse.json(order, { status: 201 });
+    const seller = await db.users.findUnique({
+      where: { id: tool.sellerId },
+      select: {
+        id: true,
+        name: true,
+        email: true
+      }
+    });
+
+    const { tools: toolInfo, ...orderRest } = order;
+
+    return NextResponse.json(
+      {
+        ...orderRest,
+        tool: toolInfo,
+        seller
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Error creating purchase order:', error);
     return NextResponse.json(

@@ -3,7 +3,7 @@ import { db } from '../src/lib/db';
 async function main() {
   console.log('🔍 Tìm kiếm admin users...\n');
   
-  const adminUsers = await db.user.findMany({
+  const adminUsers = await db.users.findMany({
     where: {
       role: { in: ['ADMIN', 'CONCIERGE'] }
     },

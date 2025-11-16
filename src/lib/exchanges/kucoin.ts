@@ -155,7 +155,11 @@ export class KuCoinExchange extends BaseExchange {
   }
 
   // KuCoin特定的认证方法
-  private async makeAuthenticatedRequest(method: string, endpoint: string, params?: any): Promise<any> {
+  private async makeAuthenticatedRequest(
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+    endpoint: string,
+    params?: any
+  ): Promise<any> {
     const timestamp = Date.now().toString()
     const queryString = params ? new URLSearchParams(params).toString() : ''
     const signatureString = timestamp + method + endpoint + queryString

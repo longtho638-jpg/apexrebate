@@ -106,12 +106,15 @@ export default async function middleware(request: NextRequest) {
   // Auto-detect and redirect to appropriate locale for root path
   if (pathname === '/' || pathname === '') {
     const detectedLocale = detectLocaleFromIP(request);
-    let redirectPath = '/'; // English is default (no prefix)
-    if (detectedLocale === 'vi') redirectPath = '/vi';
-    else if (detectedLocale === 'th') redirectPath = '/th';
-    else if (detectedLocale === 'id') redirectPath = '/id';
-    console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
-    return NextResponse.redirect(new URL(redirectPath, request.url));
+    if (detectedLocale === 'vi' || detectedLocale === 'th' || detectedLocale === 'id') {
+      const redirectPath = `/${detectedLocale}`;
+      console.log(`[middleware] Redirecting root path to: ${redirectPath} (IP locale: ${detectedLocale})`);
+      return NextResponse.redirect(new URL(redirectPath, request.url));
+    }
+
+    // Locale is already the default (en) – no redirect to avoid loops
+    console.log('[middleware] Staying on root path for default locale en');
+    return intlMiddleware(request);
   }
 
   // Removed redirects for /uiux-v3 as we now have client-only pages
@@ -123,7 +126,7 @@ export default async function middleware(request: NextRequest) {
   // Extract locale from pathname if present (e.g., /vi/dashboard → vi)
   const localeMatch = pathname.match(/^\/(en|vi|th|id)(\/.*)?$/);
   const locale = localeMatch ? localeMatch[1] : null;
-  const pathWithoutLocale = locale ? (localeMatch[2] || '/') : pathname;
+  const pathWithoutLocale = locale && localeMatch ? (localeMatch[2] || '/') : pathname;
   
   // Check if this is a protected route (with or without locale)
   const isProtectedRoute = protectedRoutes.some(route => 

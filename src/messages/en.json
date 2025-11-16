@@ -189,5 +189,15 @@
     "book": "Book a Session",
     "sessions": "My Sessions",
     "experts": "Expert Coaches"
+  },
+  "concierge_claim": {
+    "title": "Concierge Rebate Claim",
+    "description": "Submit your trading rebate claim manually. Our concierge team will process it within 24 hours.",
+    "detailsTitle": "Claim Details",
+    "detailsDescription": "Fill in your trading information for rebate calculation",
+    "exchange": "Exchange",
+    "tradeRef": "Trade Reference",
+    "grossRebate": "Gross Rebate Amount (VND)",
+    "optionalNotes": "Additional Notes (Optional)"
   }
 }
