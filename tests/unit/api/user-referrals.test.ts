@@ -1,4 +1,4 @@
-/** @jest-environment jsdom */
+/** @jest-environment node */
 import { describe, it, expect, jest } from '@jest/globals'
 
 // Mock next-auth và next-auth/next trước khi load route handler
