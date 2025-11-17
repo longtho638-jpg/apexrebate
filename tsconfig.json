@@ -41,6 +41,7 @@
     "node_modules",
     "factory",
     "seed-gpt5-architect",
+    "qwen-code",
     ".next",
     "out"
   ]
