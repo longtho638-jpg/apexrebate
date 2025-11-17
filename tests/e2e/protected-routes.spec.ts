@@ -15,6 +15,7 @@ test.describe('Kiểm thử tự động các trang bảo vệ (dashboard, refer
   test('Kiểm tra yêu cầu đăng nhập hoặc nội dung sau khi đăng nhập', async ({ page }) => {
     const isAuthAvailable = !!(EMAIL && PASSWORD)
 
+    const signinRegex = /\/(en|vi|th|id)\/auth\/signin/i
     if (isAuthAvailable) {
       // Đăng nhập 1 lần, sau đó lần lượt truy cập các route
       await login(page, EMAIL!, PASSWORD!)
@@ -24,7 +25,7 @@ test.describe('Kiểm thử tự động các trang bảo vệ (dashboard, refer
         await page.waitForLoadState('networkidle')
 
         // 1) Không bị redirect về trang đăng nhập
-        await expect(page).not.toHaveURL(/\/auth\/signin/i)
+        await expect(page).not.toHaveURL(signinRegex)
 
         // 2) Có tiêu đề hoặc nội dung chính render
         const anyHeading = page.locator('h1,h2').first()
@@ -33,10 +34,10 @@ test.describe('Kiểm thử tự động các trang bảo vệ (dashboard, refer
     } else {
       // Không có credentials: xác minh redirect về trang đăng nhập
       for (const route of protectedRoutes) {
-        await page.goto(route)
+        await page.goto(`/vi${route}`)
         // Tránh chờ networkidle vì Next.js có thể giữ kết nối
         await page.waitForLoadState('domcontentloaded')
-        await page.waitForURL(/\/auth\/signin/i, { timeout: 20000 })
+        await page.waitForURL(signinRegex, { timeout: 20000 })
       }
     }
   })

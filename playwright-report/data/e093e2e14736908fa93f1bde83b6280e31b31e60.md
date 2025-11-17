@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - main [ref=e3]:
+    - main "Sign in page" [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img [ref=e9]
+          - generic [ref=e11]: Welcome Back
+          - generic [ref=e12]: Sign in to your ApexRebate account
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - tablist [ref=e15]:
+              - tab "Email" [selected] [ref=e16]
+              - tab "Google" [ref=e17]
+            - tabpanel "Email" [ref=e18]:
+              - generic [ref=e19]:
+                - generic [ref=e20]:
+                  - text: Email Address
+                  - generic [ref=e21]:
+                    - img [ref=e22]
+                    - textbox "Email Address" [ref=e25]:
+                      - /placeholder: john@example.com
+                - generic [ref=e26]:
+                  - text: Password
+                  - generic [ref=e27]:
+                    - img [ref=e28]
+                    - textbox "Password" [ref=e31]:
+                      - /placeholder: Enter your password
+                    - button "Show password" [ref=e32]:
+                      - img [ref=e33]
+                - generic [ref=e36]:
+                  - generic [ref=e37]:
+                    - checkbox "Remember me" [ref=e38]
+                    - text: Remember me
+                  - button "Forgot password?" [ref=e39]
+                - button "Sign In" [ref=e40]
+          - generic [ref=e41]:
+            - text: Don't have an account?
+            - link "Sign up" [ref=e42] [cursor=pointer]:
+              - /url: /auth/signup
+          - generic [ref=e43]:
+            - text: By signing in, you agree to our
+            - link "Terms of Service" [ref=e44] [cursor=pointer]:
+              - /url: /terms
+            - text: and
+            - link "Privacy Policy" [ref=e45] [cursor=pointer]:
+              - /url: /privacy
+  - alert [ref=e46]
+```

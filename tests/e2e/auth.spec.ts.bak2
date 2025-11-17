@@ -1,0 +1,91 @@
+// @ts-check
+import { test, expect } from '@playwright/test';
+import { clickNavLink } from './helpers/navigation';
+
+test.describe('Authentication', () => {
+  test('should display sign in page', async ({ page }) => {
+    await page.goto('/vi')
+    
+    // Click vào nút đăng nhập 
+    await page.click('a[href="/auth/signin"], button:has-text("Đăng nhập"), button:has-text("Sign In")');
+    await expect(page).toHaveURL(/\/(en|vi)\/auth\/signin/);
+    
+    // Heading EN: "Sign In to ApexRebate"; VI: "Đăng nhập vào ApexRebate" (CardTitle)
+    await expect(page.getByRole('heading', { name: /Sign In|Đăng nhập/i })).toBeVisible();
+  });
+
+  test('should display sign up page', async ({ page }) => {
+    await page.goto('/vi')
+    
+    // Click vào nút đăng ký
+    await page.click('a[href="/auth/signup"], button:has-text("Đăng ký"), button:has-text("Sign Up")');
+    await expect(page).toHaveURL(/\/(en|vi)\/auth\/signup/);
+    
+    // Heading EN: "Join ApexRebate"; VI: "Tạo tài khoản ApexRebate" (CardTitle)
+    await expect(page.getByText(/Join ApexRebate|Tạo tài khoản ApexRebate/i)).toBeVisible();
+  });
+
+  test('should show validation errors on empty form submission', async ({ page }) => {
+    await page.goto('/auth/signin');
+    
+    // Click submit without filling form
+    await page.click('button[type="submit"]');
+    
+    // HTML5 validation: ít nhất một input required sẽ được focus
+    const emailInput = page.locator('input[type="email"], input#email');
+    await expect(emailInput).toBeFocused();
+  });
+
+  test('should navigate to calculator page', async ({ page }) => {
+    await page.goto('/vi');
+    await clickNavLink(page, 'Tính toán', 'nav-calculator');
+    await expect(page).toHaveURL(/\/vi\/calculator/);
+    // Chỉ cần có heading chính xuất hiện (tránh phụ thuộc nội dung cụ thể)
+    const anyHeading = page.locator('h1,h2').first();
+    await expect(anyHeading).toBeVisible();
+  });
+
+  test('should navigate to Wall of Fame', async ({ page }) => {
+    await page.goto('/vi');
+    await clickNavLink(page, 'Danh vọng', 'nav-wall-of-fame');
+    await expect(page).toHaveURL(/\/vi\/wall-of-fame/);
+    const anyHeading = page.locator('h1,h2').first();
+    await expect(anyHeading).toBeVisible();
+  });
+});
+
+test.describe('Navigation', () => {
+  test('should navigate through all main pages', async ({ page }) => {
+    await page.goto('/vi');
+    
+    // Test navigation items with data-testid
+    const navItems = [
+      { text: 'Tính toán', testDataId: 'nav-link-calculator', expectedUrl: /\/vi\/calculator/ },
+      { text: 'Danh vọng', testDataId: 'nav-link-wall-of-fame', expectedUrl: /\/vi\/wall-of-fame/ },
+      { text: 'Hang Sói', testDataId: 'nav-link-hang-soi', expectedUrl: /\/vi\/hang-soi/ },
+      { text: 'Tools Market', testDataId: 'nav-link-tools', expectedUrl: /\/vi\/tools/ },
+      { text: 'FAQ', testDataId: 'nav-link-faq', expectedUrl: /\/vi\/faq/ },
+      { text: 'Cách hoạt động', testDataId: 'nav-link-how-it-works', expectedUrl: /\/vi\/how-it-works/ },
+    ];
+
+    for (const item of navItems) {
+      await clickNavLink(page, item.text, item.testDataId);
+      await expect(page).toHaveURL(item.expectedUrl);
+      // Quay về home để test link tiếp theo
+      await page.goto('/vi')
+    }
+  });
+
+  test('should be responsive on mobile', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 }) // iPhone 12
+    await page.goto('/vi')
+
+    await expect(page.locator('nav')).toBeVisible()
+
+    const mobileMenuButton = page.locator('[data-testid="mobile-menu-toggle"]')
+    await mobileMenuButton.click()
+    await page.waitForTimeout(300)
+
+    await expect(page.locator('[data-testid="nav-mobile-link-calculator"]')).toBeVisible()
+  });
+});

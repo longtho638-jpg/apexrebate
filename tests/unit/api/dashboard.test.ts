@@ -26,9 +26,7 @@ describe('API /api/dashboard', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it.skip('trả về success và có data tối thiểu', async () => {
-    // SKIPPED: localStorage setup required for proper Node environment
-    // Hàm GET không bắt buộc dùng request trong triển khai hiện tại
+  it('trả về success và có data tối thiểu', async () => {
     const res = await dashboardGet(
       new Request('http://localhost/api/dashboard') as any
     )
@@ -36,8 +34,9 @@ describe('API /api/dashboard', () => {
 
     expect(json).toHaveProperty('success', true)
     expect(json).toHaveProperty('data')
-    // Kiểm tra một vài trường phổ biến
     expect(json.data).toHaveProperty('userData')
     expect(json.data).toHaveProperty('savingsHistory')
+    expect(json.data).toHaveProperty('brokerStats')
+    expect(json.data).toHaveProperty('achievements')
   })
 })

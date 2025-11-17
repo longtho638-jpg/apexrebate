@@ -1,28 +1,36 @@
+// @ts-check
 import { test, expect } from '@playwright/test';
 import { clickNavLink } from './helpers/navigation';
 
 test.describe('Authentication', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-  });
-
   test('should display sign in page', async ({ page }) => {
-    // Desktop: Click vào link trực tiếp (không cần hamburger menu)
+    const locale = Math.random() > 0.5 ? 'vi' : 'en';
+    await page.goto(`/${locale}`);
+    
+    // Click vào nút đăng nhập 
     await page.click('a[href="/auth/signin"], button:has-text("Đăng nhập"), button:has-text("Sign In")');
     await expect(page).toHaveURL(/.*auth\/signin/);
-  // Tiêu đề (CardTitle) có thể không có semantic heading → dùng text matcher
-  await expect(page.getByText(/Welcome Back|Chào mừng trở lại/i)).toBeVisible();
+    
+    // Heading EN: "Sign In to ApexRebate"; VI: "Đăng nhập vào ApexRebate" (CardTitle)
+    await expect(page.getByRole('heading', { name: /Sign In|Đăng nhập/i })).toBeVisible();
   });
 
   test('should display sign up page', async ({ page }) => {
+    const locale = Math.random() > 0.5 ? 'vi' : 'en';
+    await page.goto(`/${locale}`);
+    
+    // Click vào nút đăng ký
     await page.click('a[href="/auth/signup"], button:has-text("Đăng ký"), button:has-text("Sign Up")');
     await expect(page).toHaveURL(/.*auth\/signup/);
-  // Heading EN: "Join ApexRebate"; VI: "Tạo tài khoản ApexRebate" (CardTitle)
-  await expect(page.getByText(/Join ApexRebate|Tạo tài khoản ApexRebate/i)).toBeVisible();
+    
+    // Heading EN: "Join ApexRebate"; VI: "Tạo tài khoản ApexRebate" (CardTitle)
+    await expect(page.getByRole('heading', { name: /Join ApexRebate/i })).toBeVisible();
   });
 
   test('should show validation errors on empty form submission', async ({ page }) => {
-    await page.click('a[href="/auth/signin"], button:has-text("Đăng nhập"), button:has-text("Sign In")');
+    await page.goto('/auth/signin');
+    
+    // Click submit without filling form
     await page.click('button[type="submit"]');
     
     // HTML5 validation: ít nhất một input required sẽ được focus
@@ -31,7 +39,8 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to calculator page', async ({ page }) => {
-    await clickNavLink(page, 'Tính toán');
+    await page.goto('/');
+    await clickNavLink(page, 'Tính toán', 'nav-calculator');
     await expect(page).toHaveURL(/.*calculator/);
     // Chỉ cần có heading chính xuất hiện (tránh phụ thuộc nội dung cụ thể)
     const anyHeading = page.locator('h1,h2').first();
@@ -39,7 +48,8 @@ test.describe('Authentication', () => {
   });
 
   test('should navigate to Wall of Fame', async ({ page }) => {
-    await clickNavLink(page, 'Danh'); // phần đầu text để bớt nhạy cảm hoa/thường
+    await page.goto('/');
+    await clickNavLink(page, 'Danh vọng', 'nav-wall-of-fame');
     await expect(page).toHaveURL(/.*wall-of-fame/);
     const anyHeading = page.locator('h1,h2').first();
     await expect(anyHeading).toBeVisible();
@@ -50,16 +60,18 @@ test.describe('Navigation', () => {
   test('should navigate through all main pages', async ({ page }) => {
     await page.goto('/');
     
-    // Test navigation items
+    // Test navigation items with data-testid
     const navItems = [
-      { text: 'Tính toán', expectedUrl: /calculator/ },
-      { text: 'Danh', expectedUrl: /wall-of-fame/ },
-      { text: 'FAQ', expectedUrl: /faq/ },
-      { text: 'Cách hoạt động', expectedUrl: /how-it-works/ },
+      { text: 'Tính toán', testDataId: 'nav-calculator', expectedUrl: /calculator/ },
+      { text: 'Danh vọng', testDataId: 'nav-wall-of-fame', expectedUrl: /wall-of-fame/ },
+      { text: 'Hang Sói', testDataId: 'nav-hang-soi', expectedUrl: /hang-soi/ },
+      { text: 'Tools Market', testDataId: 'nav-tools-market', expectedUrl: /tools/ },
+      { text: 'FAQ', testDataId: 'nav-faq', expectedUrl: /faq/ },
+      { text: 'Cách hoạt động', testDataId: 'nav-how-it-works', expectedUrl: /how-it-works/ },
     ];
 
     for (const item of navItems) {
-      await clickNavLink(page, item.text);
+      await clickNavLink(page, item.text, item.testDataId);
       await expect(page).toHaveURL(item.expectedUrl);
       // Quay về home để test link tiếp theo
       await page.goto('/');
@@ -73,12 +85,12 @@ test.describe('Navigation', () => {
     // Check mobile navigation
     await expect(page.locator('nav')).toBeVisible();
     
-    // Test mobile menu với helper
-    const mobileMenuButton = page.locator('button[aria-label*="menu" i], button[aria-label*="Toggle" i]');
-    if (await mobileMenuButton.isVisible()) {
-      await mobileMenuButton.click();
-      await page.waitForTimeout(300);
-      await expect(page.locator('nav')).toContainText('Tính toán');
-    }
+    // Click mobile menu
+    const mobileMenuButton = page.locator('[data-testid="mobile-menu-toggle"]');
+    await mobileMenuButton.click();
+    await page.waitForTimeout(300);
+    // Check if the navigation text appears in the mobile menu
+    await expect(page.locator('nav')).toContainText('Tính toán');
   });
 });
+

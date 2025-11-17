@@ -1,0 +1,358 @@
+
+Running 28 tests using 2 workers
+
+[1A[2K[1/28] [chromium] › tests/e2e/analytics.spec.ts:10:7 › Analytics E2E (dựa trên dữ liệu seed) › Đăng nhập → truy cập /analytics → xác thực API analytics sử dụng dữ liệu seed
+[1A[2K[2/28] [chromium] › tests/e2e/auth-login-dashboard.spec.ts:10:7 › Auth → Dashboard (Credentials) › Đăng nhập thành công và thấy Dashboard
+[1A[2K[3/28] [chromium] › tests/e2e/auth.spec.ts:18:7 › Authentication › should display sign up page
+[1A[2K[4/28] [chromium] › tests/e2e/auth.spec.ts:6:7 › Authentication › should display sign in page
+[1A[2K  1) [chromium] › tests/e2e/auth.spec.ts:6:7 › Authentication › should display sign in page ────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Sign In|Đăng nhập/i })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Sign In|Đăng nhập/i })[22m
+
+
+      13 |     
+      14 |     // Heading EN: "Sign In to ApexRebate"; VI: "Đăng nhập vào ApexRebate" (CardTitle)
+    > 15 |     await expect(page.getByRole('heading', { name: /Sign In|Đăng nhập/i })).toBeVisible();
+         |                                                                             ^
+      16 |   });
+      17 |
+      18 |   test('should display sign up page', async ({ page }) => {
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:15:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Authentication-should-display-sign-in-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Authentication-should-display-sign-in-page-chromium/error-context.md
+
+
+[1A[2K  2) [chromium] › tests/e2e/auth.spec.ts:18:7 › Authentication › should display sign up page ───────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('heading', { name: /Join ApexRebate/i })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('heading', { name: /Join ApexRebate/i })[22m
+
+
+      25 |     
+      26 |     // Heading EN: "Join ApexRebate"; VI: "Tạo tài khoản ApexRebate" (CardTitle)
+    > 27 |     await expect(page.getByRole('heading', { name: /Join ApexRebate/i })).toBeVisible();
+         |                                                                           ^
+      28 |   });
+      29 |
+      30 |   test('should show validation errors on empty form submission', async ({ page }) => {
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:27:75
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Authentication-should-display-sign-up-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Authentication-should-display-sign-up-page-chromium/error-context.md
+
+
+[1A[2K[5/28] [chromium] › tests/e2e/auth.spec.ts:41:7 › Authentication › should navigate to calculator page
+[1A[2K[6/28] [chromium] › tests/e2e/auth.spec.ts:30:7 › Authentication › should show validation errors on empty form submission
+[1A[2K[7/28] [chromium] › tests/e2e/auth.spec.ts:50:7 › Authentication › should navigate to Wall of Fame
+[1A[2K  3) [chromium] › tests/e2e/auth.spec.ts:41:7 › Authentication › should navigate to calculator page 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="nav-calculator"]')[22m
+
+
+       at helpers/navigation.ts:27
+
+      25 |
+      26 |   if (resolvedTestId) {
+    > 27 |     await page.click(`[data-testid="${resolvedTestId}"]`)
+         |                ^
+      28 |     return
+      29 |   }
+      30 |
+        at clickNavLink (/Users/macbookprom1/apexrebate-1/tests/e2e/helpers/navigation.ts:27:16)
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:43:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Authentication-should-navigate-to-calculator-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Authentication-should-navigate-to-calculator-page-chromium/error-context.md
+
+
+[1A[2K[8/28] [chromium] › tests/e2e/auth.spec.ts:60:7 › Navigation › should navigate through all main pages
+[1A[2K  4) [chromium] › tests/e2e/auth.spec.ts:50:7 › Authentication › should navigate to Wall of Fame ───
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="nav-wall-of-fame"]')[22m
+
+
+       at helpers/navigation.ts:27
+
+      25 |
+      26 |   if (resolvedTestId) {
+    > 27 |     await page.click(`[data-testid="${resolvedTestId}"]`)
+         |                ^
+      28 |     return
+      29 |   }
+      30 |
+        at clickNavLink (/Users/macbookprom1/apexrebate-1/tests/e2e/helpers/navigation.ts:27:16)
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:52:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Authentication-should-navigate-to-Wall-of-Fame-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Authentication-should-navigate-to-Wall-of-Fame-chromium/error-context.md
+
+
+[1A[2K[9/28] [chromium] › tests/e2e/auth.spec.ts:81:7 › Navigation › should be responsive on mobile
+[1A[2K  5) [chromium] › tests/e2e/auth.spec.ts:81:7 › Navigation › should be responsive on mobile ────────
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Locator: locator('nav')
+    Expected substring: [32m"Tính toán"[39m
+    Received string:    [31m"ApexRebateCalculatorWall of FameHang SóiTools MarketFAQHow It Works🇻🇳 Việt NamToggle themeSign InSign UpVIToggle themeCalculatorWall of FameHang SóiTools MarketFAQHow It WorksSign InSign Up"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toContainText" with timeout 5000ms[22m
+    [2m  - waiting for locator('nav')[22m
+    [2m    9 × locator resolved to <nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-border bg-background/80 backdrop-blur-sm">…</nav>[22m
+    [2m      - unexpected value "ApexRebateCalculatorWall of FameHang SóiTools MarketFAQHow It Works🇻🇳 Việt NamToggle themeSign InSign UpVIToggle themeCalculatorWall of FameHang SóiTools MarketFAQHow It WorksSign InSign Up"[22m
+
+
+      91 |     await page.waitForTimeout(300);
+      92 |     // Check if the navigation text appears in the mobile menu
+    > 93 |     await expect(page.locator('nav')).toContainText('Tính toán');
+         |                                       ^
+      94 |   });
+      95 | });
+      96 |
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:93:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Navigation-should-be-responsive-on-mobile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Navigation-should-be-responsive-on-mobile-chromium/error-context.md
+
+
+[1A[2K[10/28] [chromium] › tests/e2e/calculator.spec.ts:8:7 › Guest - Calculator › Tính toán với dữ liệu hợp lệ (Binance, taker)
+[1A[2K  6) [chromium] › tests/e2e/calculator.spec.ts:8:7 › Guest - Calculator › Tính toán với dữ liệu hợp lệ (Binance, taker) 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByText(/Tiết kiệm hàng tháng/i)
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByText(/Tiết kiệm hàng tháng/i)[22m
+
+
+      17 |
+      18 |     // Kết quả hiển thị
+    > 19 |     await expect(page.getByText(/Tiết kiệm hàng tháng/i)).toBeVisible()
+         |                                                           ^
+      20 |     await expect(page.getByText(/Tiết kiệm hàng năm/i)).toBeVisible()
+      21 |
+      22 |     // Badge VIP (mặc định với 1,000,000$ → VIP 0)
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/calculator.spec.ts:19:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/calculator-Guest---Calcula-2ff3b--liệu-hợp-lệ-Binance-taker--chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/calculator-Guest---Calcula-2ff3b--liệu-hợp-lệ-Binance-taker--chromium/error-context.md
+
+
+[1A[2K[11/28] [chromium] › tests/e2e/calculator.spec.ts:30:7 › Guest - Calculator › Đổi sàn/loại giao dịch cập nhật kết quả
+[1A[2K  7) [chromium] › tests/e2e/auth.spec.ts:60:7 › Navigation › should navigate through all main pages 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: page.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('[data-testid="nav-calculator"]')[22m
+
+
+       at helpers/navigation.ts:27
+
+      25 |
+      26 |   if (resolvedTestId) {
+    > 27 |     await page.click(`[data-testid="${resolvedTestId}"]`)
+         |                ^
+      28 |     return
+      29 |   }
+      30 |
+        at clickNavLink (/Users/macbookprom1/apexrebate-1/tests/e2e/helpers/navigation.ts:27:16)
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/auth.spec.ts:74:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Navigation-should-navigate-through-all-main-pages-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/auth-Navigation-should-navigate-through-all-main-pages-chromium/error-context.md
+
+
+[1A[2K[12/28] [chromium] › tests/e2e/calculator.spec.ts:49:7 › Guest - Calculator › Xử lý input không hợp lệ
+[1A[2K[13/28] [chromium] › tests/e2e/concierge.spec.ts:8:9 › Concierge Pages - Phase 1 Manual Excellence › Dashboard Page › should load Vietnamese concierge dashboard
+[1A[2K[14/28] [chromium] › tests/e2e/concierge.spec.ts:22:9 › Concierge Pages - Phase 1 Manual Excellence › Dashboard Page › should load English concierge dashboard
+[1A[2K[15/28] [chromium] › tests/e2e/concierge.spec.ts:32:9 › Concierge Pages - Phase 1 Manual Excellence › Dashboard Page › should have quick action cards
+[1A[2K[16/28] [chromium] › tests/e2e/concierge.spec.ts:45:9 › Concierge Pages - Phase 1 Manual Excellence › Claim Page › should load Vietnamese claim form
+[1A[2K[17/28] [chromium] › tests/e2e/concierge.spec.ts:56:9 › Concierge Pages - Phase 1 Manual Excellence › Claim Page › should load English claim form
+[1A[2K[18/28] [chromium] › tests/e2e/concierge.spec.ts:66:9 › Concierge Pages - Phase 1 Manual Excellence › Claim Page › should display manual claim submission form
+[1A[2K  8) [chromium] › tests/e2e/concierge.spec.ts:66:9 › Concierge Pages - Phase 1 Manual Excellence › Claim Page › should display manual claim submission form 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByLabel('Sàn Giao Dịch')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByLabel('Sàn Giao Dịch')[22m
+
+
+      68 |       
+      69 |       // Verify that the key manual input fields are visible
+    > 70 |       await expect(page.getByLabel('Sàn Giao Dịch')).toBeVisible();
+         |                                                      ^
+      71 |       await expect(page.getByLabel('Mã Giao Dịch')).toBeVisible();
+      72 |       await expect(page.getByLabel('Số Tiền Hoàn Lại (VND)')).toBeVisible();
+      73 |       
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/concierge.spec.ts:70:54
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/concierge-Concierge-Pages--b180b-anual-claim-submission-form-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/concierge-Concierge-Pages--b180b-anual-claim-submission-form-chromium/error-context.md
+
+
+[1A[2K  9) [chromium] › tests/e2e/calculator.spec.ts:30:7 › Guest - Calculator › Đổi sàn/loại giao dịch cập nhật kết quả 
+
+    [31mTest timeout of 30000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+    [2m  - waiting for getByRole('tab', { name: /Phân tích/i })[22m
+
+
+      42 |
+      43 |     // Tab Phân tích có ROI và tiết kiệm mỗi lệnh
+    > 44 |     await page.getByRole('tab', { name: /Phân tích/i }).click()
+         |                                                         ^
+      45 |     await expect(page.getByText(/ROI hàng tháng/i)).toBeVisible()
+      46 |     await expect(page.getByText(/Tiết kiệm mỗi lệnh/i)).toBeVisible()
+      47 |   })
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/calculator.spec.ts:44:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/calculator-Guest---Calcula-b5b49--giao-dịch-cập-nhật-kết-quả-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/calculator-Guest---Calcula-b5b49--giao-dịch-cập-nhật-kết-quả-chromium/error-context.md
+
+
+[1A[2K[19/28] [chromium] › tests/e2e/concierge.spec.ts:80:9 › Concierge Pages - Phase 1 Manual Excellence › Navigation & Performance › should navigate between dashboard and claim page
+[1A[2K[20/28] [chromium] › tests/e2e/concierge.spec.ts:93:9 › Concierge Pages - Phase 1 Manual Excellence › Navigation & Performance › should load dashboard within 3 seconds
+[1A[2K[21/28] [chromium] › tests/e2e/concierge.spec.ts:102:9 › Concierge Pages - Phase 1 Manual Excellence › Navigation & Performance › should be responsive on mobile
+[1A[2K[22/28] [chromium] › tests/e2e/concierge.spec.ts:113:9 › Concierge Pages - Phase 1 Manual Excellence › Locale Switching › should support both Vietnamese and English
+[1A[2K[23/28] [chromium] › tests/e2e/guest.spec.ts:7:7 › Guest - Trang công khai và điều hướng › Trang chủ hiển thị và các liên kết chính hoạt động
+[1A[2K  10) [chromium] › tests/e2e/concierge.spec.ts:113:9 › Concierge Pages - Phase 1 Manual Excellence › Locale Switching › should support both Vietnamese and English 
+
+    Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveURL[2m([22m[32mexpected[39m[2m)[22m failed
+
+    Expected pattern: [32m/\/en\//[39m
+    Received string:  [31m"https://apexrebate.com/concierge"[39m
+    Timeout: 5000ms
+
+    Call log:
+    [2m  - Expect "toHaveURL" with timeout 5000ms[22m
+    [2m    9 × unexpected value "https://apexrebate.com/concierge"[22m
+
+
+      118 |       // Test English
+      119 |       await page.goto(buildUrl('/en/concierge'));
+    > 120 |       await expect(page).toHaveURL(/\/en\//);
+          |                          ^
+      121 |     });
+      122 |   });
+      123 | });
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/concierge.spec.ts:120:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/concierge-Concierge-Pages--f7848-both-Vietnamese-and-English-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/concierge-Concierge-Pages--f7848-both-Vietnamese-and-English-chromium/error-context.md
+
+
+[1A[2K[24/28] [chromium] › tests/e2e/guest.spec.ts:29:7 › Guest - Trang công khai và điều hướng › FAQ hiển thị nội dung cơ bản
+[1A[2K[25/28] [chromium] › tests/e2e/guest.spec.ts:37:7 › Guest - Trang công khai và điều hướng › How it works hiển thị hướng dẫn
+[1A[2K[26/28] [chromium] › tests/e2e/guest.spec.ts:42:7 › Guest - Trang công khai và điều hướng › Wall of Fame tải được và không lỗi
+[1A[2K[27/28] [chromium] › tests/e2e/protected-routes.spec.ts:15:7 › Kiểm thử tự động các trang bảo vệ (dashboard, referrals, payouts) › Kiểm tra yêu cầu đăng nhập hoặc nội dung sau khi đăng nhập
+[1A[2K[28/28] [chromium] › tests/e2e/signin-error.spec.ts:4:7 › Sign-in error localization › Hiển thị thông báo tiếng Việt khi ?error=CredentialsSignin
+[1A[2K  11) [chromium] › tests/e2e/protected-routes.spec.ts:15:7 › Kiểm thử tự động các trang bảo vệ (dashboard, referrals, payouts) › Kiểm tra yêu cầu đăng nhập hoặc nội dung sau khi đăng nhập 
+
+    Error: page.goto: net::ERR_TOO_MANY_REDIRECTS at https://apexrebate.com/vi/payouts
+    Call log:
+    [2m  - navigating to "https://apexrebate.com/vi/payouts", waiting until "load"[22m
+
+
+      35 |       // Không có credentials: xác minh redirect về trang đăng nhập
+      36 |       for (const route of protectedRoutes) {
+    > 37 |         await page.goto(`/vi${route}`)
+         |                    ^
+      38 |         // Tránh chờ networkidle vì Next.js có thể giữ kết nối
+      39 |         await page.waitForLoadState('domcontentloaded')
+      40 |         await page.waitForURL(signinRegex, { timeout: 20000 })
+        at /Users/macbookprom1/apexrebate-1/tests/e2e/protected-routes.spec.ts:37:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/protected-routes-Kiểm-thử--74d37--nội-dung-sau-khi-đăng-nhập-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K  11 failed
+    [chromium] › tests/e2e/auth.spec.ts:6:7 › Authentication › should display sign in page ─────────
+    [chromium] › tests/e2e/auth.spec.ts:18:7 › Authentication › should display sign up page ────────
+    [chromium] › tests/e2e/auth.spec.ts:41:7 › Authentication › should navigate to calculator page ─
+    [chromium] › tests/e2e/auth.spec.ts:50:7 › Authentication › should navigate to Wall of Fame ────
+    [chromium] › tests/e2e/auth.spec.ts:60:7 › Navigation › should navigate through all main pages ─
+    [chromium] › tests/e2e/auth.spec.ts:81:7 › Navigation › should be responsive on mobile ─────────
+    [chromium] › tests/e2e/calculator.spec.ts:8:7 › Guest - Calculator › Tính toán với dữ liệu hợp lệ (Binance, taker) 
+    [chromium] › tests/e2e/calculator.spec.ts:30:7 › Guest - Calculator › Đổi sàn/loại giao dịch cập nhật kết quả 
+    [chromium] › tests/e2e/concierge.spec.ts:66:9 › Concierge Pages - Phase 1 Manual Excellence › Claim Page › should display manual claim submission form 
+    [chromium] › tests/e2e/concierge.spec.ts:113:9 › Concierge Pages - Phase 1 Manual Excellence › Locale Switching › should support both Vietnamese and English 
+    [chromium] › tests/e2e/protected-routes.spec.ts:15:7 › Kiểm thử tự động các trang bảo vệ (dashboard, referrals, payouts) › Kiểm tra yêu cầu đăng nhập hoặc nội dung sau khi đăng nhập 
+  2 skipped
+  15 passed (1.8m)
+
+[36m  Serving HTML report at http://localhost:63630. Press Ctrl+C to quit.[39m

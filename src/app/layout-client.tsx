@@ -20,7 +20,9 @@ export default function RootLayoutClient({ children }: RootLayoutClientProps) {
     '/auth/reset-password',
   ];
   
-  const shouldHideNavbarFooter = hideNavbarFooterRoutes.some(route => pathname.includes(route));
+  const isV5Experience = /\/v5(\/|$)/.test(pathname);
+  const shouldHideNavbarFooter =
+    hideNavbarFooterRoutes.some((route) => pathname.includes(route)) || isV5Experience;
 
   return (
     <div className="flex flex-col min-h-screen">

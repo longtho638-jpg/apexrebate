@@ -1,17 +1,20 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 import { preset } from "catalyst-ui";
+import { colors as uiux5Colors } from "./src/uiux-v5/tokens/colors";
+import { shadows as uiux5Shadows } from "./src/uiux-v5/tokens/shadows";
 
 const config: Config = {
-darkMode: 'class',
-presets: [preset],
-content: [
-"./pages/**/*.{js,ts,jsx,tsx,mdx}",
-"./components/**/*.{js,ts,jsx,tsx,mdx}",
-  "./app/**/*.{js,ts,jsx,tsx,mdx}",
-],
-future: {
-  hoverOnlyWhenSupported: true,
+  darkMode: "class",
+  presets: [preset],
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/uiux-v5/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  future: {
+    hoverOnlyWhenSupported: true,
   },
   theme: {
     container: {
@@ -26,15 +29,26 @@ future: {
     },
     extend: {
       borderRadius: {
-      '2xl': '16px',
-      '3xl': '24px',
-      xl: "calc(var(--radius) + 4px)",
-      lg: "var(--radius)",
+        "2xl": "16px",
+        "3xl": "24px",
+        xl: "calc(var(--radius) + 4px)",
+        lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
-      wolf: {
+        ui5: {
+          primary: uiux5Colors.primaryMidnightBlue,
+          accent: uiux5Colors.accentIntelligentTeal,
+          success: uiux5Colors.successAlertGreen,
+          error: uiux5Colors.errorWarningRed,
+          text: {
+            base: uiux5Colors.textCharcoalGray,
+            muted: uiux5Colors.textLightGray,
+          },
+          surface: uiux5Colors.surfaceOffWhite,
+        },
+        wolf: {
           50: '#F5F8FF',
           100: '#E8F0FF',
           200: '#D6E4FF',
@@ -46,6 +60,10 @@ future: {
           800: '#1F49C9',
           900: '#122E8F'
         },
+        midnight: "#0F172A",
+        offWhite: "#F8FAFC",
+        teal: "#0F7D8D",
+        textSecondary: "#64748B",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -88,22 +106,34 @@ future: {
         },
       },
       fontFamily: {
-      sans: ['Inter', 'system-ui', 'Segoe UI', 'Roboto', 'Noto Sans', 'sans-serif'],
-      mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        sans: ["Inter", "system-ui", "Segoe UI", "Roboto", "Noto Sans", "sans-serif"],
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       boxShadow: {
-        sm: '0 1px 2px 0 rgb(0 0 0 / 0.08)',
-        md: '0 8px 24px -8px rgb(0 0 0 / 0.25)',
-        xl: '0 16px 40px -12px rgb(0 0 0 / 0.35)'
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.08)",
+        md: "0 8px 24px -8px rgb(0 0 0 / 0.25)",
+        xl: "0 16px 40px -12px rgb(0 0 0 / 0.35)",
+        "ui5-soft": uiux5Shadows.softDepth,
+        "ui5-glow": uiux5Shadows.glassGlow,
+      },
+      backgroundImage: {
+        "ui5-gradient":
+          "radial-gradient(circle at 0% 0%, rgba(51,209,184,0.25), transparent 45%), radial-gradient(circle at 100% 0%, rgba(127,247,229,0.15), transparent 35%), linear-gradient(135deg, #050B16, #0A1B30 60%, #051123)",
       },
       keyframes: {
         "fade-up": {
           "0%": { opacity: "0", transform: "translateY(0.75rem)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "float": {
+          "0%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+          "100%": { transform: "translateY(0px)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.6s ease forwards",
+        "float": "float 4s ease-in-out infinite",
       },
     },
   },

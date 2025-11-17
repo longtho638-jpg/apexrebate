@@ -140,9 +140,9 @@ export default function ConciergeClaimPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="exchange">{t('exchange')}</Label>
+              <Label id="exchange-label">{t('exchange')}</Label>
               <Select value={claimData.exchange} onValueChange={(value) => handleInputChange('exchange', value)}>
-                <SelectTrigger>
+                <SelectTrigger aria-labelledby="exchange-label" data-testid="concierge-exchange-trigger">
                   <SelectValue placeholder="Select exchange" />
                 </SelectTrigger>
                 <SelectContent>

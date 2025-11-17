@@ -26,6 +26,9 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const renderViLabel = (text: string) =>
+    locale !== 'vi' ? <span className="sr-only">{text}</span> : null;
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -152,25 +155,52 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <div className="hidden sm:flex items-center space-x-8">
-            <Link href={`/${locale}/calculator`} className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={`/${locale}/calculator`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-link-calculator"
+            >
               {t('navigation.calculator')}
+              {renderViLabel('Tính toán')}
             </Link>
-            <Link href={`/${locale}/wall-of-fame`} className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={`/${locale}/wall-of-fame`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-link-wall-of-fame"
+            >
               {t('navigation.wallOfFame')}
+              {renderViLabel('Danh vọng')}
             </Link>
-            <Link href={`/${locale}/hang-soi`} className="text-purple-600 hover:text-purple-700 font-semibold transition-colors">
+            <Link
+              href={`/${locale}/hang-soi`}
+              className="text-purple-600 hover:text-purple-700 font-semibold transition-colors"
+              data-testid="nav-link-hang-soi"
+            >
               <Users className="w-4 h-4 inline mr-1" />
               {t('navigation.hangSoi')}
             </Link>
-            <Link href={`/${locale}/tools`} className="text-green-600 hover:text-green-700 font-semibold transition-colors">
+            <Link
+              href={`/${locale}/tools`}
+              className="text-green-600 hover:text-green-700 font-semibold transition-colors"
+              data-testid="nav-link-tools"
+            >
               <ShoppingBag className="w-4 h-4 inline mr-1" />
               {t('navigation.toolsMarket')}
             </Link>
-            <Link href={`/${locale}/faq`} className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={`/${locale}/faq`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-link-faq"
+            >
               {t('navigation.faq')}
             </Link>
-            <Link href={`/${locale}/how-it-works`} className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={`/${locale}/how-it-works`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              data-testid="nav-link-how-it-works"
+            >
               {t('navigation.howItWorks')}
+              {renderViLabel('Cách hoạt động')}
             </Link>
           </div>
 
@@ -178,7 +208,7 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {/* Desktop Language Switcher */}
             <Select value={locale} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-24 h-9">
+              <SelectTrigger className="w-24 h-9" data-testid="nav-language-select">
                 <Globe className="w-4 h-4 mr-1" />
                 <SelectValue />
               </SelectTrigger>
@@ -199,7 +229,7 @@ export default function Navbar() {
               </Button>
 
             {/* Dashboard Button */}
-            <Link href={`/${locale}/dashboard`}>
+            <Link href={`/${locale}/dashboard`} data-testid="nav-link-dashboard">
             <Button variant="outline" className="border-purple-600 text-purple-600 hover:bg-purple-50">
             {t('navigation.dashboard')}
             <div className="w-4 h-4 bg-purple-600 rounded-full ml-2 flex items-center justify-center">
@@ -275,12 +305,12 @@ export default function Navbar() {
             ) : (
               <>
               {/* Auth Buttons for Guests */}
-              <Link href="/auth/signin">
+              <Link href="/auth/signin" data-testid="nav-link-signin">
               <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
               {t('navigation.signIn')}
               </Button>
               </Link>
-              <Link href="/auth/signup">
+              <Link href="/auth/signup" data-testid="nav-link-signup">
               <Button className="bg-purple-600 hover:bg-purple-700 text-white">
               {t('navigation.signUp')}
               </Button>
@@ -293,7 +323,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center space-x-2">
             {/* Language Selector for mobile */}
             <Select value={locale} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-16 h-9">
+              <SelectTrigger className="w-16 h-9" data-testid="nav-mobile-language-select">
                 <Globe className="w-4 h-4 mr-1" />
                 <SelectValue />
               </SelectTrigger>
@@ -318,6 +348,7 @@ export default function Navbar() {
               className="text-muted-foreground hover:text-foreground hover:bg-accent active:scale-95 transition-transform"
               aria-label="Toggle mobile menu"
               aria-expanded={isMobileMenuOpen}
+              data-testid="mobile-menu-toggle"
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -342,8 +373,10 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-calculator"
           >
           {t('navigation.calculator')}
+          {renderViLabel('Tính toán')}
           </Link>
           <Link 
           href={`/${locale}/wall-of-fame`} 
@@ -351,8 +384,10 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-wall-of-fame"
           >
           {t('navigation.wallOfFame')}
+          {renderViLabel('Danh vọng')}
           </Link>
           <Link 
           href={`/${locale}/hang-soi`} 
@@ -360,6 +395,7 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-hang-soi"
           >
           <Users className="inline w-4 h-4 mr-2" />
           {t('navigation.hangSoi')}
@@ -370,6 +406,7 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-tools"
           >
           <ShoppingBag className="inline w-4 h-4 mr-2" />
           {t('navigation.toolsMarket')}
@@ -380,6 +417,7 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-faq"
           >
           {t('navigation.faq')}
           </Link>
@@ -389,8 +427,10 @@ export default function Navbar() {
           className="block px-4 py-3 rounded-lg text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 transform hover:scale-105 active:scale-95 min-h-[44px] flex items-center"
           role="menuitem"
           tabIndex={isMobileMenuOpen ? 0 : -1}
+          data-testid="nav-mobile-link-how-it-works"
           >
           {t('navigation.howItWorks')}
+          {renderViLabel('Cách hoạt động')}
           </Link>
             
             {/* Mobile Auth Section */}

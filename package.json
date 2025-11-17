@@ -35,7 +35,13 @@
     "verify:handoff": "node --env-file .env scripts/verify-handoff.mjs",
     "deploy:all": "npm run lint && npm run test && npm run build && npm run stop && npm run test:e2e && firebase deploy && vercel --prod",
     "deploy:seed": "cd seed-gpt5-architect && ./scripts/build-uiux-v2025.sh",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "qwen:test": "qwen 'Generate comprehensive unit tests for modified files. Use Jest + testing-library. Include edge cases and error scenarios. Follow ApexRebate testing standards.'",
+    "qwen:refactor": "qwen 'Refactor modified code for performance and readability. Extract reusable components. Optimize TypeScript types. Follow ApexRebate coding standards.'",
+    "qwen:docs": "qwen 'Generate JSDoc documentation for all functions and exports. Include @param, @returns, and @example tags. Document error cases.'",
+    "qwen:analyze": "qwen 'Analyze src/ for code quality issues, security vulnerabilities, and performance bottlenecks. Provide recommendations.'",
+    "qwen:ci:fix": "qwen 'Fix failing tests and linting errors. Analyze test output and resolve issues. Ensure all tests pass.'",
+    "qwen:explain": "qwen 'Explain the architecture and main features of ApexRebate. Focus on Next.js app, authentication flow, database schema, and API structure.'"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -109,6 +115,7 @@
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "sonner": "^2.0.7",
+    "swr": "^2.3.6",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.20.3",

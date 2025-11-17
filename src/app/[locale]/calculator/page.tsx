@@ -193,13 +193,13 @@ export default function CalculatorPage() {
                 <div>
                   <Label htmlFor="broker">{t('exchange')}</Label>
                   <Select value={broker} onValueChange={setBroker}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" data-testid="exchange-trigger">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="binance">{t('binance')}</SelectItem>
-                      <SelectItem value="bybit">{t('bybit')}</SelectItem>
-                      <SelectItem value="okx">{t('okx')}</SelectItem>
+                      <SelectItem value="binance" data-testid="exchange-option-binance">{t('binance')}</SelectItem>
+                      <SelectItem value="bybit" data-testid="exchange-option-bybit">{t('bybit')}</SelectItem>
+                      <SelectItem value="okx" data-testid="exchange-option-okx">{t('okx')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -207,12 +207,12 @@ export default function CalculatorPage() {
                 <div>
                   <Label htmlFor="tradeType">{t('exchange')}</Label>
                   <Select value={tradeType} onValueChange={setTradeType}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-1" data-testid="trade-type-trigger">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="maker">Maker</SelectItem>
-                      <SelectItem value="taker">Taker</SelectItem>
+                      <SelectItem value="maker" data-testid="trade-type-option-maker">Maker</SelectItem>
+                      <SelectItem value="taker" data-testid="trade-type-option-taker">Taker</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

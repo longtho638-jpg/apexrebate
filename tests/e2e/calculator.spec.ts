@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Guest - Calculator', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/calculator')
+    await page.goto('/vi/calculator')
   })
 
   test('Tính toán với dữ liệu hợp lệ (Binance, taker)', async ({ page }) => {

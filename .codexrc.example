@@ -1,0 +1,26 @@
+{
+  "ui": "kit-cc-5.1",
+  "theme": "codex-5.1",
+  "features": ["planning", "execution", "file-operations"],
+  "backend": {
+    "provider": "openai-compatible",
+    "apiKey": "${QWEN_API_KEY}",
+    "baseUrl": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "model": "qwen3-coder-30b",
+    "modelAliases": {
+      "claude-3-5-sonnet-20241022": "qwen3-coder-30b",
+      "claude-3-5-sonnet": "qwen3-coder-30b",
+      "claude-3-5-haiku": "qwen3-coder-30b",
+      "claude-3-haiku": "qwen3-coder-30b",
+      "claude-3-opus": "qwen3-coder-30b"
+    },
+    "rateLimit": {
+      "requestsPerMinute": 50,
+      "delayBetweenRequests": 1000
+    },
+    "vision": {
+      "modelSwitch": true,
+      "autoDetect": true
+    }
+  }
+}

@@ -4,466 +4,463 @@
 - generic [active] [ref=e1]:
   - generic [ref=e2]:
     - navigation [ref=e3]:
-      - generic [ref=e5]:
-        - link "ApexRebate" [ref=e6] [cursor=pointer]:
-          - /url: /en
-          - generic [ref=e8]: ApexRebate
-        - generic [ref=e9]:
-          - link "Calculator" [ref=e10] [cursor=pointer]:
-            - /url: /en/calculator
-          - link "Wall of Fame" [ref=e11] [cursor=pointer]:
-            - /url: /en/wall-of-fame
-          - link "Hang Sói" [ref=e12] [cursor=pointer]:
-            - /url: /en/hang-soi
-            - img [ref=e13]
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - link "ApexRebate" [ref=e6] [cursor=pointer]:
+            - /url: /vi
+            - text: ApexRebate
+          - generic [ref=e7]:
+            - link "Calculator" [ref=e8] [cursor=pointer]:
+              - /url: /vi/calculator
+            - link "Wall of Fame" [ref=e9] [cursor=pointer]:
+              - /url: /vi/wall-of-fame
+            - link "Hang Sói" [ref=e10] [cursor=pointer]:
+              - /url: /vi/hang-soi
+              - img [ref=e11]
+              - text: Hang Sói
+            - link "Tools Market" [ref=e16] [cursor=pointer]:
+              - /url: /vi/tools
+              - img [ref=e17]
+              - text: Tools Market
+            - link "FAQ" [ref=e20] [cursor=pointer]:
+              - /url: /vi/faq
+            - link "How It Works" [ref=e21] [cursor=pointer]:
+              - /url: /vi/how-it-works
+          - generic [ref=e22]:
+            - combobox [ref=e23]:
+              - img [ref=e24]
+              - text: 🇻🇳 Việt Nam
+              - img [ref=e27]
+            - button "Toggle theme" [ref=e29]:
+              - img [ref=e30]
+              - img [ref=e36]
+              - text: Toggle theme
+            - link "Sign In" [ref=e38] [cursor=pointer]:
+              - /url: /auth/signin
+              - button "Sign In" [ref=e39]
+            - link "Sign Up" [ref=e40] [cursor=pointer]:
+              - /url: /auth/signup
+              - button "Sign Up" [ref=e41]
+          - generic [ref=e42]:
+            - combobox [ref=e43]:
+              - img [ref=e44]
+              - text: VI
+              - img [ref=e47]
+            - button "Toggle theme" [ref=e49]:
+              - img [ref=e50]
+              - img [ref=e56]
+              - text: Toggle theme
+            - button "Toggle mobile menu" [ref=e58]:
+              - img [ref=e59]
+        - generic [ref=e61]:
+          - menuitem "Calculator" [ref=e62] [cursor=pointer]
+          - menuitem "Wall of Fame" [ref=e63] [cursor=pointer]
+          - menuitem "Hang Sói" [ref=e64] [cursor=pointer]:
+            - img [ref=e65]
             - text: Hang Sói
-          - link "Tools Market" [ref=e18] [cursor=pointer]:
-            - /url: /en/tools
-            - img [ref=e19]
+          - menuitem "Tools Market" [ref=e70] [cursor=pointer]:
+            - img [ref=e71]
             - text: Tools Market
-          - link "FAQ" [ref=e22] [cursor=pointer]:
-            - /url: /en/faq
-          - link "How It Works" [ref=e23] [cursor=pointer]:
-            - /url: /en/how-it-works
-        - generic [ref=e24]:
-          - combobox [ref=e25]:
-            - img
-            - generic: 🇺🇸 English
-            - img
-          - button "Toggle theme" [ref=e26]:
-            - img
-            - generic [ref=e27]: Toggle theme
-          - link "Sign In" [ref=e28] [cursor=pointer]:
-            - /url: /auth/signin
-            - button "Sign In" [ref=e29]
-          - link "Sign Up" [ref=e30] [cursor=pointer]:
-            - /url: /auth/signup
-            - button "Sign Up" [ref=e31]
-    - main [ref=e32]:
-      - generic [ref=e33]:
-        - generic [ref=e34]:
-          - generic [ref=e37]:
-            - generic [ref=e38]:
-              - img
+          - menuitem "FAQ" [ref=e74] [cursor=pointer]
+          - menuitem "How It Works" [ref=e75] [cursor=pointer]
+          - generic [ref=e76]:
+            - menuitem "Sign In" [ref=e77] [cursor=pointer]
+            - menuitem "Sign Up" [ref=e78] [cursor=pointer]:
+              - img [ref=e79]
+              - text: Sign Up
+    - main [ref=e81]:
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e85]:
+            - generic [ref=e86]:
+              - img [ref=e87]
               - text: Dành cho "Trader Sói Đơn Độc"
-            - heading "Tối ưu hóa lợi nhuận ròng" [level=1] [ref=e39]
-            - paragraph [ref=e40]: Nền tảng hoàn phí minh bạch nhất cho trader nghiêm túc. Chúng tôi không hứa hẹn làm giàu nhanh, chúng tôi cung cấp công cụ tối ưu hóa dựa trên dữ liệu.
-            - generic [ref=e41]:
-              - link "Bắt đầu tối ưu hóa" [ref=e42] [cursor=pointer]:
+            - heading "Tối ưu hóa lợi nhuận ròng" [level=1] [ref=e90]
+            - paragraph [ref=e91]: Nền tảng hoàn phí minh bạch nhất cho trader nghiêm túc. Chúng tôi không hứa hẹn làm giàu nhanh, chúng tôi cung cấp công cụ tối ưu hóa dựa trên dữ liệu.
+            - generic [ref=e92]:
+              - link "Bắt đầu tối ưu hóa" [ref=e93] [cursor=pointer]:
                 - /url: /auth/signup
-                - button "Bắt đầu tối ưu hóa" [ref=e43]:
-                  - img
+                - button "Bắt đầu tối ưu hóa" [ref=e94]:
+                  - img [ref=e95]
                   - text: Bắt đầu tối ưu hóa
-                  - img
-              - link "Phân tích hiệu suất" [ref=e44] [cursor=pointer]:
+                  - img [ref=e97]
+              - link "Phân tích hiệu suất" [ref=e99] [cursor=pointer]:
                 - /url: /calculator
-                - button "Phân tích hiệu suất" [ref=e45]:
-                  - img
+                - button "Phân tích hiệu suất" [ref=e100]:
+                  - img [ref=e101]
                   - text: Phân tích hiệu suất
-            - paragraph [ref=e46]: ✓ Không có chi phí ẩn ✓ Minh bạch tuyệt đối ✓ Dành cho trader chuyên nghiệp
-          - generic [ref=e49]:
-            - generic [ref=e50]:
-              - generic [ref=e51]: $2.5M+
-              - generic [ref=e52]: Tổng tiền hoàn
-            - generic [ref=e53]:
-              - generic [ref=e54]: 1,152
-              - generic [ref=e55]: LTV trung bình ($)
-            - generic [ref=e56]:
-              - generic [ref=e57]: 40%
-              - generic [ref=e58]: Tỷ lệ hoàn phí
-            - generic [ref=e59]:
-              - generic [ref=e60]: 100%
-              - generic [ref=e61]: Minh bạch
-        - generic [ref=e63]:
-          - generic [ref=e64]:
-            - generic [ref=e65]:
-              - img
+            - paragraph [ref=e103]: ✓ Không có chi phí ẩn ✓ Minh bạch tuyệt đối ✓ Dành cho trader chuyên nghiệp
+          - generic [ref=e106]:
+            - generic [ref=e107]:
+              - generic [ref=e108]: $2.5M+
+              - generic [ref=e109]: Tổng tiền hoàn
+            - generic [ref=e110]:
+              - generic [ref=e111]: 1,152
+              - generic [ref=e112]: LTV trung bình ($)
+            - generic [ref=e113]:
+              - generic [ref=e114]: 40%
+              - generic [ref=e115]: Tỷ lệ hoàn phí
+            - generic [ref=e116]:
+              - generic [ref=e117]: 100%
+              - generic [ref=e118]: Minh bạch
+        - generic [ref=e120]:
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - img [ref=e123]
               - text: Phân tích hiệu suất
-            - heading "Tối ưu hóa lợi nhuận ròng" [level=2] [ref=e66]
-            - paragraph [ref=e67]: Công cụ phân tích chuyên sâu giúp "Trader Sói Đơn Độc" hiểu rõ tác động của phí giao dịch đến lợi nhuận
-          - generic [ref=e68]:
-            - generic [ref=e69]:
-              - generic [ref=e70]:
-                - generic [ref=e71]:
-                  - img [ref=e72]
+            - heading "Tối ưu hóa lợi nhuận ròng" [level=2] [ref=e125]
+            - paragraph [ref=e126]: Công cụ phân tích chuyên sâu giúp "Trader Sói Đơn Độc" hiểu rõ tác động của phí giao dịch đến lợi nhuận
+          - generic [ref=e127]:
+            - generic [ref=e128]:
+              - generic [ref=e129]:
+                - generic [ref=e130]:
+                  - img [ref=e131]
                   - text: Máy tính tối ưu hóa phí
-                - generic [ref=e74]: Phân tích tác động của phí đến lợi nhuận ròng của bạn
-              - generic [ref=e75]:
-                - generic [ref=e76]:
-                  - generic [ref=e77]:
-                    - generic [ref=e78]: Sàn giao dịch
-                    - combobox [ref=e79]:
-                      - generic: Binance
-                      - img
-                  - generic [ref=e80]:
-                    - generic [ref=e81]: Khối lượng hàng tháng (USD)
-                    - spinbutton "Khối lượng hàng tháng (USD)" [ref=e82]: "100000"
-                - generic [ref=e84]:
-                  - generic [ref=e85]: Tiết kiệm ước tính hàng tháng
-                  - generic [ref=e86]: $16
-                  - generic [ref=e87]: Tăng lợi nhuận ròng 0.2%/năm
-                - link "Đăng ký tài khoản để bắt đầu tối ưu hóa lợi nhuận giao dịch" [ref=e88] [cursor=pointer]:
-                  - /url: /auth/signup
-                  - button "Đăng ký tài khoản để bắt đầu tối ưu hóa lợi nhuận giao dịch" [ref=e89]:
-                    - text: Bắt đầu tối ưu hóa
-                    - img
-            - generic [ref=e90]:
-              - generic [ref=e91]:
-                - generic [ref=e92]:
-                  - img [ref=e93]
-                  - text: Phân tích cho "Trader Sói"
-                - generic [ref=e96]: Chi tiết tác động của phí đến hiệu suất giao dịch
-              - generic [ref=e97]:
-                - generic [ref=e98]:
-                  - generic [ref=e99]:
-                    - generic [ref=e100]: Tổng phí giao dịch
-                    - generic [ref=e101]: $40
-                  - generic [ref=e102]:
-                    - generic [ref=e103]: Hoàn phí từ ApexRebate
-                    - generic [ref=e104]: $16
-                  - generic [ref=e105]:
-                    - generic [ref=e106]: Phí ròng sau hoàn
-                    - generic [ref=e107]: $24
-                  - generic [ref=e108]:
-                    - generic [ref=e109]: Tỷ lệ tối ưu hóa
-                    - generic [ref=e110]: 40.0%
-                - paragraph [ref=e112]:
-                  - strong [ref=e113]: "Lời khuyên cho Trader Sói:"
-                  - text: Với khối lượng $100000/tháng, việc tối ưu hóa phí có thể tăng lợi nhuận ròng của bạn lên 0.2% mỗi năm.
-        - generic [ref=e115]:
-          - generic [ref=e116]:
-            - generic [ref=e117]:
-              - img
-              - text: Danh vọng Trader Sói
-            - heading "Những \"Trader Sói Đơn Độc\" xuất sắc" [level=2] [ref=e118]
-            - paragraph [ref=e119]: Minh bạch hiệu suất và thành tích của các thành viên ưu tú
-          - generic [ref=e120]:
-            - generic [ref=e121]:
-              - generic [ref=e123]:
-                - generic [ref=e124]:
-                  - generic [ref=e125]: "1"
-                  - generic [ref=e126]:
-                    - generic [ref=e127]: Kaison T.
-                    - generic [ref=e128]: Elite Trader
-                - img [ref=e129]
-              - generic [ref=e136]:
-                - generic [ref=e137]:
-                  - generic [ref=e138]: "Tiết kiệm tổng:"
-                  - generic [ref=e139]: $45,230
-                - generic [ref=e140]:
-                  - generic [ref=e141]: "Số giao dịch:"
-                  - generic [ref=e142]: 2,847
+                - generic [ref=e133]: Phân tích tác động của phí đến lợi nhuận ròng của bạn
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - generic [ref=e136]:
+                    - text: Sàn giao dịch
+                    - combobox [ref=e137]:
+                      - text: Binance
+                      - img [ref=e138]
+                  - generic [ref=e140]:
+                    - text: Khối lượng hàng tháng (USD)
+                    - spinbutton "Khối lượng hàng tháng (USD)" [ref=e141]: "100000"
                 - generic [ref=e143]:
-                  - generic [ref=e144]: "Độ chính xác:"
-                  - generic [ref=e145]: 94.2%
-                - generic [ref=e146]:
-                  - generic [ref=e147]: "Hiệu suất:"
-                  - generic [ref=e148]: 1588.69/trade
-            - generic [ref=e149]:
-              - generic [ref=e151]:
-                - generic [ref=e152]:
-                  - generic [ref=e153]: "2"
-                  - generic [ref=e154]:
-                    - generic [ref=e155]: Anh Minh N.
-                    - generic [ref=e156]: Elite Trader
-                - img [ref=e157]
-              - generic [ref=e164]:
-                - generic [ref=e165]:
-                  - generic [ref=e166]: "Tiết kiệm tổng:"
-                  - generic [ref=e167]: $38,920
-                - generic [ref=e168]:
-                  - generic [ref=e169]: "Số giao dịch:"
-                  - generic [ref=e170]: 2,156
-                - generic [ref=e171]:
-                  - generic [ref=e172]: "Độ chính xác:"
-                  - generic [ref=e173]: 91.8%
-                - generic [ref=e174]:
-                  - generic [ref=e175]: "Hiệu suất:"
-                  - generic [ref=e176]: 1805.19/trade
-            - generic [ref=e177]:
-              - generic [ref=e179]:
-                - generic [ref=e180]:
-                  - generic [ref=e181]: "3"
-                  - generic [ref=e182]:
-                    - generic [ref=e183]: Trung H.
-                    - generic [ref=e184]: Elite Trader
-                - img [ref=e185]
-              - generic [ref=e192]:
-                - generic [ref=e193]:
-                  - generic [ref=e194]: "Tiết kiệm tổng:"
-                  - generic [ref=e195]: $32,150
-                - generic [ref=e196]:
-                  - generic [ref=e197]: "Số giao dịch:"
-                  - generic [ref=e198]: 1,923
-                - generic [ref=e199]:
-                  - generic [ref=e200]: "Độ chính xác:"
-                  - generic [ref=e201]: 89.5%
-                - generic [ref=e202]:
-                  - generic [ref=e203]: "Hiệu suất:"
-                  - generic [ref=e204]: 1671.87/trade
+                  - generic [ref=e144]: Tiết kiệm ước tính hàng tháng
+                  - generic [ref=e145]: $16
+                  - generic [ref=e146]: Tăng lợi nhuận ròng 0.2%/năm
+                - link "Đăng ký tài khoản để bắt đầu tối ưu hóa lợi nhuận giao dịch" [ref=e147] [cursor=pointer]:
+                  - /url: /auth/signup
+                  - button "Đăng ký tài khoản để bắt đầu tối ưu hóa lợi nhuận giao dịch" [ref=e148]:
+                    - text: Bắt đầu tối ưu hóa
+                    - img [ref=e149]
+            - generic [ref=e151]:
+              - generic [ref=e152]:
+                - generic [ref=e153]:
+                  - img [ref=e154]
+                  - text: Phân tích cho "Trader Sói"
+                - generic [ref=e157]: Chi tiết tác động của phí đến hiệu suất giao dịch
+              - generic [ref=e158]:
+                - generic [ref=e159]:
+                  - generic [ref=e160]:
+                    - text: Tổng phí giao dịch
+                    - generic [ref=e161]: $40
+                  - generic [ref=e162]:
+                    - text: Hoàn phí từ ApexRebate
+                    - generic [ref=e163]: $16
+                  - generic [ref=e164]:
+                    - text: Phí ròng sau hoàn
+                    - generic [ref=e165]: $24
+                  - generic [ref=e166]:
+                    - text: Tỷ lệ tối ưu hóa
+                    - generic [ref=e167]: 40.0%
+                - paragraph [ref=e169]:
+                  - strong [ref=e170]: "Lời khuyên cho Trader Sói:"
+                  - text: Với khối lượng $100000/tháng, việc tối ưu hóa phí có thể tăng lợi nhuận ròng của bạn lên 0.2% mỗi năm.
+        - generic [ref=e172]:
+          - generic [ref=e173]:
+            - generic [ref=e174]:
+              - img [ref=e175]
+              - text: Danh vọng Trader Sói
+            - heading "Những \"Trader Sói Đơn Độc\" xuất sắc" [level=2] [ref=e181]
+            - paragraph [ref=e182]: Minh bạch hiệu suất và thành tích của các thành viên ưu tú
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - generic [ref=e186]:
+                - generic [ref=e187]:
+                  - generic [ref=e188]: "1"
+                  - generic [ref=e189]:
+                    - generic [ref=e190]: Kaison T.
+                    - generic [ref=e191]: Elite Trader
+                - img [ref=e192]
+              - generic [ref=e199]:
+                - generic [ref=e200]: Tiết kiệm tổng:$45,230
+                - generic [ref=e201]: Số giao dịch:2,847
+                - generic [ref=e202]: Độ chính xác:94.2%
+                - generic [ref=e203]:
+                  - text: "Hiệu suất:"
+                  - generic [ref=e204]: 1588.69/trade
             - generic [ref=e205]:
               - generic [ref=e207]:
                 - generic [ref=e208]:
-                  - generic [ref=e209]: "4"
+                  - generic [ref=e209]: "2"
                   - generic [ref=e210]:
-                    - generic [ref=e211]: Linh P.
+                    - generic [ref=e211]: Anh Minh N.
                     - generic [ref=e212]: Elite Trader
                 - img [ref=e213]
               - generic [ref=e220]:
-                - generic [ref=e221]:
-                  - generic [ref=e222]: "Tiết kiệm tổng:"
-                  - generic [ref=e223]: $28,760
+                - generic [ref=e221]: Tiết kiệm tổng:$38,920
+                - generic [ref=e222]: Số giao dịch:2,156
+                - generic [ref=e223]: Độ chính xác:91.8%
                 - generic [ref=e224]:
-                  - generic [ref=e225]: "Số giao dịch:"
-                  - generic [ref=e226]: 1,654
-                - generic [ref=e227]:
-                  - generic [ref=e228]: "Độ chính xác:"
-                  - generic [ref=e229]: 87.3%
-                - generic [ref=e230]:
-                  - generic [ref=e231]: "Hiệu suất:"
-                  - generic [ref=e232]: 1738.81/trade
-            - generic [ref=e233]:
-              - generic [ref=e235]:
-                - generic [ref=e236]:
-                  - generic [ref=e237]: "5"
-                  - generic [ref=e238]:
-                    - generic [ref=e239]: Hoang V.
-                    - generic [ref=e240]: Elite Trader
-                - img [ref=e241]
-              - generic [ref=e248]:
-                - generic [ref=e249]:
-                  - generic [ref=e250]: "Tiết kiệm tổng:"
-                  - generic [ref=e251]: $25,430
-                - generic [ref=e252]:
-                  - generic [ref=e253]: "Số giao dịch:"
-                  - generic [ref=e254]: 1,432
-                - generic [ref=e255]:
-                  - generic [ref=e256]: "Độ chính xác:"
-                  - generic [ref=e257]: 85.9%
-                - generic [ref=e258]:
-                  - generic [ref=e259]: "Hiệu suất:"
-                  - generic [ref=e260]: 1775.84/trade
-          - link "Xem danh sách đầy đủ các thành viên xuất sắc" [ref=e262] [cursor=pointer]:
+                  - text: "Hiệu suất:"
+                  - generic [ref=e225]: 1805.19/trade
+            - generic [ref=e226]:
+              - generic [ref=e228]:
+                - generic [ref=e229]:
+                  - generic [ref=e230]: "3"
+                  - generic [ref=e231]:
+                    - generic [ref=e232]: Trung H.
+                    - generic [ref=e233]: Elite Trader
+                - img [ref=e234]
+              - generic [ref=e241]:
+                - generic [ref=e242]: Tiết kiệm tổng:$32,150
+                - generic [ref=e243]: Số giao dịch:1,923
+                - generic [ref=e244]: Độ chính xác:89.5%
+                - generic [ref=e245]:
+                  - text: "Hiệu suất:"
+                  - generic [ref=e246]: 1671.87/trade
+            - generic [ref=e247]:
+              - generic [ref=e249]:
+                - generic [ref=e250]:
+                  - generic [ref=e251]: "4"
+                  - generic [ref=e252]:
+                    - generic [ref=e253]: Linh P.
+                    - generic [ref=e254]: Elite Trader
+                - img [ref=e255]
+              - generic [ref=e262]:
+                - generic [ref=e263]: Tiết kiệm tổng:$28,760
+                - generic [ref=e264]: Số giao dịch:1,654
+                - generic [ref=e265]: Độ chính xác:87.3%
+                - generic [ref=e266]:
+                  - text: "Hiệu suất:"
+                  - generic [ref=e267]: 1738.81/trade
+            - generic [ref=e268]:
+              - generic [ref=e270]:
+                - generic [ref=e271]:
+                  - generic [ref=e272]: "5"
+                  - generic [ref=e273]:
+                    - generic [ref=e274]: Hoang V.
+                    - generic [ref=e275]: Elite Trader
+                - img [ref=e276]
+              - generic [ref=e283]:
+                - generic [ref=e284]: Tiết kiệm tổng:$25,430
+                - generic [ref=e285]: Số giao dịch:1,432
+                - generic [ref=e286]: Độ chính xác:85.9%
+                - generic [ref=e287]:
+                  - text: "Hiệu suất:"
+                  - generic [ref=e288]: 1775.84/trade
+          - link "Xem danh sách đầy đủ các thành viên xuất sắc" [ref=e290] [cursor=pointer]:
             - /url: /wall-of-fame
-            - button "Xem danh sách đầy đủ các thành viên xuất sắc" [ref=e263]:
-              - img
+            - button "Xem danh sách đầy đủ các thành viên xuất sắc" [ref=e291]:
+              - img [ref=e292]
               - text: Xem thêm thành viên
-              - img
-        - generic [ref=e265]:
-          - generic [ref=e266]:
-            - generic [ref=e267]:
-              - img
+              - img [ref=e297]
+        - generic [ref=e300]:
+          - generic [ref=e301]:
+            - generic [ref=e302]:
+              - img [ref=e303]
               - text: Quy trình minh bạch
-            - heading "Cách ApexRebate hoạt động" [level=2] [ref=e268]
-            - paragraph [ref=e269]: 4 bước đơn giản, không có chi phí ẩn
-          - generic [ref=e270]:
-            - generic [ref=e271]:
-              - generic [ref=e273]: "1"
-              - heading "Đăng ký tài khoản" [level=3] [ref=e274]
-              - paragraph [ref=e275]: Tạo tài khoản ApexRebate miễn phí trong vài phút
-            - generic [ref=e276]:
-              - generic [ref=e278]: "2"
-              - heading "Kết nối sàn giao dịch" [level=3] [ref=e279]
-              - paragraph [ref=e280]: Sử dụng link affiliate của chúng tôi để đăng ký sàn giao dịch
-            - generic [ref=e281]:
-              - generic [ref=e283]: "3"
-              - heading "Bắt đầu giao dịch" [level=3] [ref=e284]
-              - paragraph [ref=e285]: Giao dịch bình thường như bạn vẫn làm hàng ngày
-            - generic [ref=e286]:
-              - generic [ref=e288]: "4"
-              - heading "Nhận hoàn phí" [level=3] [ref=e289]
-              - paragraph [ref=e290]: Tiền hoàn phí được tự động chuyển vào tài khoản của bạn
-        - generic [ref=e292]:
-          - generic [ref=e293]:
-            - generic [ref=e294]:
-              - img
+            - heading "Cách ApexRebate hoạt động" [level=2] [ref=e305]
+            - paragraph [ref=e306]: 4 bước đơn giản, không có chi phí ẩn
+          - generic [ref=e307]:
+            - generic [ref=e308]:
+              - generic [ref=e310]: "1"
+              - heading "Đăng ký tài khoản" [level=3] [ref=e311]
+              - paragraph [ref=e312]: Tạo tài khoản ApexRebate miễn phí trong vài phút
+            - generic [ref=e313]:
+              - generic [ref=e315]: "2"
+              - heading "Kết nối sàn giao dịch" [level=3] [ref=e316]
+              - paragraph [ref=e317]: Sử dụng link affiliate của chúng tôi để đăng ký sàn giao dịch
+            - generic [ref=e318]:
+              - generic [ref=e320]: "3"
+              - heading "Bắt đầu giao dịch" [level=3] [ref=e321]
+              - paragraph [ref=e322]: Giao dịch bình thường như bạn vẫn làm hàng ngày
+            - generic [ref=e323]:
+              - generic [ref=e325]: "4"
+              - heading "Nhận hoàn phí" [level=3] [ref=e326]
+              - paragraph [ref=e327]: Tiền hoàn phí được tự động chuyển vào tài khoản của bạn
+        - generic [ref=e329]:
+          - generic [ref=e330]:
+            - generic [ref=e331]:
+              - img [ref=e332]
               - text: Cộng đồng độc quyền
-            - heading "\"Hang Sói\" - Nơi hội tụ Elite Trader" [level=2] [ref=e295]
-            - paragraph [ref=e296]: Cộng đồng riêng tư dành cho những "Trader Sói Đơn Độc" thực sự. Không tín hiệu, không lùa gà - chỉ có phân tích chuyên sâu và tối ưu hóa hiệu suất.
-          - generic [ref=e297]:
-            - generic [ref=e299]:
-              - generic [ref=e300]:
-                - generic [ref=e302]:
-                  - img [ref=e303]
+            - heading "\"Hang Sói\" - Nơi hội tụ Elite Trader" [level=2] [ref=e337]
+            - paragraph [ref=e338]: Cộng đồng riêng tư dành cho những "Trader Sói Đơn Độc" thực sự. Không tín hiệu, không lùa gà - chỉ có phân tích chuyên sâu và tối ưu hóa hiệu suất.
+          - generic [ref=e339]:
+            - generic [ref=e341]:
+              - generic [ref=e342]:
+                - generic [ref=e344]:
+                  - img [ref=e345]
                   - text: Nội quy tuyệt đối
-                - list [ref=e306]:
-                  - listitem [ref=e307]:
-                    - img [ref=e308]
+                - list [ref=e348]:
+                  - listitem [ref=e349]:
+                    - img [ref=e350]
                     - text: Cấm tuyệt đối việc "phím hàng" và "lùa gà"
-                  - listitem [ref=e311]:
-                    - img [ref=e312]
+                  - listitem [ref=e353]:
+                    - img [ref=e354]
                     - text: Chỉ cho phép thảo luận chuyên sâu về phân tích kỹ thuật
-                  - listitem [ref=e315]:
-                    - img [ref=e316]
+                  - listitem [ref=e357]:
+                    - img [ref=e358]
                     - text: Tập trung vào quản lý rủi ro và tâm lý giao dịch
-              - generic [ref=e319]:
-                - generic [ref=e321]:
-                  - img [ref=e322]
+              - generic [ref=e361]:
+                - generic [ref=e363]:
+                  - img [ref=e364]
                   - text: Nội dung chuyên biệt
-                - list [ref=e325]:
-                  - listitem [ref=e326]:
-                    - img [ref=e327]
+                - list [ref=e367]:
+                  - listitem [ref=e368]:
+                    - img [ref=e369]
                     - text: Phân tích chi phí ẩn và cấu trúc phí các sàn
-                  - listitem [ref=e330]:
-                    - img [ref=e331]
+                  - listitem [ref=e372]:
+                    - img [ref=e373]
                     - text: Chiến lược tối ưu hóa lợi nhuận ròng
-                  - listitem [ref=e334]:
-                    - img [ref=e335]
+                  - listitem [ref=e376]:
+                    - img [ref=e377]
                     - text: Chia sẻ công cụ và bot trading tự phát triển
-            - generic [ref=e339]:
-              - generic [ref=e340]:
-                - img [ref=e342]
-                - generic [ref=e347]: Tham gia "Hang Sói"
-                - generic [ref=e348]: Cộng đồng độc quyền chỉ dành cho thành viên đã xác minh
-              - generic [ref=e349]:
-                - paragraph [ref=e350]: Hiện có 100+ thành viên ưu tú
-                - button "Đăng ký tham gia" [ref=e351]:
+            - generic [ref=e381]:
+              - generic [ref=e382]:
+                - img [ref=e384]
+                - generic [ref=e389]: Tham gia "Hang Sói"
+                - generic [ref=e390]: Cộng đồng độc quyền chỉ dành cho thành viên đã xác minh
+              - generic [ref=e391]:
+                - paragraph [ref=e392]: Hiện có 100+ thành viên ưu tú
+                - button "Đăng ký tham gia" [ref=e393]:
                   - text: Đăng ký tham gia
-                  - img
-                - paragraph [ref=e352]: "* Yêu cầu: Khối lượng giao dịch tối thiểu $50,000/tháng"
-        - generic [ref=e354]:
-          - generic [ref=e355]:
-            - generic [ref=e356]:
-              - img
+                  - img [ref=e394]
+                - paragraph [ref=e396]: "* Yêu cầu: Khối lượng giao dịch tối thiểu $50,000/tháng"
+        - generic [ref=e398]:
+          - generic [ref=e399]:
+            - generic [ref=e400]:
+              - img [ref=e401]
               - text: Câu hỏi chuyên sâu
-            - heading "Thắc mắc từ Trader Sói" [level=2] [ref=e357]
-            - paragraph [ref=e358]: Những câu hỏi thực tế từ những trader nghiêm túc
-          - generic [ref=e359]:
-            - generic [ref=e360]:
-              - generic [ref=e362]:
-                - img [ref=e363]
+            - heading "Thắc mắc từ Trader Sói" [level=2] [ref=e404]
+            - paragraph [ref=e405]: Những câu hỏi thực tế từ những trader nghiêm túc
+          - generic [ref=e406]:
+            - generic [ref=e407]:
+              - generic [ref=e409]:
+                - img [ref=e410]
                 - text: ApexRebate hoạt động như thế nào?
-              - paragraph [ref=e367]: Chúng tôi hợp tác với các sàn giao dịch lớn để mang lại mức hoa hồng cao nhất cho bạn. Khi bạn giao dịch qua link affiliate của chúng tôi, bạn nhận được phần hoàn phí từ các giao dịch của mình.
-            - generic [ref=e368]:
-              - generic [ref=e370]:
-                - img [ref=e371]
-                - text: Tôi có thể tiết kiệm được bao nhiêu?
-              - paragraph [ref=e375]: Tùy thuộc vào khối lượng giao dịch của bạn. Trader trung bình có thể tiết kiệm từ 20-40% tổng phí giao dịch hàng tháng.
-            - generic [ref=e376]:
-              - generic [ref=e378]:
-                - img [ref=e379]
-                - text: Khi nào tôi nhận được tiền hoàn phí?
-              - paragraph [ref=e383]: Chúng tôi xử lý thanh toán hàng tuần. Bạn sẽ nhận được tiền hoàn phí vào tài khoản đã đăng ký trong vòng 24-48 giờ sau khi xử lý.
-            - generic [ref=e384]:
-              - generic [ref=e386]:
-                - img [ref=e387]
-                - text: Có chi phí ẩn nào không?
-              - paragraph [ref=e391]: Hoàn toàn không. Dịch vụ của chúng tôi hoàn toàn miễn phí. Bạn chỉ nhận được tiền, không phải trả tiền.
-          - generic [ref=e393]:
-            - paragraph [ref=e394]: Câu hỏi khác? Chúng tôi có đội ngũ chuyên gia sẵn sàng tư vấn.
-            - button "Liên hệ chuyên gia" [ref=e395]:
-              - img
-              - text: Liên hệ chuyên gia
-        - generic [ref=e397]:
-          - generic [ref=e398]:
-            - img
-            - text: Quyết định thông minh
-          - heading "Sẵn sàng tối ưu hóa lợi nhuận ròng?" [level=2] [ref=e399]
-          - paragraph [ref=e400]: Tham gia cộng đồng những "Trader Sói Đơn Độc" đang sử dụng dữ liệu để tối ưu hóa hiệu suất giao dịch
-          - generic [ref=e401]:
-            - link "Bắt đầu tối ưu hóa miễn phí" [ref=e402] [cursor=pointer]:
-              - /url: /auth/signup
-              - button "Bắt đầu tối ưu hóa miễn phí" [ref=e403]:
-                - img
-                - text: Bắt đầu tối ưu hóa miễn phí
-            - link "Tìm hiểu về \"Hang Sói\"" [ref=e404] [cursor=pointer]:
-              - /url: /hang-soi
-              - button "Tìm hiểu về \"Hang Sói\"" [ref=e405]:
-                - img
-                - text: Tìm hiểu về "Hang Sói"
-          - paragraph [ref=e406]: ✓ Không yêu cầu thẻ tín dụng ✓ Bắt đầu trong 5 phút ✓ Hủy bất kỳ lúc nào
-    - contentinfo [ref=e407]:
-      - generic [ref=e408]:
-        - generic [ref=e409]:
-          - generic [ref=e410]:
-            - generic [ref=e413]: ApexRebate
-            - paragraph [ref=e414]: Tối ưu hóa lợi nhuận cho trader nghiêm túc
+              - paragraph [ref=e414]: Chúng tôi hợp tác với các sàn giao dịch lớn để mang lại mức hoa hồng cao nhất cho bạn. Khi bạn giao dịch qua link affiliate của chúng tôi, bạn nhận được phần hoàn phí từ các giao dịch của mình.
             - generic [ref=e415]:
-              - link [ref=e416] [cursor=pointer]:
-                - /url: "#"
-                - img [ref=e417]
-              - link [ref=e419] [cursor=pointer]:
-                - /url: "#"
-                - img [ref=e420]
-              - link [ref=e422] [cursor=pointer]:
-                - /url: "#"
-                - img [ref=e423]
-              - link [ref=e427] [cursor=pointer]:
-                - /url: "#"
-                - img [ref=e428]
-          - generic [ref=e431]:
-            - heading "Sản phẩm" [level=3] [ref=e432]
-            - list [ref=e433]:
-              - listitem [ref=e434]:
-                - link "Hoàn phí" [ref=e435] [cursor=pointer]:
-                  - /url: /calculator
-              - listitem [ref=e436]:
-                - link "ApexPro" [ref=e437] [cursor=pointer]:
-                  - /url: /apex-pro
-              - listitem [ref=e438]:
-                - link "Hang Sói" [ref=e439] [cursor=pointer]:
-                  - /url: /hang-soi
+              - generic [ref=e417]:
+                - img [ref=e418]
+                - text: Tôi có thể tiết kiệm được bao nhiêu?
+              - paragraph [ref=e422]: Tùy thuộc vào khối lượng giao dịch của bạn. Trader trung bình có thể tiết kiệm từ 20-40% tổng phí giao dịch hàng tháng.
+            - generic [ref=e423]:
+              - generic [ref=e425]:
+                - img [ref=e426]
+                - text: Khi nào tôi nhận được tiền hoàn phí?
+              - paragraph [ref=e430]: Chúng tôi xử lý thanh toán hàng tuần. Bạn sẽ nhận được tiền hoàn phí vào tài khoản đã đăng ký trong vòng 24-48 giờ sau khi xử lý.
+            - generic [ref=e431]:
+              - generic [ref=e433]:
+                - img [ref=e434]
+                - text: Có chi phí ẩn nào không?
+              - paragraph [ref=e438]: Hoàn toàn không. Dịch vụ của chúng tôi hoàn toàn miễn phí. Bạn chỉ nhận được tiền, không phải trả tiền.
           - generic [ref=e440]:
-            - heading "Công ty" [level=3] [ref=e441]
-            - list [ref=e442]:
-              - listitem [ref=e443]:
-                - link "Về chúng tôi" [ref=e444] [cursor=pointer]:
+            - paragraph [ref=e441]: Câu hỏi khác? Chúng tôi có đội ngũ chuyên gia sẵn sàng tư vấn.
+            - button "Liên hệ chuyên gia" [ref=e442]:
+              - img [ref=e443]
+              - text: Liên hệ chuyên gia
+        - generic [ref=e446]:
+          - generic [ref=e447]:
+            - img [ref=e448]
+            - text: Quyết định thông minh
+          - heading "Sẵn sàng tối ưu hóa lợi nhuận ròng?" [level=2] [ref=e450]
+          - paragraph [ref=e451]: Tham gia cộng đồng những "Trader Sói Đơn Độc" đang sử dụng dữ liệu để tối ưu hóa hiệu suất giao dịch
+          - generic [ref=e452]:
+            - link "Bắt đầu tối ưu hóa miễn phí" [ref=e453] [cursor=pointer]:
+              - /url: /auth/signup
+              - button "Bắt đầu tối ưu hóa miễn phí" [ref=e454]:
+                - img [ref=e455]
+                - text: Bắt đầu tối ưu hóa miễn phí
+            - link "Tìm hiểu về \"Hang Sói\"" [ref=e457] [cursor=pointer]:
+              - /url: /hang-soi
+              - button "Tìm hiểu về \"Hang Sói\"" [ref=e458]:
+                - img [ref=e459]
+                - text: Tìm hiểu về "Hang Sói"
+          - paragraph [ref=e464]: ✓ Không yêu cầu thẻ tín dụng ✓ Bắt đầu trong 5 phút ✓ Hủy bất kỳ lúc nào
+    - contentinfo [ref=e465]:
+      - generic [ref=e466]:
+        - generic [ref=e467]:
+          - generic [ref=e468]:
+            - generic [ref=e469]: ApexRebate
+            - paragraph [ref=e470]: Tối ưu hóa lợi nhuận cho trader nghiêm túc
+            - generic [ref=e471]:
+              - link [ref=e472] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e473]
+              - link [ref=e475] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e476]
+              - link [ref=e478] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e479]
+              - link [ref=e483] [cursor=pointer]:
+                - /url: "#"
+                - img [ref=e484]
+          - generic [ref=e487]:
+            - heading "Sản phẩm" [level=3] [ref=e488]
+            - list [ref=e489]:
+              - listitem [ref=e490]:
+                - link "Hoàn phí" [ref=e491] [cursor=pointer]:
+                  - /url: /calculator
+              - listitem [ref=e492]:
+                - link "ApexPro" [ref=e493] [cursor=pointer]:
+                  - /url: /apex-pro
+              - listitem [ref=e494]:
+                - link "Hang Sói" [ref=e495] [cursor=pointer]:
+                  - /url: /hang-soi
+          - generic [ref=e496]:
+            - heading "Công ty" [level=3] [ref=e497]
+            - list [ref=e498]:
+              - listitem [ref=e499]:
+                - link "Về chúng tôi" [ref=e500] [cursor=pointer]:
                   - /url: /about
-              - listitem [ref=e445]:
-                - link "Liên hệ" [ref=e446] [cursor=pointer]:
+              - listitem [ref=e501]:
+                - link "Liên hệ" [ref=e502] [cursor=pointer]:
                   - /url: /contact
-              - listitem [ref=e447]:
-                - link "Điều khoản" [ref=e448] [cursor=pointer]:
+              - listitem [ref=e503]:
+                - link "Điều khoản" [ref=e504] [cursor=pointer]:
                   - /url: /terms
-          - generic [ref=e449]:
-            - heading "Đối tác" [level=3] [ref=e450]
-            - generic [ref=e451]:
-              - generic [ref=e454]: Binance
-              - generic [ref=e457]: Bybit
-              - generic [ref=e460]: OKX
-        - generic [ref=e461]:
-          - generic [ref=e462]:
-            - generic [ref=e463]:
-              - heading "Liên kết nhanh" [level=4] [ref=e464]
-              - list [ref=e465]:
-                - listitem [ref=e466]:
-                  - link "Trang chủ" [ref=e467] [cursor=pointer]:
+          - generic [ref=e505]:
+            - heading "Đối tác" [level=3] [ref=e506]
+            - generic [ref=e507]:
+              - generic [ref=e508]: Binance
+              - generic [ref=e509]: Bybit
+              - generic [ref=e510]: OKX
+        - generic [ref=e511]:
+          - generic [ref=e512]:
+            - generic [ref=e513]:
+              - heading "Liên kết nhanh" [level=4] [ref=e514]
+              - list [ref=e515]:
+                - listitem [ref=e516]:
+                  - link "Trang chủ" [ref=e517] [cursor=pointer]:
                     - /url: /
-                - listitem [ref=e468]:
-                  - link "Máy tính" [ref=e469] [cursor=pointer]:
+                - listitem [ref=e518]:
+                  - link "Máy tính" [ref=e519] [cursor=pointer]:
                     - /url: /calculator
-                - listitem [ref=e470]:
-                  - link "Danh vọng" [ref=e471] [cursor=pointer]:
+                - listitem [ref=e520]:
+                  - link "Danh vọng" [ref=e521] [cursor=pointer]:
                     - /url: /wall-of-fame
-            - generic [ref=e472]:
-              - heading "Dịch vụ" [level=4] [ref=e473]
-              - list [ref=e474]:
-                - listitem [ref=e475]:
-                  - link "Hoàn phí Binance" [ref=e476] [cursor=pointer]:
+            - generic [ref=e522]:
+              - heading "Dịch vụ" [level=4] [ref=e523]
+              - list [ref=e524]:
+                - listitem [ref=e525]:
+                  - link "Hoàn phí Binance" [ref=e526] [cursor=pointer]:
                     - /url: /services/binance-rebate
-                - listitem [ref=e477]:
-                  - link "Hoàn phí Bybit" [ref=e478] [cursor=pointer]:
+                - listitem [ref=e527]:
+                  - link "Hoàn phí Bybit" [ref=e528] [cursor=pointer]:
                     - /url: /services/bybit-rebate
-                - listitem [ref=e479]:
-                  - link "Hoàn phí OKX" [ref=e480] [cursor=pointer]:
+                - listitem [ref=e529]:
+                  - link "Hoàn phí OKX" [ref=e530] [cursor=pointer]:
                     - /url: /services/okx-rebate
-            - generic [ref=e481]:
-              - heading "Liên hệ" [level=4] [ref=e482]
-              - list [ref=e483]:
-                - listitem [ref=e484]:
-                  - img [ref=e485]
-                  - generic [ref=e488]: support@apexrebate.com
-                - listitem [ref=e489]:
-                  - img [ref=e490]
-                  - generic [ref=e492]: +84 123 456 789
-          - generic [ref=e493]:
-            - generic [ref=e494]: © 2024 ApexRebate. Tất cả quyền được bảo lưu.
-            - generic [ref=e495]:
-              - generic [ref=e496]: Trang web này sử dụng cookie để cải thiện trải nghiệm của bạn.
-              - button "Quay lên trên" [ref=e497]:
-                - img
+            - generic [ref=e531]:
+              - heading "Liên hệ" [level=4] [ref=e532]
+              - list [ref=e533]:
+                - listitem [ref=e534]:
+                  - img [ref=e535]
+                  - text: support@apexrebate.com
+                - listitem [ref=e538]:
+                  - img [ref=e539]
+                  - text: +84 123 456 789
+          - generic [ref=e541]:
+            - generic [ref=e542]: © 2024 ApexRebate. Tất cả quyền được bảo lưu.
+            - generic [ref=e543]:
+              - text: Trang web này sử dụng cookie để cải thiện trải nghiệm của bạn.
+              - button "Quay lên trên" [ref=e544]:
+                - img [ref=e545]
                 - text: Quay lên trên
-  - alert [ref=e498]
-  - button "Open Next.js Dev Tools" [ref=e504] [cursor=pointer]:
-    - img [ref=e505]
+  - alert [ref=e547]
 ```

@@ -1,13 +1,34 @@
 import { Page } from '@playwright/test'
 
+const NAV_TEST_IDS: Record<string, string> = {
+  'Tính toán': 'nav-link-calculator',
+  'Calculator': 'nav-link-calculator',
+  'Danh vọng': 'nav-link-wall-of-fame',
+  'Danh Vọng': 'nav-link-wall-of-fame',
+  'Wall of Fame': 'nav-link-wall-of-fame',
+  'Hang Sói': 'nav-link-hang-soi',
+  'Tools Market': 'nav-link-tools',
+  'Chợ Công Cụ': 'nav-link-tools',
+  'FAQ': 'nav-link-faq',
+  'Cách hoạt động': 'nav-link-how-it-works',
+  'How It Works': 'nav-link-how-it-works',
+}
+
 /**
- * Click vào navigation link trên desktop
+ * Click vào navigation link trên desktop, ưu tiên data-testid nếu có
  * @param page Playwright Page object
- * @param linkText Text của link cần click (VD: "Tính toán")
+ * @param linkText Text của link cần click (VD: "Tính toán") 
+ * @param testDataId Optional data-testid selector cho higher priority
  */
-export async function clickNavLink(page: Page, linkText: string) {
-  // Desktop: Click trực tiếp vào link visible trong navbar
-  await page.click(`a:has-text("${linkText}")`);
+export async function clickNavLink(page: Page, linkText: string, testDataId?: string) {
+  const resolvedTestId = testDataId ?? NAV_TEST_IDS[linkText]
+
+  if (resolvedTestId) {
+    await page.click(`[data-testid="${resolvedTestId}"]`)
+    return
+  }
+
+  await page.click(`a:has-text("${linkText}")`)
 }
 
 /**

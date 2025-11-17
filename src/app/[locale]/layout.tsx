@@ -1,17 +1,23 @@
-import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
-import {LocaleSync} from './locale-sync';
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
+import { LocaleSync } from './locale-sync'
+import RootLayoutClient from '../layout-client'
 
 export default async function LocaleLayout({
-  children
+  children,
+  params,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
 }) {
-  const messages = await getMessages();
+  const resolvedParams = await params
+  const messages = await getMessages()
   return (
-    <NextIntlClientProvider messages={messages}>
-      <LocaleSync />
-      {children}
+    <NextIntlClientProvider messages={messages} locale={resolvedParams.locale}>
+      <RootLayoutClient>
+        <LocaleSync />
+        {children}
+      </RootLayoutClient>
     </NextIntlClientProvider>
-  );
+  )
 }
