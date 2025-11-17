@@ -23,16 +23,21 @@ Sentry.init({
     }
 
     // Remove query params that might contain sensitive data
-    if (event.request?.query_string) {
+    if (event.request?.query_string && typeof event.request.query_string === 'string') {
+      const queryString = event.request.query_string
       const sensitiveParams = ['token', 'apiKey', 'secret', 'password']
+
+      let filteredQuery = queryString
       sensitiveParams.forEach((param) => {
-        if (event.request?.query_string?.includes(param)) {
-          event.request.query_string = event.request.query_string
+        if (filteredQuery.includes(param)) {
+          filteredQuery = filteredQuery
             .split('&')
             .filter((q) => !q.startsWith(param))
             .join('&')
         }
       })
+
+      event.request.query_string = filteredQuery
     }
 
     return event

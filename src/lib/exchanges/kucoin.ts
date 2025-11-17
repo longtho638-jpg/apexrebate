@@ -251,4 +251,9 @@ export class KuCoinExchange extends BaseExchange {
       this.handleError(error)
     }
   }
+
+  // Generate signature for API requests
+  private generateSignature(message: string, secret: string): string {
+    return crypto.createHmac('sha256', secret).update(message).digest('base64')
+  }
 }

@@ -7,7 +7,8 @@ import Card from "@/uiux-v5/atoms/Card";
 import Input from "@/uiux-v5/atoms/Input";
 import Button from "@/uiux-v5/atoms/Button";
 
-export default function SettingsTemplate({ user }: { 
+export default function SettingsTemplate({ locale = "en", user }: { 
+  locale?: string;
   user: { 
     name: string; 
     email: string; 
@@ -15,7 +16,7 @@ export default function SettingsTemplate({ user }: {
 }) {
   return (
     <>
-      <NavBar />
+      <NavBar locale={locale} />
 
       <Section>
         <Container className="max-w-xl">
@@ -32,7 +33,7 @@ export default function SettingsTemplate({ user }: {
         </Container>
       </Section>
 
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }

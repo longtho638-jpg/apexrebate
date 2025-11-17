@@ -1,6 +1,11 @@
 import DashboardTemplate from "@/uiux-v5/templates/DashboardTemplate";
 
-export default function DashboardV5() {
+export default async function DashboardV5({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   const stats = {
     totalSavings: "$50,000",
     monthSavings: "$0",
@@ -16,5 +21,5 @@ export default function DashboardV5() {
     exchanges: <div>Chart placeholder</div>
   };
 
-  return <DashboardTemplate stats={stats} charts={charts} />;
+  return <DashboardTemplate locale={locale} stats={stats} charts={charts} />;
 }

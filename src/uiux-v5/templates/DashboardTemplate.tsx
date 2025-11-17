@@ -6,7 +6,8 @@ import ChartShell from "@/uiux-v5/molecules/ChartShell";
 import Section from "@/uiux-v5/atoms/Section";
 import Container from "@/uiux-v5/atoms/Container";
 
-export default function DashboardTemplate({ stats, charts }: { 
+export default function DashboardTemplate({ locale = "en", stats, charts }: { 
+  locale?: string;
   stats: { 
     totalSavings: string; 
     monthSavings: string; 
@@ -23,7 +24,7 @@ export default function DashboardTemplate({ stats, charts }: {
 }) {
   return (
     <>
-      <NavBar />
+      <NavBar locale={locale} />
 
       <DashboardHeader stats={stats} />
 
@@ -41,7 +42,7 @@ export default function DashboardTemplate({ stats, charts }: {
         </Container>
       </Section>
 
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }

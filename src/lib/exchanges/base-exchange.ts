@@ -108,11 +108,6 @@ export abstract class BaseExchange {
     return fee * rebateRate
   }
 
-  // 生成签名 (通用实现)
-  protected generateSignature(payload: string, secret: string): string {
-    return crypto.createHmac('sha256', secret).update(payload).digest('hex')
-  }
-
   // API请求封装
   protected async makeRequest(
     endpoint: string,

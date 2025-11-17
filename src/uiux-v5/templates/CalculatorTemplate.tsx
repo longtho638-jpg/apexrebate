@@ -7,12 +7,13 @@ import Card from "@/uiux-v5/atoms/Card";
 import Input from "@/uiux-v5/atoms/Input";
 import Button from "@/uiux-v5/atoms/Button";
 
-export default function CalculatorTemplate({ onCalculate }: { 
+export default function CalculatorTemplate({ locale = "en", onCalculate }: { 
+  locale?: string;
   onCalculate: () => void 
 }) {
   return (
     <>
-      <NavBar />
+      <NavBar locale={locale} />
 
       <Section>
         <Container className="max-w-xl">
@@ -29,7 +30,7 @@ export default function CalculatorTemplate({ onCalculate }: {
         </Container>
       </Section>
 
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }

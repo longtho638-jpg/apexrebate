@@ -9,9 +9,7 @@ const config = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  experimental: {
-    instrumentationHook: true,
-  },
+  experimental: {},
   async headers() {
     return [
       {

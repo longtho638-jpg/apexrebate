@@ -1,4 +1,5 @@
 import { BaseExchange, ExchangeCredentials, TradingPair, Ticker, FeeStructure, AffiliateInfo, Transaction, Balance } from './base-exchange'
+import * as crypto from 'crypto'
 
 export class CoinbaseExchange extends BaseExchange {
   private readonly apiVersion = 'v2'
@@ -200,6 +201,11 @@ export class CoinbaseExchange extends BaseExchange {
     } catch (error) {
       this.handleError(error)
     }
+  }
+
+  // Generate signature for API requests
+  private generateSignature(message: string, secret: string): string {
+    return crypto.createHmac('sha256', Buffer.from(secret, 'base64')).update(message).digest('base64')
   }
 
   // 重写速率限制处理

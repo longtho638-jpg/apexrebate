@@ -7,10 +7,10 @@ import Container from "@/uiux-v5/atoms/Container";
 import Card from "@/uiux-v5/atoms/Card";
 import Button from "@/uiux-v5/atoms/Button";
 
-export default function HomepageTemplate() {
+export default function HomepageTemplate({ locale = "en" }: { locale?: string }) {
   return (
     <>
-      <NavBar />
+      <NavBar locale={locale} />
 
       <Hero />
 
@@ -53,7 +53,7 @@ export default function HomepageTemplate() {
         </Container>
       </Section>
 
-      <Footer />
+      <Footer locale={locale} />
     </>
   );
 }
