@@ -1,4 +1,6 @@
 // src/uiux-v5/molecules/Footer.tsx
+"use client";
+
 import Container from "@/uiux-v5/atoms/Container";
 import Link from "next/link";
 
