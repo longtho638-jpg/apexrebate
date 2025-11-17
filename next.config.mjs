@@ -6,7 +6,7 @@ const config = {
   reactStrictMode: true,
   output: 'standalone',
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   experimental: {},
   async headers() {
@@ -33,12 +33,12 @@ const config = {
       },
       {
         source: '/uiux-v3',
-        destination: '/',
+        destination: '/uiux-v5',
         permanent: true,
       },
       {
         source: '/:locale/uiux-v3',
-        destination: '/:locale',
+        destination: '/:locale/uiux-v5',
         permanent: true,
       },
       {

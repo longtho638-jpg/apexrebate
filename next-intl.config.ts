@@ -1,7 +1,5 @@
-import { defineConfig } from 'next-intl/config';
-
-export default defineConfig({
+export default {
   locales: ['en', 'vi', 'th', 'id'],
   defaultLocale: 'vi',
   localeDetection: true,
-});
+};

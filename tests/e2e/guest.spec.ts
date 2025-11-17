@@ -5,29 +5,29 @@ test.describe('Guest - Trang công khai và điều hướng', () => {
   test.skip(({ browserName }) => browserName !== 'chromium' && browserName !== 'firefox', 'Only run on desktop browsers')
 
   test('Trang chủ hiển thị và các liên kết chính hoạt động', async ({ page }) => {
-    await page.goto('/')
+    await page.goto('/vi')
 
     // Tiêu đề chính
     await expect(page).toHaveTitle(/ApexRebate/i)
 
     // Liên kết điều hướng chính
     const links = [
-      { text: 'Tính toán', path: /\/calculator/ },
-      { text: 'FAQ', path: /\/faq/ },
-      { text: 'Cách hoạt động', path: /\/how-it-works/ },
-      { text: 'Danh Vọng', path: /\/wall-of-fame/ },
+      { text: 'Tính toán', testId: 'nav-link-calculator', path: /\/vi\/calculator/ },
+      { text: 'FAQ', testId: 'nav-link-faq', path: /\/vi\/faq/ },
+      { text: 'Cách hoạt động', testId: 'nav-link-how-it-works', path: /\/vi\/how-it-works/ },
+      { text: 'Danh Vọng', testId: 'nav-link-wall-of-fame', path: /\/vi\/wall-of-fame/ },
     ]
 
-    for (const { text, path } of links) {
-      await clickNavLink(page, text)
+    for (const { text, testId, path } of links) {
+      await clickNavLink(page, text, testId)
       await expect(page).toHaveURL(path)
       // Quay lại trang chủ để tiếp tục kiểm tra
-      await page.goto('/')
+      await page.goto('/vi')
     }
   })
 
   test('FAQ hiển thị nội dung cơ bản', async ({ page }) => {
-    await page.goto('/faq')
+    await page.goto('/vi/faq')
     await expect(page.locator('h1,h2').first()).toBeVisible()
     // Có ít nhất một accordion hoặc câu hỏi
     const anyQuestion = page.locator('details, [role="button"], button:has-text("?")').first()
@@ -35,12 +35,12 @@ test.describe('Guest - Trang công khai và điều hướng', () => {
   })
 
   test('How it works hiển thị hướng dẫn', async ({ page }) => {
-    await page.goto('/how-it-works')
+    await page.goto('/vi/how-it-works')
     await expect(page.locator('h1,h2').first()).toBeVisible()
   })
 
   test('Wall of Fame tải được và không lỗi', async ({ page }) => {
-    await page.goto('/wall-of-fame')
+    await page.goto('/vi/wall-of-fame')
     await expect(page.locator('h1,h2')).toContainText(/Wall of Fame|Danh Vọng/i)
   })
 })
