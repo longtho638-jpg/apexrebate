@@ -1,4 +1,5 @@
 import nextIntl from 'next-intl/plugin';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const withNextIntl = nextIntl('./src/i18n/request.ts');
 
@@ -8,7 +9,9 @@ const config = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  experimental: {},
+  experimental: {
+    instrumentationHook: true,
+  },
   async headers() {
     return [
       {
@@ -50,4 +53,25 @@ const config = {
   },
 };
 
-export default withNextIntl(config);
+// Wrap with Sentry if enabled
+const finalConfig = process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(
+      withNextIntl(config),
+      {
+        // Sentry Webpack Plugin options
+        silent: true,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+      },
+      {
+        // Upload source maps for better error tracking
+        widenClientFileUpload: true,
+        transpileClientSDK: true,
+        tunnelRoute: '/monitoring',
+        hideSourceMaps: true,
+        disableLogger: true,
+      }
+    )
+  : withNextIntl(config);
+
+export default finalConfig;
