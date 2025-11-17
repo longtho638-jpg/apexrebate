@@ -1,4 +1,6 @@
 // src/uiux-v5/templates/CalculatorTemplate.tsx
+"use client";
+
 import NavBar from "@/uiux-v5/molecules/NavBar";
 import Footer from "@/uiux-v5/molecules/Footer";
 import Section from "@/uiux-v5/atoms/Section";
@@ -7,9 +9,9 @@ import Card from "@/uiux-v5/atoms/Card";
 import Input from "@/uiux-v5/atoms/Input";
 import Button from "@/uiux-v5/atoms/Button";
 
-export default function CalculatorTemplate({ locale = "en", onCalculate }: { 
+export default function CalculatorTemplate({ locale = "en", onCalculate }: {
   locale?: string;
-  onCalculate: () => void 
+  onCalculate?: () => void
 }) {
   return (
     <>
@@ -23,7 +25,7 @@ export default function CalculatorTemplate({ locale = "en", onCalculate }: {
             <Input placeholder="Khối lượng giao dịch (USD)" />
             <Input placeholder="Sàn giao dịch" />
 
-            <Button variant="primary" className="w-full" onClick={onCalculate}>
+            <Button variant="primary" className="w-full" onClick={onCalculate || (() => console.log('Calculate clicked'))}>
               Tính toán
             </Button>
           </Card>

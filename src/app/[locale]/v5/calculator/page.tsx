@@ -6,5 +6,5 @@ export default async function CalculatorV5({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  return <CalculatorTemplate locale={locale} onCalculate={() => {}} />;
+  return <CalculatorTemplate locale={locale} />;
 }
