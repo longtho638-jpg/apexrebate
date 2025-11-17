@@ -1,4 +1,6 @@
 import { BaseExchange, ExchangeCredentials, TradingPair, Ticker, FeeStructure, AffiliateInfo, Transaction, Balance } from './base-exchange'
+import { BinanceExchange } from './binance'
+import { BybitExchange } from './bybit'
 import { CoinbaseExchange } from './coinbase'
 import { KrakenExchange } from './kraken'
 import { KuCoinExchange } from './kucoin'
@@ -121,6 +123,12 @@ export class ExchangeManager {
       let exchange: BaseExchange
 
       switch (config.name) {
+        case 'Binance':
+          exchange = new BinanceExchange(config.credentials)
+          break
+        case 'Bybit':
+          exchange = new BybitExchange(config.credentials)
+          break
         case 'Coinbase':
           exchange = new CoinbaseExchange(config.credentials)
           break
@@ -130,7 +138,6 @@ export class ExchangeManager {
         case 'KuCoin':
           exchange = new KuCoinExchange(config.credentials)
           break
-        // Binance和Bybit已有实现，这里暂时跳过
         default:
           console.warn(`交易所 ${config.name} 尚未实现`)
           return
