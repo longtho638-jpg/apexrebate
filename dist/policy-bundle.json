@@ -1,7 +1,0 @@
-{
-  "version": 1,
-  "entries": {
-    "rollout_allow.rego": "package apex.rollout\n\ndefault allow := false\n\nallow {\n  input.environment == \"prod\"\n  input.guardrails.p95_edge <= 250\n  input.guardrails.p95_node <= 450\n  input.guardrails.error_rate <= 0.001\n  input.tests.e2e_pass == true\n  input.evidence.sig_valid == true\n}\n\n# Test mode: allow deploy to preview branches\n",
-    "payouts.rego": "package apex.payouts\n\ndefault allow_payout := false\n\nallow_payout {\n  not input.flags.kill_switch_payout\n  input.user.kyc == true\n  input.rules.wash_trading_prohibited == true\n  input.rules.self_referral_prohibited == true\n  input.txn.value > 0\n  input.txn.age_days >= 0\n  input.txn.age_days <= input.rules.clawback_window_days\n}\n\n# Clawback allowed when conditions met\nallow_clawback {\n  input.user.kyc == true\n  input.clawback_reason != \"\"\n}\n"
-  }
-}

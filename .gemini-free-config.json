@@ -1,0 +1,8 @@
+{
+  "apiKey": "AIzaSyDIRUXLtyA2fHC3NePc9vU6zUdfMmg9oDc",
+  "model": "gemini-2.5-pro",
+  "endpoint": "https://generativeai.googleapis.com",
+  "temperature": 0.7,
+  "maxOutputTokens": 8192,
+  "rateLimitDelay": 500
+}

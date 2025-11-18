@@ -73,7 +73,7 @@ interface Payout {
   notes?: string;
 }
 
-export default function AdminDashboard() {
+export default function AdminDashboardClient() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [stats, setStats] = useState<AdminStats | null>(null);

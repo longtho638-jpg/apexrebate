@@ -3,9 +3,10 @@
  * Hỗ trợ: OpenAI GPT-4, GPT-4o-mini, Anthropic Claude Sonnet 4.5, v.v.
  */
 
-export type AIProvider = 'openai' | 'anthropic';
+export type AIProvider = 'openai' | 'anthropic' | 'google';
 
 export type AIModel = 
+  | 'gemini-3-pro-preview'
   | 'gpt-4'
   | 'gpt-4o'
   | 'gpt-4o-mini'
@@ -45,6 +46,20 @@ export interface AIProviderConfig {
 // ====================================
 
 export const AI_MODEL_CONFIGS: Record<AIModel, AIModelConfig> = {
+  // Google Gemini Models
+  'gemini-3-pro-preview': {
+    provider: 'google',
+    model: 'gemini-3-pro-preview',
+    enabled: true,
+    maxTokens: 32000,
+    temperature: 0.7,
+    topP: 1,
+    rateLimit: 1000,
+    costPer1MTokens: {
+      input: 1.0,
+      output: 4.0
+    }
+  },
   // OpenAI Models
   'gpt-4': {
     provider: 'openai',
@@ -187,6 +202,22 @@ export const getOpenAIConfig = (): AIProviderConfig => {
  * Lấy cấu hình Anthropic - CHỈ SỬ DỤNG TRÊN SERVER
  * Gọi hàm này trong API routes hoặc server components
  */
+/**
+ * Lấy cấu hình Google Gemini - CHỈ SỬ DỤNG TRÊN SERVER
+ * Gọi hàm này trong API routes hoặc server components
+ */
+export const getGoogleConfig = (): AIProviderConfig => {
+  if (typeof window !== 'undefined') {
+    throw new Error('getGoogleConfig() chỉ có thể gọi trên server-side');
+  }
+  
+  return {
+    apiKey: process.env.GEMINI_API_KEY || '',
+    baseURL: process.env.GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta',
+    defaultModel: (process.env.GEMINI_DEFAULT_MODEL as AIModel) || 'gemini-3-pro-preview'
+  };
+};
+
 export const getAnthropicConfig = (): AIProviderConfig => {
   if (typeof window !== 'undefined') {
     throw new Error('getAnthropicConfig() chỉ có thể gọi trên server-side');
@@ -277,7 +308,7 @@ export function estimateCost(
 
 export const DEFAULT_AI_CONFIG = {
   // Model ưu tiên cho các tác vụ khác nhau
-  chat: 'claude-sonnet-4.5' as AIModel, // ✅ SỬ DỤNG CLAUDE SONNET 4.5 CHO CHAT
+  chat: 'gemini-3-pro-preview' as AIModel, // ✅ GEMINI 3.0 PRO PREVIEW // ✅ SỬ DỤNG CLAUDE SONNET 4.5 CHO CHAT
   completion: 'gpt-4o-mini' as AIModel,
   embedding: 'text-embedding-3-small' as const,
   analysis: 'claude-opus-3' as AIModel,
